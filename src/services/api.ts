@@ -14,7 +14,10 @@ import type { HealthStatus } from "@lieshoucloud/types";
  *      - 适合调 Spring Cloud Gateway
  */
 
-const GATEWAY_BASE = "http://localhost:9000";
+import { resolveApiBase } from '@lieshoucloud/config';
+
+/** 网关基址：env 优先（VITE_API_BASE），缺省本地 Tauri 联调 */
+const GATEWAY_BASE = resolveApiBase({ defaultBase: 'http://localhost:9000' });
 
 /** Tauri command - 调用 Rust 端 fetch_health */
 export async function fetchTauriBridgeHealth(): Promise<{
