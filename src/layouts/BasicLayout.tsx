@@ -36,12 +36,22 @@ const BASE_NAV: NavItem[] = [
   { key: "/approval", label: "审批流", path: "/approval" },
 ];
 
-/** 行业增强菜单（edition.industries 派生；行业页面回迁通用仓后填充路由） */
+/** 行业增强菜单（edition.industries 派生；行业页面已回迁通用仓，2026-09） */
 const INDUSTRY_NAV: Record<IndustryId, NavItem[]> = {
   generic: [],
-  legal: [],
-  edu: [],
-  iot: [],
+  legal: [
+    { key: "/legal/time", label: "计时记录", path: "/legal/time", industry: "legal" },
+  ],
+  edu: [
+    { key: "/edu/courses", label: "课程管理", path: "/edu/courses", industry: "edu" },
+    { key: "/edu/lessons", label: "课时排期", path: "/edu/lessons", industry: "edu" },
+    { key: "/edu/children", label: "孩子进度", path: "/edu/children", industry: "edu" },
+  ],
+  iot: [
+    { key: "/iot/devices", label: "设备管理", path: "/iot/devices", industry: "iot" },
+    { key: "/iot/alerts", label: "告警中心", path: "/iot/alerts", industry: "iot" },
+    { key: "/iot/overview", label: "设备总览", path: "/iot/overview", industry: "iot" },
+  ],
 };
 
 export default function BasicLayout() {
