@@ -14,7 +14,7 @@ import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
 
 import type { IndustryId } from '@lieshoucloud/types';
-import { getEdition, getEditionIndustries, isMenuHidden } from '../config/editions';
+import { getEdition, getEditionIndustries, isCapabilityEnabled, isMenuHidden } from '../config/editions';
 
 const { Header, Sider, Content } = Layout;
 
@@ -24,6 +24,8 @@ interface NavItem {
   path: string;
   /** 行业归属（缺省 = 通用能力；行业菜单仅当 edition.industries 包含时显示） */
   industry?: IndustryId;
+  /** 能力 ID（模块级组合；edition.capabilities 声明时精确匹配） */
+  capability?: string;
 }
 
 /** 通用菜单（所有版别基础；客户层可用 hiddenMenus 裁剪） */
@@ -40,17 +42,17 @@ const BASE_NAV: NavItem[] = [
 const INDUSTRY_NAV: Record<IndustryId, NavItem[]> = {
   generic: [],
   legal: [
-    { key: "/legal/time", label: "计时记录", path: "/legal/time", industry: "legal" },
+    { key: "/legal/time", label: "计时记录", path: "/legal/time", industry: "legal", capability: "legal/time" },
   ],
   edu: [
-    { key: "/edu/courses", label: "课程管理", path: "/edu/courses", industry: "edu" },
-    { key: "/edu/lessons", label: "课时排期", path: "/edu/lessons", industry: "edu" },
-    { key: "/edu/children", label: "孩子进度", path: "/edu/children", industry: "edu" },
+    { key: "/edu/courses", label: "课程管理", path: "/edu/courses", industry: "edu", capability: "edu/courses" },
+    { key: "/edu/lessons", label: "课时排期", path: "/edu/lessons", industry: "edu", capability: "edu/lessons" },
+    { key: "/edu/children", label: "孩子进度", path: "/edu/children", industry: "edu", capability: "edu/children" },
   ],
   iot: [
-    { key: "/iot/devices", label: "设备管理", path: "/iot/devices", industry: "iot" },
-    { key: "/iot/alerts", label: "告警中心", path: "/iot/alerts", industry: "iot" },
-    { key: "/iot/overview", label: "设备总览", path: "/iot/overview", industry: "iot" },
+    { key: "/iot/devices", label: "设备管理", path: "/iot/devices", industry: "iot", capability: "iot/devices" },
+    { key: "/iot/alerts", label: "告警中心", path: "/iot/alerts", industry: "iot", capability: "iot/alerts" },
+    { key: "/iot/overview", label: "设备总览", path: "/iot/overview", industry: "iot", capability: "iot/overview" },
   ],
 };
 
@@ -64,7 +66,7 @@ export default function BasicLayout() {
   const visibleNav: NavItem[] = [
     ...BASE_NAV.filter((n) => !isMenuHidden(edition, n.path)),
     ...getEditionIndustries(edition)
-      .flatMap((i) => INDUSTRY_NAV[i] ?? [])
+      .flatMap((i) => (INDUSTRY_NAV[i] ?? []).filter((n) => isCapabilityEnabled(edition, i, n.capability ?? n.path)))
       .filter((n) => !isMenuHidden(edition, n.path)),
   ];
 

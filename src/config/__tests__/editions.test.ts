@@ -3,10 +3,13 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 
+import type { DesktopEdition } from '../editions';
 import {
   EDITIONS,
   editionFromTenant,
   getEditionIndustries,
+  getEnabledCapabilities,
+  isCapabilityEnabled,
   isMenuHidden,
   resolveEditionId,
 } from '../editions';
@@ -53,6 +56,31 @@ describe('菜单裁剪（hiddenMenus 前缀匹配）', () => {
 
   it('前缀匹配覆盖子路径', () => {
     expect(isMenuHidden(EDITIONS.legalmind, '/customers/detail/1')).toBe(true);
+  });
+});
+
+describe('能力组合（capabilities 模块级 · 跨行业）', () => {
+  it('未声明 capabilities → 行业全量（null）', () => {
+    expect(getEnabledCapabilities(EDITIONS.legalmind, 'legal')).toBeNull();
+    expect(isCapabilityEnabled(EDITIONS.legalmind, 'legal', 'legal/cases')).toBe(true);
+  });
+
+  it('客户声明能力子集 → 精确组合（跨行业：legal 案件/计时 + iot 设备）', () => {
+    const custom: DesktopEdition = {
+      id: 'legalmind',
+      brandName: '测试客户',
+      industries: ['legal', 'iot'],
+      capabilities: ['legal/cases', 'legal/time', 'iot/devices'],
+    };
+    expect(getEnabledCapabilities(custom, 'legal')).toEqual(['legal/cases', 'legal/time']);
+    expect(getEnabledCapabilities(custom, 'iot')).toEqual(['iot/devices']);
+    expect(isCapabilityEnabled(custom, 'legal', 'legal/schedule')).toBe(false);
+    expect(isCapabilityEnabled(custom, 'iot', 'iot/alerts')).toBe(false);
+  });
+
+  it('capabilities 空数组视为未声明', () => {
+    const e: DesktopEdition = { id: 'generic', brandName: 'x', industries: ['legal'], capabilities: [] };
+    expect(getEnabledCapabilities(e, 'legal')).toBeNull();
   });
 });
 

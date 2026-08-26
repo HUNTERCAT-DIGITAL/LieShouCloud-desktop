@@ -62,6 +62,27 @@ export function getEditionIndustries(edition: DesktopEdition): IndustryId[] {
   return edition.industries ?? [];
 }
 
+/**
+ * 客户在某行业启用的能力清单（模块级组合 · 2026-09）。
+ * - capabilities 已声明 → 精确匹配该行业子集；
+ * - 未声明（null）→ 行业全量。
+ */
+export function getEnabledCapabilities(edition: DesktopEdition, industry: IndustryId): string[] | null {
+  const caps = edition.capabilities ?? [];
+  if (caps.length === 0) return null;
+  return caps.filter((c) => c.startsWith(`${industry}/`));
+}
+
+/** 某能力是否被客户启用（缺省行业全量时返回 true） */
+export function isCapabilityEnabled(
+  edition: DesktopEdition,
+  industry: IndustryId,
+  capability: string,
+): boolean {
+  const caps = getEnabledCapabilities(edition, industry);
+  return caps === null || caps.includes(capability);
+}
+
 /** 菜单过滤：path 是否被版别裁剪（hiddenMenus 前缀匹配） */
 export function isMenuHidden(edition: DesktopEdition, path: string): boolean {
   return (edition.hiddenMenus ?? []).some((h) => path === h || path.startsWith(`${h}/`));
