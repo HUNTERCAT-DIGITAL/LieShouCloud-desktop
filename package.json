@@ -25,10 +25,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router-dom": "^7.18.2",
-    "zustand": "5.0.2",
-    "@lieshoucloud/industry-edu": "workspace:*",
-    "@lieshoucloud/industry-iot": "workspace:*",
-    "@lieshoucloud/industry-legal": "workspace:*"
+    "zustand": "5.0.2"
   },
   "devDependencies": {
     "@lieshoucloud/config": "workspace:*",

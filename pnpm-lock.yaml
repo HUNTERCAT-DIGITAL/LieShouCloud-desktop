@@ -14,15 +14,6 @@ importers:
       '@lieshoucloud/api-client':
         specifier: workspace:*
         version: link:open/api-client
-      '@lieshoucloud/industry-edu':
-        specifier: workspace:*
-        version: link:industry/packages/industry-edu
-      '@lieshoucloud/industry-iot':
-        specifier: workspace:*
-        version: link:industry/packages/industry-iot
-      '@lieshoucloud/industry-legal':
-        specifier: workspace:*
-        version: link:industry/packages/industry-legal
       '@lieshoucloud/types':
         specifier: workspace:*
         version: link:open/types
@@ -87,42 +78,6 @@ importers:
       vitest:
         specifier: 3.0.5
         version: 3.0.5(@types/node@22.9.4)(jsdom@30.0.1)
-
-  industry/packages/industry-edu:
-    devDependencies:
-      '@lieshoucloud/api-client':
-        specifier: workspace:*
-        version: link:../../../open/api-client
-      '@lieshoucloud/types':
-        specifier: workspace:*
-        version: link:../../../open/types
-      typescript:
-        specifier: 5.6.3
-        version: 5.6.3
-
-  industry/packages/industry-iot:
-    devDependencies:
-      '@lieshoucloud/api-client':
-        specifier: workspace:*
-        version: link:../../../open/api-client
-      '@lieshoucloud/types':
-        specifier: workspace:*
-        version: link:../../../open/types
-      typescript:
-        specifier: 5.6.3
-        version: 5.6.3
-
-  industry/packages/industry-legal:
-    devDependencies:
-      '@lieshoucloud/api-client':
-        specifier: workspace:*
-        version: link:../../../open/api-client
-      '@lieshoucloud/types':
-        specifier: workspace:*
-        version: link:../../../open/types
-      typescript:
-        specifier: 5.6.3
-        version: 5.6.3
 
   open/api-client:
     devDependencies:

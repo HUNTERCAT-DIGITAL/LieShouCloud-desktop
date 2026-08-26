@@ -8,16 +8,8 @@
  */
 import type { IndustryId } from '@lieshoucloud/types';
 
-import { dwjkEdition } from './dwjk';
 import { genericEdition } from './generic';
-import { haizanEdition } from './haizan';
-import { huntercatEdition } from './huntercat';
-import { hekerenEdition } from './hekeren';
-import { linkesecurityEdition } from './linkesecurity';
-import { jmzzEdition } from './jmzz';
 import { layerEdition } from './layer';
-import { legalmindEdition } from './legalmind';
-import { zhiyeEdition } from './zhiye';
 import type { DesktopEdition, DesktopEditionId } from './types';
 
 export type { DesktopEdition, DesktopEditionId } from './types';
@@ -27,14 +19,6 @@ const EDITION_ENV_KEY = 'VITE_EDITION';
 export const EDITIONS: Record<DesktopEditionId, DesktopEdition> = {
   generic: genericEdition,
   layer: layerEdition,
-  zhiye: zhiyeEdition,
-  jmzz: jmzzEdition,
-  legalmind: legalmindEdition,
-  dwjk: dwjkEdition,
-  haizan: haizanEdition,
-  huntercat: huntercatEdition,
-  linkesecurity: linkesecurityEdition,
-  hekeren: hekerenEdition,
 };
 
 function editionFromEnv(): DesktopEditionId | null {
@@ -44,15 +28,7 @@ function editionFromEnv(): DesktopEditionId | null {
 }
 
 function editionFromHostname(host: string): DesktopEditionId {
-  if (host.startsWith('legalmind.')) return 'legalmind';
   if (host.startsWith('layer.')) return 'layer';
-  if (host.startsWith('zhiye.')) return 'zhiye';
-  if (host.startsWith('jmzz.') || host.includes('.jmzz.')) return 'jmzz';
-  if (host.startsWith('dwjk.')) return 'dwjk';
-  if (host.startsWith('haizan.')) return 'haizan';
-  if (host.startsWith('huntercat.')) return 'huntercat';
-  if (host.startsWith('linkesecurity.')) return 'linkesecurity';
-  if (host.startsWith('hekeren.')) return 'hekeren';
   return 'generic';
 }
 
