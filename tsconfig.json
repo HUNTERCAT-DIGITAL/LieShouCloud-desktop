@@ -5,9 +5,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@lieshoucloud/api-client": ["open/packages/api-client/src"],
-      "@lieshoucloud/types": ["open/packages/types/src"],
-      "@lieshoucloud/ui": ["open/packages/ui/src"],
+      "@lieshoucloud/api-client": ["open/api-client/src"],
+      "@lieshoucloud/types": ["open/types/src"],
+      "@lieshoucloud/ui": ["open/ui/src"],
       "@lieshoucloud/industry-edu": ["industry/packages/industry-edu/src"],
       "@lieshoucloud/industry-iot": ["industry/packages/industry-iot/src"],
       "@lieshoucloud/industry-legal": ["industry/packages/industry-legal/src"]
