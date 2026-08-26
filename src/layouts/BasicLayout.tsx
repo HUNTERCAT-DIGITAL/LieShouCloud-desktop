@@ -13,15 +13,21 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
 
+import type { IndustryId } from '@lieshoucloud/types';
+import { getEdition, getEditionIndustries, isMenuHidden } from '../config/editions';
+
 const { Header, Sider, Content } = Layout;
 
 interface NavItem {
   key: string;
   label: string;
   path: string;
+  /** 行业归属（缺省 = 通用能力；行业菜单仅当 edition.industries 包含时显示） */
+  industry?: IndustryId;
 }
 
-const NAV: NavItem[] = [
+/** 通用菜单（所有版别基础；客户层可用 hiddenMenus 裁剪） */
+const BASE_NAV: NavItem[] = [
   { key: "/welcome", label: "工作台", path: "/welcome" },
   { key: "/customers", label: "客户管理", path: "/customers" },
   { key: "/legal/cases", label: "案件管理", path: "/legal/cases" },
@@ -30,13 +36,29 @@ const NAV: NavItem[] = [
   { key: "/approval", label: "审批流", path: "/approval" },
 ];
 
+/** 行业增强菜单（edition.industries 派生；行业页面回迁通用仓后填充路由） */
+const INDUSTRY_NAV: Record<IndustryId, NavItem[]> = {
+  generic: [],
+  legal: [],
+  edu: [],
+  iot: [],
+};
+
 export default function BasicLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
 
-  const items: MenuProps["items"] = NAV.map((n) => ({
+  const edition = getEdition();
+  const visibleNav: NavItem[] = [
+    ...BASE_NAV.filter((n) => !isMenuHidden(edition, n.path)),
+    ...getEditionIndustries(edition)
+      .flatMap((i) => INDUSTRY_NAV[i] ?? [])
+      .filter((n) => !isMenuHidden(edition, n.path)),
+  ];
+
+  const items: MenuProps["items"] = visibleNav.map((n) => ({
     key: n.path,
     label: n.label,
   }));
@@ -76,7 +98,7 @@ export default function BasicLayout() {
       </Sider>
       <Layout>
         <Header style={styles.header}>
-          <div style={styles.title}>Desktop · {NAV.find((n) => n.path === location.pathname)?.label ?? ""}</div>
+          <div style={styles.title}>Desktop · {visibleNav.find((n) => n.path === location.pathname)?.label ?? ""}</div>
           <Dropdown menu={{ items: userMenu }} placement="bottomRight">
             <Space style={{ cursor: "pointer" }}>
               <Avatar size="small" icon={<UserOutlined />} style={{ background: colors.primary }}>
