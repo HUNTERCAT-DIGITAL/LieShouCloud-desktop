@@ -7,9 +7,9 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { getExtraEdition } from "./config/editions";
 
-import { AuthGuard } from "./components/AuthGuard";
-import PageLoading from "./components/PageLoading";
+import { AuthGuard, PageLoading } from "@lieshoucloud/ui";
 import BasicLayout from "./layouts/BasicLayout";
+import { useAuthStore } from "./stores/auth";
 
 const Login = lazy(() => import("./pages/Login"));
 const Welcome = lazy(() => import("./pages/Welcome"));
@@ -42,17 +42,23 @@ function ExtraRoute({ route }: { route: { path: string; load: () => Promise<{ de
 
 const EXTRA_ROUTES = getExtraEdition().extraRoutes ?? [];
 
+/**
+ * 受保护布局：认证状态由端内 auth store 读取，注入共享 AuthGuard（L1-1 · 受控版）.
+ */
+function ProtectedLayout() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  return (
+    <AuthGuard isAuthenticated={isAuthenticated}>
+      <BasicLayout />
+    </AuthGuard>
+  );
+}
+
 export const routes = (
   <Suspense fallback={<PageLoading />}>
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route
-        element={
-          <AuthGuard>
-            <BasicLayout />
-          </AuthGuard>
-        }
-      >
+      <Route element={<ProtectedLayout />}>
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/customers" element={<Customers />} />
         <Route path="/customers/:id" element={<CustomerDetail />} />
