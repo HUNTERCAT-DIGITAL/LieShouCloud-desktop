@@ -6,7 +6,7 @@
 import type { ComponentType } from 'react';
 import type { IndustryId } from '@lieshoucloud/types';
 
-export type DesktopEditionId = 'generic' | 'layer' | 'zhiye' | 'jmzz' | 'legalmind' | 'dwjk' | 'haizan';
+export type DesktopEditionId = 'generic' | 'layer' | 'zhiye' | 'jmzz' | 'legalmind' | 'dwjk' | 'haizan' | 'huntercat';
 
 export interface DesktopEdition {
   id: DesktopEditionId;

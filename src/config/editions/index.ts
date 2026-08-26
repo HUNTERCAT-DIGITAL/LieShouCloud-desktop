@@ -11,6 +11,7 @@ import type { IndustryId } from '@lieshoucloud/types';
 import { dwjkEdition } from './dwjk';
 import { genericEdition } from './generic';
 import { haizanEdition } from './haizan';
+import { huntercatEdition } from './huntercat';
 import { jmzzEdition } from './jmzz';
 import { layerEdition } from './layer';
 import { legalmindEdition } from './legalmind';
@@ -29,6 +30,7 @@ export const EDITIONS: Record<DesktopEditionId, DesktopEdition> = {
   legalmind: legalmindEdition,
   dwjk: dwjkEdition,
   haizan: haizanEdition,
+  huntercat: huntercatEdition,
 };
 
 function editionFromEnv(): DesktopEditionId | null {
@@ -44,6 +46,7 @@ function editionFromHostname(host: string): DesktopEditionId {
   if (host.startsWith('jmzz.') || host.includes('.jmzz.')) return 'jmzz';
   if (host.startsWith('dwjk.')) return 'dwjk';
   if (host.startsWith('haizan.')) return 'haizan';
+  if (host.startsWith('huntercat.')) return 'huntercat';
   return 'generic';
 }
 
