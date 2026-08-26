@@ -6,7 +6,7 @@ import type { DesktopEdition } from './types';
 
 export const genericEdition: DesktopEdition = {
   id: 'generic',
-  brandName: '猎手云 Pro',
+  brandName: 'LieShouCloud',
   industries: [],
   hiddenMenus: ['/legal', '/inventory'],
 };

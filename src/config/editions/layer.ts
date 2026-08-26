@@ -6,7 +6,7 @@ import type { DesktopEdition } from './types';
 
 export const layerEdition: DesktopEdition = {
   id: 'layer',
-  brandName: '猎手云 Pro · 法律版',
+  brandName: 'LieShouCloud · 法律版',
   industries: ['legal'],
   hiddenMenus: ['/customers', '/inventory', '/finance', '/approval'],
 };
