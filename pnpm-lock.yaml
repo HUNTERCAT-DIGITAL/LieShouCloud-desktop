@@ -13,7 +13,7 @@ importers:
         version: 5.5.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@lieshoucloud/api-client':
         specifier: workspace:*
-        version: link:open/packages/api-client
+        version: link:open/api-client
       '@lieshoucloud/industry-edu':
         specifier: workspace:*
         version: link:industry/packages/industry-edu
@@ -25,10 +25,10 @@ importers:
         version: link:industry/packages/industry-legal
       '@lieshoucloud/types':
         specifier: workspace:*
-        version: link:open/packages/types
+        version: link:open/types
       '@lieshoucloud/ui':
         specifier: workspace:*
-        version: link:open/packages/ui
+        version: link:open/ui
       '@tauri-apps/api':
         specifier: ~2.0.0
         version: 2.0.3
@@ -53,7 +53,7 @@ importers:
     devDependencies:
       '@lieshoucloud/config':
         specifier: workspace:*
-        version: link:open/packages/config
+        version: link:open/config
       '@tauri-apps/cli':
         specifier: ~2.0.0
         version: 2.0.4
@@ -92,10 +92,10 @@ importers:
     devDependencies:
       '@lieshoucloud/api-client':
         specifier: workspace:*
-        version: link:../../../open/packages/api-client
+        version: link:../../../open/api-client
       '@lieshoucloud/types':
         specifier: workspace:*
-        version: link:../../../open/packages/types
+        version: link:../../../open/types
       typescript:
         specifier: 5.6.3
         version: 5.6.3
@@ -104,10 +104,10 @@ importers:
     devDependencies:
       '@lieshoucloud/api-client':
         specifier: workspace:*
-        version: link:../../../open/packages/api-client
+        version: link:../../../open/api-client
       '@lieshoucloud/types':
         specifier: workspace:*
-        version: link:../../../open/packages/types
+        version: link:../../../open/types
       typescript:
         specifier: 5.6.3
         version: 5.6.3
@@ -116,15 +116,15 @@ importers:
     devDependencies:
       '@lieshoucloud/api-client':
         specifier: workspace:*
-        version: link:../../../open/packages/api-client
+        version: link:../../../open/api-client
       '@lieshoucloud/types':
         specifier: workspace:*
-        version: link:../../../open/packages/types
+        version: link:../../../open/types
       typescript:
         specifier: 5.6.3
         version: 5.6.3
 
-  open/packages/api-client:
+  open/api-client:
     devDependencies:
       openapi-typescript:
         specifier: ^7.4.4
@@ -133,9 +133,9 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
 
-  open/packages/config: {}
+  open/config: {}
 
-  open/packages/types:
+  open/types:
     dependencies:
       dayjs:
         specifier: ^1.11.23
@@ -157,7 +157,7 @@ importers:
         specifier: ^8.15.0
         version: 8.68.0(eslint@9.39.5)(typescript@5.6.3)
 
-  open/packages/ui:
+  open/ui:
     dependencies:
       '@ant-design/icons':
         specifier: ~5.5.1
@@ -181,6 +181,9 @@ importers:
       '@eslint/js':
         specifier: ^9.15.0
         version: 9.39.5
+      '@lieshoucloud/api-client':
+        specifier: workspace:*
+        version: link:../api-client
       '@lieshoucloud/types':
         specifier: workspace:*
         version: link:../types
@@ -208,6 +211,9 @@ importers:
       jsdom:
         specifier: 25.0.1
         version: 25.0.1
+      react-router-dom:
+        specifier: ^7.18.2
+        version: 7.18.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       typescript:
         specifier: 5.6.3
         version: 5.6.3

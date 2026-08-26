@@ -1,6 +1,6 @@
 [submodule "open"]
 	path = open
-	url = git@github.com:HUNTERCAT-DIGITAL/LieShouCloud.git
+	url = git@github.com:HUNTERCAT-DIGITAL/LieShouCloud-web.git
 [submodule "industry"]
 	path = industry
 	url = git@github.com:HUNTERCAT-DIGITAL/LieShouCloudPro-industry.git
