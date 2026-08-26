@@ -28,7 +28,7 @@ describe('版别配置表', () => {
     }
   });
 
-  it('legalmind（凌科数安客户）声明启用 legal 行业能力', () => {
+  it('legalmind（凌科安时客户）声明启用 legal 行业能力', () => {
     expect(getEditionIndustries(EDITIONS.legalmind)).toContain('legal');
     expect(getEditionIndustries(EDITIONS.legalmind)).not.toContain('edu');
   });
