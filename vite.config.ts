@@ -21,15 +21,15 @@ export default defineConfig({
       { find: "@", replacement: path.resolve(__dirname, "src") },
       {
         find: "@lieshoucloud/api-client",
-        replacement: path.resolve(__dirname, "open/packages/api-client/src"),
+        replacement: path.resolve(__dirname, "open/api-client/src"),
       },
       {
         find: "@lieshoucloud/types",
-        replacement: path.resolve(__dirname, "open/packages/types/src"),
+        replacement: path.resolve(__dirname, "open/types/src"),
       },
       {
         find: "@lieshoucloud/ui",
-        replacement: path.resolve(__dirname, "open/packages/ui/src"),
+        replacement: path.resolve(__dirname, "open/ui/src"),
       },
       // 客户包兜底：@lieshoucloud/<client>[/<subpath>] → ../packages/<client>/src[/<subpath>]
       // （正则捕获组 + $1/$2 由 String.replace 展开）
