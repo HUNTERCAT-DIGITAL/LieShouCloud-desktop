@@ -1,8 +1,11 @@
 /**
  * Routes (Phase 9 · desktop).
  */
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
+import type { ComponentType } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+
+import { getExtraEdition } from "./config/editions";
 
 import { AuthGuard } from "./components/AuthGuard";
 import PageLoading from "./components/PageLoading";
@@ -24,6 +27,20 @@ const IotOverview = lazy(() => import("./pages/IotOverview"));
 const Inventory = lazy(() => import("./pages/Inventory"));
 const Finance = lazy(() => import("./pages/Finance"));
 const Approval = lazy(() => import("./pages/Approval"));
+
+/** 客户专属路由槽（extraRoutes · 2026-09 客户聚合仓）：内容由客户仓注入 */
+function ExtraRoute({ route }: { route: { path: string; load: () => Promise<{ default: ComponentType }> } }) {
+  const [Comp, setComp] = useState<ComponentType | null>(null);
+  useEffect(() => {
+    route
+      .load()
+      .then((m) => setComp(() => m.default))
+      .catch(() => setComp(null));
+  }, [route]);
+  return Comp ? <Comp /> : <PageLoading />;
+}
+
+const EXTRA_ROUTES = getExtraEdition().extraRoutes ?? [];
 
 export const routes = (
   <Suspense fallback={<PageLoading />}>
@@ -51,6 +68,9 @@ export const routes = (
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/finance" element={<Finance />} />
         <Route path="/approval" element={<Approval />} />
+        {EXTRA_ROUTES.map((r) => (
+          <Route key={r.path} path={r.path} element={<ExtraRoute route={r} />} />
+        ))}
         <Route path="/" element={<Navigate to="/welcome" replace />} />
         <Route path="*" element={<Navigate to="/welcome" replace />} />
       </Route>

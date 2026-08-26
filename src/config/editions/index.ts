@@ -93,3 +93,17 @@ export function editionFromTenant(tenantEdition?: string | null): DesktopEdition
   const id = (tenantEdition ?? '').toLowerCase();
   return id in EDITIONS ? EDITIONS[id as DesktopEditionId] : EDITIONS.generic;
 }
+
+/**
+ * 客户仓注入的 Edition 增强（extraRoutes 等 · 2026-09 客户聚合仓模式）.
+ * 独立仓库（无客户仓）glob 不匹配 → 空；客户仓 deploy:prepare 生成 `*.extra.ts` 后自动合并。
+ */
+const EXTRA_MODULES = import.meta.glob<{ default?: Partial<DesktopEdition> }>('./*.extra.ts', {
+  eager: true,
+});
+
+export function getExtraEdition(): Partial<DesktopEdition> {
+  return Object.values(EXTRA_MODULES)
+    .map((m) => m.default ?? {})
+    .reduce<Partial<DesktopEdition>>((acc, cur) => ({ ...acc, ...cur }), {});
+}
