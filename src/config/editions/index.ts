@@ -12,6 +12,7 @@ import { dwjkEdition } from './dwjk';
 import { genericEdition } from './generic';
 import { haizanEdition } from './haizan';
 import { huntercatEdition } from './huntercat';
+import { linkesecurityEdition } from './linkesecurity';
 import { jmzzEdition } from './jmzz';
 import { layerEdition } from './layer';
 import { legalmindEdition } from './legalmind';
@@ -31,6 +32,7 @@ export const EDITIONS: Record<DesktopEditionId, DesktopEdition> = {
   dwjk: dwjkEdition,
   haizan: haizanEdition,
   huntercat: huntercatEdition,
+  linkesecurity: linkesecurityEdition,
 };
 
 function editionFromEnv(): DesktopEditionId | null {
@@ -47,6 +49,7 @@ function editionFromHostname(host: string): DesktopEditionId {
   if (host.startsWith('dwjk.')) return 'dwjk';
   if (host.startsWith('haizan.')) return 'haizan';
   if (host.startsWith('huntercat.')) return 'huntercat';
+  if (host.startsWith('linkesecurity.')) return 'linkesecurity';
   return 'generic';
 }
 
