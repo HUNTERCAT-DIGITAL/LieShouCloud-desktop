@@ -1,3 +1,12 @@
-[submodule "open"]
-	path = open
-	url = git@github.com:HUNTERCAT-DIGITAL/LieShouCloud-web.git
+[submodule "open/api-client"]
+	path = open/api-client
+	url = git@github.com:HUNTERCAT-DIGITAL/LieShouCloud-api-client.git
+[submodule "open/config"]
+	path = open/config
+	url = git@github.com:HUNTERCAT-DIGITAL/LieShouCloud-config.git
+[submodule "open/types"]
+	path = open/types
+	url = git@github.com:HUNTERCAT-DIGITAL/LieShouCloud-types.git
+[submodule "open/ui"]
+	path = open/ui
+	url = git@github.com:HUNTERCAT-DIGITAL/LieShouCloud-ui.git

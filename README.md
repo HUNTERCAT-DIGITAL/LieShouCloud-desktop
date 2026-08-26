@@ -1,108 +1,54 @@
-# @lieshoucloud/desktop
+# LieShouCloud-desktop · 猎手云桌面端(开源)
 
-LieShou Cloud Desktop —— **Tauri 2 + React 19**（系统 webview 中的 SPA）。
+> 猎手云(开源)的桌面客户端:Tauri 2 桌面壳 + React 19 渲染,承载登录 / 工作台 / 客户 / 库存 / 财务 / 审批等通用业务。
+> 行业能力与客户定制通过 **Edition 配置 + 客户仓注入**(`extraRoutes`)装配,不在本仓内。
 
-## 启动
-
-前置：
-- Node 22 + pnpm 9+
-- **Rust toolchain**（[rustup.rs](https://rustup.rs/)）
-- 平台特定：
-  - **macOS**：Xcode Command Line Tools（`xcode-select --install`）
-  - **Windows**：WebView2（Win11 自带）+ Visual Studio Build Tools
-  - **Linux**：webkit2gtk + libsoup
-
-```bash
-# 仓库根 - 装所有 workspace
-pnpm install
-
-# 仅 desktop (启动 Vite 1420 + Rust 进程 + 桌面窗口)
-pnpm turbo run tauri:dev --filter=@lieshoucloud/desktop
-# 或
-cd apps/desktop && pnpm tauri:dev
-
-# Type check
-pnpm turbo run typecheck --filter=@lieshoucloud/desktop
-
-# Test
-pnpm turbo run test --filter=@lieshoucloud/desktop
-
-# 生产 build（输出到 src-tauri/target/release/bundle/{dmg,msi,deb,app}）
-cd apps/desktop && pnpm tauri:build
-```
-
-## 路由（React Router 7）
-
-```
-src/pages/
-├── Home.tsx     /         欢迎页
-└── Health.tsx   /health   健康状态（含 packages/ui HealthBadge 复用）
-```
-
-## 跨包共享（首个完整复用 web 端能力）
-
-| 包 | desktop 用法 | 备注 |
-|---|---|---|
-| `@lieshoucloud/types` | `import type { HealthStatus }` | 类型共享 |
-| `@lieshoucloud/api-client` | `import { request }` | HTTP fetch wrapper |
-| **`@lieshoucloud/ui`** | **`import { HealthBadge }`** | **DOM 组件复用（react 19 一致）** ✅ |
-
-> **desktop 是第一个完整复用 `packages/ui` 的端**。
-> mobile（RN 18.3）/ mini-program（Taro 4）因 react peerDep 冲突 / 平台抽象不同无法复用；
-> admin（React 19 + DOM）与 desktop 是同一栈，理论上也能复用——后续 Phase 5+ 整理。
-
-## 架构
-
-```
-┌─────────────────────────────────┐
-│ React SPA in system webview     │
-│   ├─ @lieshoucloud/ui (跨包)     │
-│   ├─ @lieshoucloud/api-client   │
-│   └─ Tauri invoke (IPC)         │
-└─────────────────────────────────┘
-         ↕ IPC commands
-┌─────────────────────────────────┐
-│ Rust process (Tauri 2)          │
-│   ├─ Window management          │
-│   ├─ System tray / menu         │
-│   └─ Native APIs                │
-└─────────────────────────────────┘
-         ↕ HTTP (when needed)
-┌─────────────────────────────────┐
-│ Spring Cloud Gateway :9000      │
-└─────────────────────────────────┘
-```
+<p align="center">
+  <img src="https://img.shields.io/badge/Tauri-2-orange" alt="Tauri 2"/>
+  <img src="https://img.shields.io/badge/React-19-61dafb" alt="React 19"/>
+  <img src="https://img.shields.io/badge/Vite-6-646cff" alt="Vite 6"/>
+  <img src="https://img.shields.io/badge/License-Apache--2.0-brightgreen" alt="Apache-2.0"/>
+</p>
 
 ## 技术栈
 
-| 维度 | 选型 |
-|---|---|
-| 桌面框架 | Tauri 2.x（Rust + 系统 webview） |
-| 前端 | React 19 + Vite 6 + React Router 7 |
-| IPC | `@tauri-apps/api` v2 + `#[tauri::command]` |
-| 跨包 | `@lieshoucloud/{ui,types,api-client}: workspace:*` |
+- Tauri 2(Rust)+ React 19 + TypeScript(strict)+ Vite 6
+- 共享层 `@lieshoucloud/{api-client,config,types,ui}` 经 `open/` submodule 挂载 [LieShouCloud-web](https://github.com/HUNTERCAT-DIGITAL/LieShouCloud-web)
 
-## Phase 2+ 路线
+## 快速开始
 
-- Tauri command 扩：fs / dialog / shell / notification / clipboard
-- 系统托盘（Tray icon）
-- 多窗口（multi-window）
-- 自动更新（tauri-plugin-updater）
-- 应用菜单
-- 国际化（i18n）
-- 离线缓存（tauri-plugin-store）
-- 真实 Spring Boot 后端打通
-- 跨平台打包：macOS .dmg / Windows .msi / Linux .deb .AppImage
+```bash
+git clone git@github.com:HUNTERCAT-DIGITAL/LieShouCloud-desktop.git
+git submodule update --init --recursive   # 拉 open/(LieShouCloud-web 共享包)
+pnpm install
+pnpm tauri:dev                            # 开发(需 Rust toolchain)
+```
 
-## 已知限制
+## 脚本
 
-- Phase 1 不 build（CI 无 Rust toolchain）
-- `apps/desktop/src-tauri/icons/` 缺失：dev 模式 OK，build 模式需补（`pnpm tauri icon`）
-- Cargo workspace 与 pnpm workspace 不互通（Rust 端独立）
-- Tauri 2 capabilities 默认权限收窄；新权限需在 `capabilities/default.json` 显式开启
+| 命令 | 说明 |
+| --- | --- |
+| `pnpm tauri:dev` | 桌面开发(需 Rust) |
+| `pnpm tauri:build` | 生产构建(产物在 src-tauri/target/release/bundle/) |
+| `pnpm typecheck` | tsc -b --noEmit |
+| `pnpm test` | Vitest |
+| `pnpm build` | vite build(前端部分) |
 
-## 关联文档
+## 客户/行业装配
 
-- `.ai/decisions/0015-desktop.md`
-- `.ai/conversations/2026-08-22-desktop.md`
-- ADR-0012（monorepo）/ 0013（mobile）/ 0014（mini-program）
+本仓只含**通用部分**;行业能力与客户定制由客户仓注入:
+
+- 客户 Edition 配置在客户仓 `config/editions/<client>.ts`(本仓仅 `generic` + `layer` 预设)
+- 客户仓生成 `editions/<client>.extra.ts`(extraRoutes)→ 本仓装配
+- `EditionGuard` / `isMenuHidden` 按 `edition.hiddenMenus` 裁剪;行业能力经 `edition.industries` 声明(industry 包为闭源商业模块)
+
+## 关联仓库
+
+- 共享层(开源):`HUNTERCAT-DIGITAL/LieShouCloud-web`
+- 后端底座(开源):`HUNTERCAT-DIGITAL/LieShouCloud`
+- 其他端(开源):`LieShouCloud-admin-web` · `LieShouCloud-mobile` · `LieShouCloud-mini-program`
+- 商业主仓:`HUNTERCAT-DIGITAL/LieShouCloudPro`
+
+## License
+
+Apache-2.0,见 [LICENSE](LICENSE)。

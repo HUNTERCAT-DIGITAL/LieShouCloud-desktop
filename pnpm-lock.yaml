@@ -81,6 +81,9 @@ importers:
 
   open/api-client:
     devDependencies:
+      '@lieshoucloud/config':
+        specifier: workspace:*
+        version: link:../config
       openapi-typescript:
         specifier: ^7.4.4
         version: 7.13.0(typescript@5.6.3)
@@ -99,6 +102,9 @@ importers:
       '@eslint/js':
         specifier: ^9.15.0
         version: 9.39.5
+      '@lieshoucloud/config':
+        specifier: workspace:*
+        version: link:../config
       eslint:
         specifier: ^9.15.0
         version: 9.39.5
@@ -139,6 +145,9 @@ importers:
       '@lieshoucloud/api-client':
         specifier: workspace:*
         version: link:../api-client
+      '@lieshoucloud/config':
+        specifier: workspace:*
+        version: link:../config
       '@lieshoucloud/types':
         specifier: workspace:*
         version: link:../types
