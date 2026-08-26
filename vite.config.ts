@@ -8,16 +8,36 @@ import path from "node:path";
  *  - watch 忽略 src-tauri/** (Rust 端变更由 cargo 监听)
  *  - alias 与 tsconfig.json paths 完全同步
  * @see .ai/decisions/0015-desktop.md
+ *
+ * 客户聚合仓模式（2026-09）：客户包 @lieshoucloud/<client> 由客户仓
+ * deploy:prepare 生成 tsconfig.<client>.json（paths → ../packages/<client>/src），
+ * 此处补充 Vite 运行时 alias（顺序：具体包在前，客户包正则兜底）。
+ * 独立仓库（无客户仓）不 import 客户包，正则兜底不会命中，安全。
  */
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src"),
-      "@lieshoucloud/api-client": path.resolve(__dirname, "open/packages/api-client/src"),
-      "@lieshoucloud/types": path.resolve(__dirname, "open/packages/types/src"),
-      "@lieshoucloud/ui": path.resolve(__dirname, "open/packages/ui/src"),
-    },
+    alias: [
+      { find: "@", replacement: path.resolve(__dirname, "src") },
+      {
+        find: "@lieshoucloud/api-client",
+        replacement: path.resolve(__dirname, "open/packages/api-client/src"),
+      },
+      {
+        find: "@lieshoucloud/types",
+        replacement: path.resolve(__dirname, "open/packages/types/src"),
+      },
+      {
+        find: "@lieshoucloud/ui",
+        replacement: path.resolve(__dirname, "open/packages/ui/src"),
+      },
+      // 客户包兜底：@lieshoucloud/<client>[/<subpath>] → ../packages/<client>/src[/<subpath>]
+      // （正则捕获组 + $1/$2 由 String.replace 展开）
+      {
+        find: /^@lieshoucloud\/([a-z-]+)(\/.*)?$/,
+        replacement: path.resolve(__dirname, "../packages/$1/src$2"),
+      },
+    ],
   },
   clearScreen: false,
   server: {
