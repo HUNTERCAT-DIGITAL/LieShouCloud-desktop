@@ -7,9 +7,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
-      "@lieshoucloud/api-client": path.resolve(__dirname, "../../services/core/packages/api-client/src"),
-      "@lieshoucloud/types": path.resolve(__dirname, "../../services/core/packages/types/src"),
-      "@lieshoucloud/ui": path.resolve(__dirname, "../../services/core/packages/ui/src"),
+      "@lieshoucloud/api-client": path.resolve(__dirname, "open/packages/api-client/src"),
+      "@lieshoucloud/types": path.resolve(__dirname, "open/packages/types/src"),
+      "@lieshoucloud/ui": path.resolve(__dirname, "open/packages/ui/src"),
     },
   },
   test: {
