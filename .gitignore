@@ -1,0 +1,19 @@
+# Vite
+dist/
+
+# Testing
+coverage/
+
+# Tauri Rust 端编译产物
+src-tauri/target/
+
+# Node / pnpm
+node_modules/
+.npm/
+
+.DS_Store
+*.tsbuildinfo
+.DS_Store
+*.log
+.env*.local
+.env*.tsbuildinfo

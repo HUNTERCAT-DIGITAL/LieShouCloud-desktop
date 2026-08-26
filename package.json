@@ -1,0 +1,49 @@
+{
+  "name": "@lieshoucloud/desktop-app",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "lint": "echo \"lint: desktop ESLint config deferred to Phase 2\" && exit 0",
+    "test": "vitest run --passWithNoTests",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
+  },
+  "dependencies": {
+    "@ant-design/icons": "~5.5.1",
+    "@lieshoucloud/api-client": "workspace:*",
+    "@lieshoucloud/types": "workspace:*",
+    "@lieshoucloud/ui": "workspace:*",
+    "@tauri-apps/api": "~2.0.0",
+    "antd": "5.22.0",
+    "dayjs": "~1.11.13",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-router-dom": "^7.18.2",
+    "zustand": "5.0.2"
+  },
+  "devDependencies": {
+    "@lieshoucloud/config": "workspace:*",
+    "@tauri-apps/cli": "~2.0.0",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.1.0",
+    "@types/node": "~22.9.0",
+    "@types/react": "19.0.0",
+    "@types/react-dom": "19.0.0",
+    "@vitejs/plugin-react": "4.3.3",
+    "jsdom": "30.0.1",
+    "typescript": "5.6.3",
+    "vite": "6.4.3",
+    "vitest": "3.0.5"
+  },
+  "engines": {
+    "node": ">=22.0.0 <23.0.0",
+    "pnpm": ">=9.0.0 <10.0.0"
+  },
+  "packageManager": "pnpm@9.12.0"
+}

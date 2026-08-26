@@ -1,0 +1,14 @@
+{
+  "extends": "@lieshoucloud/config/tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vite/client", "node", "vitest/globals", "@testing-library/jest-dom"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@lieshoucloud/api-client": ["open/packages/api-client/src"],
+      "@lieshoucloud/types": ["open/packages/types/src"],
+      "@lieshoucloud/ui": ["open/packages/ui/src"]
+    }
+  },
+  "include": ["src"]
+}
