@@ -2,7 +2,7 @@
  * Desktop inventory service（Phase 9 · 多端接入）.
  * 注意：api-client 的 request() 自动拼 /api 前缀，path 只写业务路径。
  */
-import { request } from "@lieshoucloud/api-client";
+import { request } from "@lieshoucloud/contract-api";
 
 export type StockMovementType = "IN" | "OUT";
 

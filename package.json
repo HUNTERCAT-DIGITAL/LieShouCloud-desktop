@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "~5.5.1",
-    "@lieshoucloud/api-client": "workspace:*",
-    "@lieshoucloud/types": "workspace:*",
+    "@lieshoucloud/contract-api": "workspace:*",
+    "@lieshoucloud/contract-types": "workspace:*",
     "@lieshoucloud/ui": "workspace:*",
     "@tauri-apps/api": "~2.0.0",
     "antd": "5.22.0",
@@ -25,10 +25,11 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router-dom": "^7.18.2",
-    "zustand": "5.0.2"
+    "zustand": "5.0.2",
+    "@lieshoucloud/core-web": "workspace:*"
   },
   "devDependencies": {
-    "@lieshoucloud/config": "workspace:*",
+    "@lieshoucloud/contract-config": "workspace:*",
     "@tauri-apps/cli": "~2.0.0",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.1.0",

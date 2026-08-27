@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockRequest } = vi.hoisted(() => ({ mockRequest: vi.fn() }));
 
-vi.mock("@lieshoucloud/api-client", () => ({ request: mockRequest }));
+vi.mock("@lieshoucloud/contract-api", () => ({ request: mockRequest }));
 
 import { STATUS_META, countCustomers, getCustomer, listCustomers } from "./customer";
 

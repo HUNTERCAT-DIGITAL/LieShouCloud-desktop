@@ -20,12 +20,12 @@ export default defineConfig({
     alias: [
       { find: "@", replacement: path.resolve(__dirname, "src") },
       {
-        find: "@lieshoucloud/api-client",
-        replacement: path.resolve(__dirname, "open/api-client/src"),
+        find: "@lieshoucloud/contract-api",
+        replacement: path.resolve(__dirname, "open/contract-api/src"),
       },
       {
-        find: "@lieshoucloud/types",
-        replacement: path.resolve(__dirname, "open/types/src"),
+        find: "@lieshoucloud/contract-types",
+        replacement: path.resolve(__dirname, "open/contract-types/src"),
       },
       {
         find: "@lieshoucloud/ui",

@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
-import { request } from "@lieshoucloud/api-client";
-import type { HealthStatus } from "@lieshoucloud/types";
+import { request } from "@lieshoucloud/contract-api";
+import type { HealthStatus } from "@lieshoucloud/contract-types";
 
 /**
  * Desktop API 客户端 - 双通道:
@@ -10,11 +10,11 @@ import type { HealthStatus } from "@lieshoucloud/types";
  *      - 适合本地 native 操作（fs / dialog / shell）
  *
  *   2. HTTP fetch (与 web admin 共享)
- *      - 通过 @lieshoucloud/api-client 的 request<T>()
+ *      - 通过 @lieshoucloud/contract-api 的 request<T>()
  *      - 适合调 Spring Cloud Gateway
  */
 
-import { resolveApiBase } from '@lieshoucloud/config';
+import { resolveApiBase } from '@lieshoucloud/contract-config';
 
 /** 网关基址：env 优先（VITE_API_BASE），缺省本地 Tauri 联调 */
 const GATEWAY_BASE = resolveApiBase({ defaultBase: 'http://localhost:9000' });

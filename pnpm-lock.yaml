@@ -11,12 +11,15 @@ importers:
       '@ant-design/icons':
         specifier: ~5.5.1
         version: 5.5.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@lieshoucloud/api-client':
+      '@lieshoucloud/contract-api':
         specifier: workspace:*
         version: link:open/api-client
-      '@lieshoucloud/types':
+      '@lieshoucloud/contract-types':
         specifier: workspace:*
         version: link:open/types
+      '@lieshoucloud/core-web':
+        specifier: workspace:*
+        version: link:open/core-web
       '@lieshoucloud/ui':
         specifier: workspace:*
         version: link:open/ui
@@ -40,9 +43,9 @@ importers:
         version: 7.18.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       zustand:
         specifier: 5.0.2
-        version: 5.0.2(@types/react@19.0.0)(react@19.0.0)
+        version: 5.0.2(@types/react@19.0.0)(react@19.0.0)(use-sync-external-store@1.6.0(react@19.0.0))
     devDependencies:
-      '@lieshoucloud/config':
+      '@lieshoucloud/contract-config':
         specifier: workspace:*
         version: link:open/config
       '@tauri-apps/cli':
@@ -81,7 +84,7 @@ importers:
 
   open/api-client:
     devDependencies:
-      '@lieshoucloud/config':
+      '@lieshoucloud/contract-config':
         specifier: workspace:*
         version: link:../config
       openapi-typescript:
@@ -93,6 +96,28 @@ importers:
 
   open/config: {}
 
+  open/core-web:
+    dependencies:
+      '@lieshoucloud/contract-api':
+        specifier: workspace:*
+        version: link:../api-client
+      '@lieshoucloud/contract-types':
+        specifier: workspace:*
+        version: link:../types
+      zustand:
+        specifier: ^4.5.0
+        version: 4.5.7(@types/react@19.0.0)(react@19.0.0)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.0.0
+      react:
+        specifier: ^19.0.0
+        version: 19.0.0
+      typescript:
+        specifier: ^5.0.0
+        version: 5.6.3
+
   open/types:
     dependencies:
       dayjs:
@@ -102,7 +127,7 @@ importers:
       '@eslint/js':
         specifier: ^9.15.0
         version: 9.39.5
-      '@lieshoucloud/config':
+      '@lieshoucloud/contract-config':
         specifier: workspace:*
         version: link:../config
       eslint:
@@ -142,13 +167,13 @@ importers:
       '@eslint/js':
         specifier: ^9.15.0
         version: 9.39.5
-      '@lieshoucloud/api-client':
+      '@lieshoucloud/contract-api':
         specifier: workspace:*
         version: link:../api-client
-      '@lieshoucloud/config':
+      '@lieshoucloud/contract-config':
         specifier: workspace:*
         version: link:../config
-      '@lieshoucloud/types':
+      '@lieshoucloud/contract-types':
         specifier: workspace:*
         version: link:../types
       '@testing-library/jest-dom':
@@ -2369,6 +2394,11 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
+  use-sync-external-store@1.6.0:
+    resolution: {integrity: sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
   vite-node@3.0.5:
     resolution: {integrity: sha512-02JEJl7SbtwSDJdYS537nU6l+ktdvcREfLksk/NDAqtdKWGqHl+joXzEubHROmS3E6pip+Xgu2tFezMu75jH7A==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
@@ -2536,6 +2566,21 @@ packages:
 
   zrender@5.6.1:
     resolution: {integrity: sha512-OFXkDJKcrlx5su2XbzJvj/34Q3m6PvyCZkVPHGYpcCJ52ek4U/ymZyfuV1nKE23AyBJ51E/6Yr0mhZ7xGTO4ag==}
+
+  zustand@4.5.7:
+    resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0.6'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
 
   zustand@5.0.2:
     resolution: {integrity: sha512-8qNdnJVJlHlrKXi50LDqqUNmUbuBjoKLrYQBnoChIbVph7vni+sY+YpvdjXG9YLd/Bxr6scMcR+rm5H3aSqPaw==}
@@ -4814,6 +4859,10 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
+  use-sync-external-store@1.6.0(react@19.0.0):
+    dependencies:
+      react: 19.0.0
+
   vite-node@3.0.5(@types/node@22.9.4):
     dependencies:
       cac: 6.7.14
@@ -5003,7 +5052,15 @@ snapshots:
     dependencies:
       tslib: 2.3.0
 
-  zustand@5.0.2(@types/react@19.0.0)(react@19.0.0):
+  zustand@4.5.7(@types/react@19.0.0)(react@19.0.0):
+    dependencies:
+      use-sync-external-store: 1.6.0(react@19.0.0)
     optionalDependencies:
       '@types/react': 19.0.0
       react: 19.0.0
+
+  zustand@5.0.2(@types/react@19.0.0)(react@19.0.0)(use-sync-external-store@1.6.0(react@19.0.0)):
+    optionalDependencies:
+      '@types/react': 19.0.0
+      react: 19.0.0
+      use-sync-external-store: 1.6.0(react@19.0.0)

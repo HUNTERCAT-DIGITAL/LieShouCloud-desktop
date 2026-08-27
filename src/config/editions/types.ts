@@ -4,7 +4,7 @@
  * 门户营销字段（hero/faq/cta）由 admin-web 承载，此处不复制。
  */
 import type { ComponentType } from 'react';
-import type { IndustryId } from '@lieshoucloud/types';
+import type { IndustryId } from '@lieshoucloud/contract-types';
 
 export type DesktopEditionId = 'generic' | 'layer';
 

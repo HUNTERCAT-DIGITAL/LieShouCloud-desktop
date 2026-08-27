@@ -4,7 +4,7 @@
  * 类型与 admin 的 services/crm.ts 对齐——下一阶段 types 包下沉后可彻底共享。
  * 现在先用 inline 类型，保持 desktop 独立可运行。
  */
-import { request } from "@lieshoucloud/api-client";
+import { request } from "@lieshoucloud/contract-api";
 
 export type CustomerStatus = "NEW" | "FOLLOWING" | "CONVERTED" | "LOST";
 

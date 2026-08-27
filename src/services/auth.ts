@@ -7,8 +7,8 @@
  * 注意：api-client 的 request() 会自动拼接 `/api` 前缀（vite proxy → gateway），
  * 因此这里 path 只写 `/auth/**`，不能再重复 `/api`。
  */
-import { request } from "@lieshoucloud/api-client";
-import type { CurrentUser, LoginRequest, TokenResponse } from "@lieshoucloud/types";
+import { request } from "@lieshoucloud/contract-api";
+import type { CurrentUser, LoginRequest, TokenResponse } from "@lieshoucloud/contract-types";
 
 export async function login(req: LoginRequest): Promise<TokenResponse> {
   return request<TokenResponse>({

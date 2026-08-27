@@ -6,7 +6,7 @@
  * - 装配：行业菜单显隐由 edition.industries 派生（industry 包工作台数据）；
  *   hiddenMenus 做客户级裁剪。
  */
-import type { IndustryId } from '@lieshoucloud/types';
+import type { IndustryId } from '@lieshoucloud/contract-types';
 
 import { genericEdition } from './generic';
 import { layerEdition } from './layer';

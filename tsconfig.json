@@ -1,12 +1,12 @@
 {
-  "extends": "@lieshoucloud/config/tsconfig.base.json",
+  "extends": "@lieshoucloud/contract-config/tsconfig.base.json",
   "compilerOptions": {
     "types": ["vite/client", "node", "vitest/globals", "@testing-library/jest-dom"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@lieshoucloud/api-client": ["open/api-client/src"],
-      "@lieshoucloud/types": ["open/types/src"],
+      "@lieshoucloud/contract-api": ["open/contract-api/src"],
+      "@lieshoucloud/contract-types": ["open/contract-types/src"],
       "@lieshoucloud/ui": ["open/ui/src"]
     }
   },

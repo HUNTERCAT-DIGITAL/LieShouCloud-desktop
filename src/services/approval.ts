@@ -2,7 +2,7 @@
  * Desktop approval service（ADR-0032 · 审批流，多端接入）.
  * 注意：api-client 的 request() 自动拼 /api 前缀，path 只写业务路径。
  */
-import { request } from "@lieshoucloud/api-client";
+import { request } from "@lieshoucloud/contract-api";
 
 export type ApprovalType = "EXPENSE" | "PURCHASE" | "SALE" | "OTHER";
 export type ApprovalStatus = "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
