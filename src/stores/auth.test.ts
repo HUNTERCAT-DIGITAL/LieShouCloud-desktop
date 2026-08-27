@@ -37,9 +37,9 @@ beforeEach(() => {
     notifier: { success: () => {}, error: () => {} },
     navigation: { to: () => {}, replace: () => {} },
     api: {
-      request: (path) => {
-        if (path.includes("/login")) return Promise.resolve(loginResp);
-        if (path.includes("/me")) return Promise.resolve({ userId: 7, username: "desktopuser", roles: ["USER"] });
+      request: <T>(path: string): Promise<T> => {
+        if (path.includes("/login")) return Promise.resolve(loginResp as T);
+        if (path.includes("/me")) return Promise.resolve({ userId: 7, username: "desktopuser", roles: ["USER"] } as T);
         return Promise.reject(new Error("unexpected " + path));
       },
     },
@@ -68,7 +68,7 @@ describe("desktop auth store", () => {
       storage: { get: () => null, set: () => {}, remove: () => {} },
       notifier: { success: () => {}, error: () => {} },
       navigation: { to: () => {}, replace: () => {} },
-      api: { request: () => Promise.reject(new Error("network down")) },
+      api: { request: <T>() => Promise.reject<T>(new Error("network down")) },
     });
     await expect(useAuthStore.getState().login("x", "bad")).rejects.toThrow("network down");
     const s = useAuthStore.getState();
