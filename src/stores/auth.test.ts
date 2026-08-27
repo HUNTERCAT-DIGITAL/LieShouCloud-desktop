@@ -1,10 +1,24 @@
 /**
- * Desktop auth store smoke 单测（Phase 9 · 多端真实化）.
+ * Desktop auth store smoke 单测（core-web 提供 · 2026-09）.
+ * 经 configureCore 注入 mock api 端口（不依赖真实网络）。
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import * as authApi from "../services/auth";
+import { configureCore } from "@lieshoucloud/core-web";
 import { useAuthStore } from "../stores/auth";
+
+const loginResp = {
+  accessToken: "a",
+  refreshToken: "r",
+  expiresIn: 1800,
+  tokenType: "Bearer",
+  userId: 7,
+  username: "desktopuser",
+  tenantCode: "huntercat",
+  tenantName: "t",
+  tenantEdition: "GENERIC",
+  availableTenants: [],
+};
 
 beforeEach(() => {
   localStorage.clear();
@@ -13,6 +27,22 @@ beforeEach(() => {
     refreshToken: null,
     user: null,
     isAuthenticated: false,
+  });
+  configureCore({
+    storage: {
+      get: (k) => localStorage.getItem(k),
+      set: (k, v) => localStorage.setItem(k, v),
+      remove: (k) => localStorage.removeItem(k),
+    },
+    notifier: { success: () => {}, error: () => {} },
+    navigation: { to: () => {}, replace: () => {} },
+    api: {
+      request: (path) => {
+        if (path.includes("/login")) return Promise.resolve(loginResp);
+        if (path.includes("/me")) return Promise.resolve({ userId: 7, username: "desktopuser", roles: ["USER"] });
+        return Promise.reject(new Error("unexpected " + path));
+      },
+    },
   });
   vi.restoreAllMocks();
 });
@@ -23,37 +53,24 @@ afterEach(() => {
 
 describe("desktop auth store", () => {
   it("login 成功：写 token + 标 isAuthenticated + 异步 fetchMe", async () => {
-    vi.spyOn(authApi, "login").mockResolvedValue({
-      accessToken: "a",
-      refreshToken: "r",
-      expiresIn: 1800,
-      tokenType: "Bearer",
-      userId: 7,
-      username: "desktopuser",
-    });
-    vi.spyOn(authApi, "fetchCurrentUser").mockResolvedValue({
-      userId: 7,
-      username: "desktopuser",
-      roles: ["USER"],
-    });
-
     await useAuthStore.getState().login("desktopuser", "p");
-
     const s = useAuthStore.getState();
     expect(s.accessToken).toBe("a");
     expect(s.refreshToken).toBe("r");
     expect(s.isAuthenticated).toBe(true);
     expect(s.user?.userId).toBe(7);
-    // 等异步 fetchMe
     await new Promise((r) => setTimeout(r, 0));
     expect(useAuthStore.getState().user?.roles).toEqual(["USER"]);
   });
 
   it("login 失败：抛错 + state 不变", async () => {
-    vi.spyOn(authApi, "login").mockRejectedValue(new Error("network down"));
-
+    configureCore({
+      storage: { get: () => null, set: () => {}, remove: () => {} },
+      notifier: { success: () => {}, error: () => {} },
+      navigation: { to: () => {}, replace: () => {} },
+      api: { request: () => Promise.reject(new Error("network down")) },
+    });
     await expect(useAuthStore.getState().login("x", "bad")).rejects.toThrow("network down");
-
     const s = useAuthStore.getState();
     expect(s.isAuthenticated).toBe(false);
     expect(s.accessToken).toBeNull();
