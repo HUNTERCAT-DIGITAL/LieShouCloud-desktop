@@ -17,3 +17,6 @@ node_modules/
 *.log
 .env*.local
 .env*.tsbuildinfo
+
+# LieShouBoot prepare.mjs 生成的版别注入（勿提交）
+src/config/editions/*.extra.ts
