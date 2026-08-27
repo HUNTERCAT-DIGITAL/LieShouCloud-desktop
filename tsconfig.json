@@ -1,16 +1,42 @@
 {
   "extends": "@lieshoucloud/contract-config/tsconfig.base.json",
   "compilerOptions": {
-    "types": ["vite/client", "node", "vitest/globals", "@testing-library/jest-dom"],
+    "types": [
+      "vite/client",
+      "node",
+      "vitest/globals",
+      "@testing-library/jest-dom"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@lieshoucloud/contract-api": ["open/contract-api/src"],
-      "@lieshoucloud/contract-types": ["open/contract-types/src"],
-      "@lieshoucloud/ui": ["open/ui/src"],
-      "@lieshoucloud/boot": ["../packages/boot/src/index.ts"],
-      "@lieshoucloud/boot/*": ["../packages/boot/src/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@lieshoucloud/contract-api": [
+        "open/contract-api/src"
+      ],
+      "@lieshoucloud/contract-types": [
+        "open/contract-types/src"
+      ],
+      "@lieshoucloud/ui": [
+        "open/ui/src"
+      ],
+      "@lieshoucloud/boot": [
+        "../packages/boot/src/index.ts"
+      ],
+      "@lieshoucloud/boot/*": [
+        "../packages/boot/src/*"
+      ],
+      "@lieshoucloud/core-web": [
+        "open/core-web/src"
+      ]
     }
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/config/editions/*.extra.ts"
+  ]
 }
