@@ -18,7 +18,7 @@
 ## 快速开始
 
 ```bash
-git clone git@github.com:HUNTERCAT-DIGITAL/lieshou-cloud-desktop.git
+git clone git@github.com:HUNTERCAT-DIGITAL/lieshou-desktop.git
 git submodule update --init --recursive   # 拉 open/(lieshou-cloud-web 共享包)
 pnpm install
 pnpm tauri:dev                            # 开发(需 Rust toolchain)
