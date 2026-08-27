@@ -1,4 +1,4 @@
-# LieShouCloud-desktop · 猎手云桌面端(开源)
+# lieshou-cloud-desktop · 猎手云桌面端(开源)
 
 > 猎手云(开源)的桌面客户端:Tauri 2 桌面壳 + React 19 渲染,承载登录 / 工作台 / 客户 / 库存 / 财务 / 审批等通用业务。
 > 行业能力与客户定制通过 **Edition 配置 + 客户仓注入**(`extraRoutes`)装配,不在本仓内。
@@ -13,13 +13,13 @@
 ## 技术栈
 
 - Tauri 2(Rust)+ React 19 + TypeScript(strict)+ Vite 6
-- 共享层 `@lieshoucloud/{api-client,config,types,ui}` 经 `open/` submodule 挂载 [LieShouCloud-web](https://github.com/HUNTERCAT-DIGITAL/LieShouCloud-web)
+- 共享层 `@lieshoucloud/{api-client,config,types,ui}` 经 `open/` submodule 挂载 [lieshou-cloud-web](https://github.com/HUNTERCAT-DIGITAL/lieshou-cloud-web)
 
 ## 快速开始
 
 ```bash
-git clone git@github.com:HUNTERCAT-DIGITAL/LieShouCloud-desktop.git
-git submodule update --init --recursive   # 拉 open/(LieShouCloud-web 共享包)
+git clone git@github.com:HUNTERCAT-DIGITAL/lieshou-cloud-desktop.git
+git submodule update --init --recursive   # 拉 open/(lieshou-cloud-web 共享包)
 pnpm install
 pnpm tauri:dev                            # 开发(需 Rust toolchain)
 ```
@@ -44,10 +44,10 @@ pnpm tauri:dev                            # 开发(需 Rust toolchain)
 
 ## 关联仓库
 
-- 共享层(开源):`HUNTERCAT-DIGITAL/LieShouCloud-web`
-- 后端底座(开源):`HUNTERCAT-DIGITAL/LieShouCloud`
-- 其他端(开源):`LieShouCloud-admin-web` · `LieShouCloud-mobile` · `LieShouCloud-mini-program`
-- 商业主仓:`HUNTERCAT-DIGITAL/LieShouCloudPro`
+- 共享层(开源):`HUNTERCAT-DIGITAL/lieshou-cloud-web`
+- 后端底座(开源):`HUNTERCAT-DIGITAL/lieshou-cloud`
+- 其他端(开源):`lieshou-cloud-admin-web` · `lieshou-cloud-mobile` · `lieshou-cloud-mini-program`
+- 商业主仓:`HUNTERCAT-DIGITAL/lieshou-cloud-pro`
 
 ## License
 
