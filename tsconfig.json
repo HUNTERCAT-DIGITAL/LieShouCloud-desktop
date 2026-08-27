@@ -7,7 +7,9 @@
       "@/*": ["src/*"],
       "@lieshoucloud/contract-api": ["open/contract-api/src"],
       "@lieshoucloud/contract-types": ["open/contract-types/src"],
-      "@lieshoucloud/ui": ["open/ui/src"]
+      "@lieshoucloud/ui": ["open/ui/src"],
+      "@lieshoucloud/boot": ["../packages/boot/src/index.ts"],
+      "@lieshoucloud/boot/*": ["../packages/boot/src/*"]
     }
   },
   "include": ["src"]
