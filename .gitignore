@@ -20,3 +20,9 @@ node_modules/
 
 # LieShouBoot prepare.mjs 生成的版别注入（勿提交）
 src/config/editions/*.extra.ts
+
+# 客户仓生成的原生品牌/升级配置（tauri.<client>.conf.json · 勿提交）
+src-tauri/tauri.*.conf.json
+
+# 客户仓生成的版别 tsconfig（tsconfig.<client>.json · 勿提交；tsconfig.json 不受影响）
+tsconfig.*.json

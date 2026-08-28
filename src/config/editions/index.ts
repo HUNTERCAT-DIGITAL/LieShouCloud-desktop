@@ -10,7 +10,7 @@ import type { IndustryId } from '@lieshoucloud/contract-types';
 
 import { genericEdition } from './generic';
 import { layerEdition } from './layer';
-import type { DesktopEdition, DesktopEditionId } from './types';
+import type { DesktopBranding, DesktopEdition, DesktopEditionId } from './types';
 
 export type { DesktopEdition, DesktopEditionId } from './types';
 
@@ -75,6 +75,33 @@ export function isCapabilityEnabled(
 /** 菜单过滤：path 是否被版别裁剪（hiddenMenus 前缀匹配） */
 export function isMenuHidden(edition: DesktopEdition, path: string): boolean {
   return (edition.hiddenMenus ?? []).some((h) => path === h || path.startsWith(`${h}/`));
+}
+
+/** 品牌默认值（中性；客户版未覆盖时回落） */
+const DEFAULT_BRANDING: Required<DesktopBranding> = {
+  logo: '/brand-logo.png',
+  slogan: '一站式企业数字化工作台',
+  footerText: 'LieShou Cloud Desktop',
+  windowTitle: 'LieShou Cloud Desktop',
+  colorPrimary: '#02429B',
+  defaultTenant: '',
+};
+
+/**
+ * 品牌合并（纯函数 · 缺省字段补默认值）。
+ * 版别配置 → 完整品牌对象；客户仓 *.extra.ts 的 branding 字段覆盖默认值。
+ */
+export function mergeBranding(edition: DesktopEdition): Required<DesktopBranding> {
+  const b = edition.branding ?? {};
+  return { ...DEFAULT_BRANDING, ...b };
+}
+
+/**
+ * 当前版别品牌配置（缺省字段补默认值）。
+ * UI 层统一从该函数取品牌（logo/标语/页脚/主色/默认租户），不再硬编码客户品牌。
+ */
+export function getBranding(): Required<DesktopBranding> {
+  return mergeBranding(getEdition());
 }
 
 /** 后端租户版别 → 端配置（未知回退 generic） */

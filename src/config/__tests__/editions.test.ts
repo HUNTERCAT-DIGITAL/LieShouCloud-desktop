@@ -9,9 +9,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { DesktopEdition } from '../editions';
 import {
   EDITIONS,
+  getBranding,
   getEditionIndustries,
   getEnabledCapabilities,
   isCapabilityEnabled,
+  mergeBranding,
   resolveEditionId,
 } from '../editions';
 
@@ -51,6 +53,40 @@ describe('行业能力装配（industry 包机制 · 客户仓注入）', () => 
     expect(isCapabilityEnabled(custom, 'legal', 'legal/cases')).toBe(true);
     expect(isCapabilityEnabled(custom, 'legal', 'legal/time')).toBe(false);
     expect(isCapabilityEnabled(custom, 'iot', 'iot/devices')).toBe(true);
+  });
+});
+
+describe('品牌配置（mergeBranding · 2026-09 可配置化）', () => {
+  it('中性版（generic）回落中性默认值', () => {
+    const b = mergeBranding(EDITIONS.generic);
+    expect(b.logo).toBe('/brand-logo.png');
+    expect(b.slogan).toBeTruthy();
+    expect(b.footerText).toBeTruthy();
+    expect(b.windowTitle).toBeTruthy();
+    expect(b.colorPrimary).toBeTruthy();
+    expect(b.defaultTenant).toBe('');
+  });
+
+  it('客户 branding 覆盖默认值，未覆盖字段回落默认', () => {
+    const custom: DesktopEdition = {
+      ...EDITIONS.generic,
+      branding: { slogan: '精密制造 · 数字化车间', defaultTenant: 'jmzz' },
+    };
+    const b = mergeBranding(custom);
+    expect(b.slogan).toBe('精密制造 · 数字化车间');
+    expect(b.defaultTenant).toBe('jmzz');
+    expect(b.logo).toBe('/brand-logo.png');
+    expect(b.colorPrimary).toBe('#02429B');
+  });
+
+  it('当前环境 getBranding 字段齐全（客户注入物已随 glob 生效）', () => {
+    const b = getBranding();
+    expect(b.logo).toBeTruthy();
+    expect(b.slogan).toBeTruthy();
+    expect(b.footerText).toBeTruthy();
+    expect(b.windowTitle).toBeTruthy();
+    expect(b.colorPrimary).toBeTruthy();
+    expect(typeof b.defaultTenant).toBe('string');
   });
 });
 

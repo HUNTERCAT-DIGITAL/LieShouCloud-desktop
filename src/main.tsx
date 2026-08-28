@@ -1,10 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { ConfigProvider, message } from "antd";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { configureCore } from "@lieshoucloud/core-web";
 import { request, setBaseUrl } from "@lieshoucloud/contract-api";
 import { resolveApiBase } from "@lieshoucloud/contract-config";
 import App from "./App";
+import { getBranding, getEdition } from "./config/editions";
 import { colors } from "./theme/colors";
 import zhCN from "antd/locale/zh_CN";
 import "./styles/global.css";
@@ -37,14 +39,28 @@ configureCore({
   },
 });
 
+// —— 品牌（可配置 · 2026-09）：antd 主题 token 用版别主色；原生窗口标题用版别品牌 ——
+const branding = getBranding();
+const brandColors = {
+  ...colors,
+  primary: branding.colorPrimary || colors.primary,
+};
+
+// 原生窗口标题（沉浸式无边框窗口下 OS 任务栏/alt-tab 展示；浏览器 dev 环境静默跳过）
+if (typeof window !== "undefined" && "__TAURI_INTERNALS__" in window) {
+  getCurrentWindow()
+    .setTitle(branding.windowTitle || getEdition().brandName)
+    .catch(() => undefined);
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ConfigProvider
       locale={zhCN}
       theme={{
         token: {
-          colorPrimary: colors.primary,
-          colorInfo: colors.primary,
+          colorPrimary: brandColors.primary,
+          colorInfo: brandColors.primary,
           borderRadius: 6,
           fontSize: 14,
           colorBgLayout: colors.pageBg,

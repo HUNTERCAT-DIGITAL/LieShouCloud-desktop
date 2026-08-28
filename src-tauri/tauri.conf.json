@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2.0.0",
-  "productName": "智法云枢",
+  "productName": "LieShou Cloud Desktop",
   "version": "0.0.2",
   "identifier": "cn.huntercat.lieshoucloudpro.desktop",
   "build": {
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "智法云枢",
+        "title": "LieShou Cloud Desktop",
         "width": 1280,
         "height": 800,
         "minWidth": 800,
@@ -25,13 +25,13 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: asset: https://asset.localhost; connect-src 'self' ipc: http://ipc.localhost https://api.example.com https://legalmind.lieshoucloud.huntercat.cn"
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: asset: https://asset.localhost; connect-src 'self' ipc: http://ipc.localhost https://api.example.com"
     }
   },
   "bundle": {
     "active": true,
     "targets": "all",
-    "createUpdaterArtifacts": true,
+    "createUpdaterArtifacts": false,
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -40,15 +40,13 @@
       "icons/icon.ico"
     ],
     "category": "Productivity",
-    "shortDescription": "智法云枢 · 凌科安时智能法律服务平台",
-    "longDescription": "智法云枢 - 凌科安时律师事务所智能法律服务平台 (Tauri 2 + React 19)"
+    "shortDescription": "LieShou Cloud Desktop",
+    "longDescription": "LieShou Cloud Desktop - Tauri 2 + React 19 desktop application"
   },
   "plugins": {
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEMzRUNBN0JEOEJCMTk5MzYKUldRMm1iR0x2YWZzd3pNai9wN0J6SHBkVnVCNTBYRkZFN0lTQnVNc3NyaGQ2bWcvd29HQVUzT0EK",
-      "endpoints": [
-        "https://legalmind.lieshoucloud.huntercat.cn/updates/latest.json"
-      ],
+      "endpoints": ["https://updates.lieshoucloud.huntercat.cn/updates/latest.json"],
       "windows": {
         "installMode": "passive"
       }

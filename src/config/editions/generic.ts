@@ -6,7 +6,13 @@ import type { DesktopEdition } from './types';
 
 export const genericEdition: DesktopEdition = {
   id: 'generic',
-  brandName: 'LieShouCloud',
+  brandName: 'LieShou Cloud Desktop',
+  // 中性品牌默认值（客户仓 *.extra.ts / tauri.<client>.conf.json 覆盖）
+  branding: {
+    slogan: '一站式企业数字化工作台',
+    footerText: 'LieShou Cloud Desktop',
+  },
   industries: [],
-  hiddenMenus: ['/legal', '/inventory'],
+  // /cases 为 legalmind 案件业务（上游中性版隐藏；客户版按需覆盖）
+  hiddenMenus: ['/cases', '/legal', '/inventory'],
 };

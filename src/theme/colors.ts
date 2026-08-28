@@ -1,6 +1,6 @@
 /**
  * Desktop 主题色 - 与 apps/admin / apps/mobile / apps/mini-program 对齐.
- * 主色：凌科安时品牌蓝 #02429B（legal 行业域品牌色，小程序 tabBar 同源）. 
+ * 默认品牌蓝（客户版可由 Edition branding.colorPrimary 覆盖 · 2026-09）.
  */
 export const colors = {
   primary: "#02429B",

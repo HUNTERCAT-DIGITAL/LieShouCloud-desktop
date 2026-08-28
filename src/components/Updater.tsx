@@ -3,8 +3,8 @@
  *
  * 入口：BasicLayout 用户菜单「检查更新」。
  * 流程：check() → 无更新提示 / 有更新弹 Modal → 下载进度 → 自动重启安装。
- * 升级清单：https://legalmind.lieshoucloud.huntercat.cn/updates/latest.json（客户仓 nginx /updates/）
- * 发布流程：见客户仓 deploy/README.md「桌面端升级发布」。
+ * 升级端点：构建期由客户仓 tauri.<client>.conf.json 注入（plugins.updater.endpoints），
+ * 发布流程见客户仓 deploy/README.md「桌面端升级发布」；上游 base 配置只留中性占位。
  *
  * @note dev / debug 构建下 updater 默认禁用，check() 会抛错，此处兜底提示。
  */

@@ -8,10 +8,33 @@ import type { IndustryId } from '@lieshoucloud/contract-types';
 
 export type DesktopEditionId = 'generic' | 'layer';
 
+/**
+ * 品牌（branding）配置 · 2026-09 客户品牌可配置化.
+ *
+ * 上游仓库只保留中性默认值；客户/行业版由客户仓 `*.extra.ts`（运行时 UI 层）
+ * 与构建期 `tauri.<client>.conf.json`（原生层：安装包名/描述/CSP/升级端点）注入。
+ */
+export interface DesktopBranding {
+  /** 品牌 Logo（public/ 下路径或客户包 import 的资产 URL；缺省 /brand-logo.png） */
+  logo?: string;
+  /** 登录页副标语 */
+  slogan?: string;
+  /** 页脚版权行（版本号由运行时拼接，无需在此写死） */
+  footerText?: string;
+  /** 原生窗口标题（运行时 setTitle 覆盖 tauri.conf.json；缺省 brandName） */
+  windowTitle?: string;
+  /** 品牌主色（antd token + 登录页渐变；缺省默认品牌蓝） */
+  colorPrimary?: string;
+  /** 默认租户编码（客户版登录缺省；缺省用 contract-config 默认值） */
+  defaultTenant?: string;
+}
+
 export interface DesktopEdition {
   id: DesktopEditionId;
   /** 品牌名（窗口标题/侧边栏等） */
   brandName: string;
+  /** 品牌增强（logo/标语/页脚/主色/默认租户 · 客户仓可覆盖） */
+  branding?: DesktopBranding;
   /** 登录后首页（客户可注入专属作战台路径；缺省 /welcome） */
   homePath?: string;
   /** 启用的行业能力（行业菜单显隐由此派生） */

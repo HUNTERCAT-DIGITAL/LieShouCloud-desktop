@@ -15,7 +15,7 @@ import { useUpdater } from "../components/Updater";
 import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
 
-import { getEdition, getExtraEdition, isMenuHidden } from '../config/editions';
+import { getBranding, getEdition, getExtraEdition, isMenuHidden } from '../config/editions';
 
 const { Header, Sider, Content } = Layout;
 
@@ -84,7 +84,7 @@ export default function BasicLayout() {
         }}
       >
         <div style={styles.brand}>
-          <img src="/brand-logo.png" alt="logo" style={styles.brandLogo} />
+          <img src={getBranding().logo} alt="logo" style={styles.brandLogo} />
           <span style={styles.brandText}>{getEdition().brandName}</span>
         </div>
         <Menu
