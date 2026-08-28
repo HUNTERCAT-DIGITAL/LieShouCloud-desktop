@@ -6,10 +6,11 @@
  */
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { RoleTag } from "@lieshoucloud/ui";
-import { Avatar, Button, Dropdown, Layout, Menu, Space } from "antd";
+import { Avatar, Dropdown, Layout, Menu, Space } from "antd";
 import type { MenuProps } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
+import WindowControls from "../components/WindowControls";
 import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
 
@@ -26,6 +27,7 @@ interface NavItem {
 /** 通用菜单（所有版别基础；客户层可用 hiddenMenus 裁剪） */
 const BASE_NAV: NavItem[] = [
   { key: "/welcome", label: "工作台", path: "/welcome" },
+  { key: "/cases", label: "案件管理", path: "/cases" },
   { key: "/customers", label: "客户管理", path: "/customers" },
   { key: "/inventory", label: "库存管理", path: "/inventory" },
   { key: "/finance", label: "记账本", path: "/finance" },
@@ -64,42 +66,40 @@ export default function BasicLayout() {
       <Sider
         width={208}
         style={{
-          background: colors.siderBg,
-          borderRight: `1px solid ${colors.border}`,
+          background: `linear-gradient(180deg, ${colors.siderBg} 0%, ${colors.siderBgLight} 100%)`,
+          borderRight: "none",
         }}
       >
         <div style={styles.brand}>
-          <div style={styles.dot} />
-          <span style={styles.brandText}>LieShou Cloud</span>
+          <img src="/brand-logo.png" alt="logo" style={styles.brandLogo} />
+          <span style={styles.brandText}>{getEdition().brandName}</span>
         </div>
         <Menu
+          theme="dark"
           mode="inline"
           selectedKeys={[location.pathname]}
           items={items}
           onClick={({ key }) => navigate(key)}
-          style={{ background: "transparent", border: "none" }}
+          style={{ background: "transparent", border: "none", padding: "8px 6px" }}
         />
       </Sider>
       <Layout>
         <Header style={styles.header}>
-          <div style={styles.title}>Desktop · {visibleNav.find((n) => n.path === location.pathname)?.label ?? ""}</div>
+          <div data-tauri-drag-region style={styles.dragArea}>
+            <span style={styles.title}>
+              {visibleNav.find((n) => n.path === location.pathname)?.label ?? ""}
+            </span>
+          </div>
           <Dropdown menu={{ items: userMenu }} placement="bottomRight">
-            <Space style={{ cursor: "pointer" }}>
+            <Space style={{ cursor: "pointer", padding: "0 8px" }}>
               <Avatar size="small" icon={<UserOutlined />} style={{ background: colors.primary }}>
                 {user?.username?.charAt(0).toUpperCase() ?? "?"}
               </Avatar>
-              <span>{user?.username ?? "未登录"}</span>
+              <span style={{ color: "#fff" }}>{user?.username ?? "未登录"}</span>
               {user?.roles.map((r: string) => <RoleTag key={r} role={r} />)}
-              <Button
-                type="text"
-                icon={<LogoutOutlined />}
-                onClick={() => {
-                  logout();
-                  navigate("/login", { replace: true });
-                }}
-              />
             </Space>
           </Dropdown>
+          <WindowControls />
         </Header>
         <Content style={styles.content}>
           <Outlet />
@@ -113,37 +113,45 @@ const styles: Record<string, React.CSSProperties> = {
   brand: {
     display: "flex",
     alignItems: "center",
-    padding: "20px 16px",
-    borderBottom: `1px solid ${colors.border}`,
+    gap: 10,
+    padding: "18px 16px",
+    borderBottom: "1px solid rgba(255,255,255,0.08)",
   },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    background: colors.primary,
-    marginRight: 8,
+  brandLogo: {
+    width: 28,
+    height: 28,
+    borderRadius: 7,
+    objectFit: "cover",
   },
   brandText: {
     fontSize: 16,
-    fontWeight: 600,
-    color: colors.text,
+    fontWeight: 700,
+    color: "#fff",
+    letterSpacing: 1,
   },
   header: {
-    background: "#fff",
-    borderBottom: `1px solid ${colors.border}`,
-    padding: "0 24px",
+    background: `linear-gradient(180deg, ${colors.siderBg} 0%, ${colors.siderBgLight} 100%)`,
+    borderBottom: "none",
+    padding: "0 0 0 24px",
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
-    height: 56,
+    height: 48,
+  },
+  dragArea: {
+    flex: 1,
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
   },
   title: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 600,
-    color: colors.text,
+    color: "#fff",
   },
   content: {
     padding: 24,
-    background: colors.bg,
+    background: colors.pageBg,
+    overflow: "auto",
+    height: "calc(100vh - 48px)",
   },
 };

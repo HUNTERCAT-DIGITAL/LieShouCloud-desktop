@@ -40,9 +40,10 @@ export function resolveEditionId(): DesktopEditionId {
   );
 }
 
-/** 当前部署版别配置 */
+/** 当前部署版别配置（基础版 + 客户仓 extra 增强叠加） */
 export function getEdition(): DesktopEdition {
-  return EDITIONS[resolveEditionId()];
+  const base = EDITIONS[resolveEditionId()];
+  return { ...base, ...getExtraEdition() };
 }
 
 /** 客户版别启用的行业能力（行业菜单显隐的派生入口） */

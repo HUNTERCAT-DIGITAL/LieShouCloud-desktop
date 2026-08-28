@@ -25,7 +25,7 @@ export default function Welcome() {
   }, []);
 
   return (
-    <div style={{ padding: 8 }}>
+    <div style={{ padding: 0 }}>
       <h2 style={{ marginTop: 0 }}>欢迎回来，{user?.username ?? "用户"}</h2>
       <Row gutter={16}>
         <Col span={12}>

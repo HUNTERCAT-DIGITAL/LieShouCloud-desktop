@@ -4,14 +4,16 @@
  * 复用 ui 包 EmptyState；轻量 antd Form。失败展示后端 message。
  */
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { EmptyState } from "@lieshoucloud/ui";
+import { DEFAULT_TENANT_CODE } from "@lieshoucloud/contract-config";
 import { Alert, Button, Card, Form, Input, Space, Typography } from "antd";
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
-import { colors } from "../theme/colors";
+import WindowControls from "../components/WindowControls";
+import { getEdition } from "../config/editions";
 import { isApiError } from "../services/auth";
 import { useAuthStore } from "../stores/auth";
+import { colors } from "../theme/colors";
 
 const { Title } = Typography;
 
@@ -38,7 +40,8 @@ export default function Login() {
     setSubmitting(true);
     setErrorMsg(null);
     try {
-      await login(values.username, values.password);
+      // 客户专属桌面端：默认租户 jxlkas（凌科安时），登录请求显式携带
+      await login(values.username, values.password, DEFAULT_TENANT_CODE);
       const from = (location.state as { from?: string } | null)?.from ?? "/welcome";
       navigate(from, { replace: true });
     } catch (e) {
@@ -54,14 +57,21 @@ export default function Login() {
 
   return (
     <div style={styles.page}>
-      <Card style={styles.card}>
+      <div className="light-titlebar" style={styles.titlebar}>
+        <div data-tauri-drag-region style={{ flex: 1, height: "100%" }} />
+        <WindowControls />
+      </div>
+      <Card style={styles.card} styles={{ body: { padding: "36px 40px" } }}>
         <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-          <Space>
-            <div style={styles.dot} />
-            <span style={styles.brandText}>LieShou Cloud</span>
-          </Space>
-          <Title level={3} style={{ margin: 0 }}>
-            登录 · Desktop
+          <div style={styles.brand}>
+            <img src="/brand-logo.png" alt="logo" style={styles.brandLogo} />
+            <div>
+              <div style={styles.brandText}>{getEdition().brandName}</div>
+              <div style={styles.slogan}>凌科安时 · 智能法律服务平台</div>
+            </div>
+          </div>
+          <Title level={4} style={{ margin: 0 }}>
+            登录
           </Title>
           {errorMsg && <Alert type="error" message={errorMsg} showIcon />}
           <Form<LoginForm>
@@ -72,10 +82,10 @@ export default function Login() {
             requiredMark={false}
           >
             <Form.Item label="用户名" name="username" rules={[{ required: true, message: "请输入用户名" }]}>
-              <Input prefix={<UserOutlined />} placeholder="futurewl" autoFocus size="large" />
+              <Input prefix={<UserOutlined />} placeholder="请输入用户名" autoFocus size="large" />
             </Form.Item>
             <Form.Item label="密码" name="password" rules={[{ required: true, message: "请输入密码" }]}>
-              <Input.Password prefix={<LockOutlined />} placeholder="password" size="large" />
+              <Input.Password prefix={<LockOutlined />} placeholder="请输入密码" size="large" />
             </Form.Item>
             <Form.Item style={{ marginBottom: 0 }}>
               <Button type="primary" htmlType="submit" loading={submitting} size="large" block>
@@ -83,35 +93,63 @@ export default function Login() {
               </Button>
             </Form.Item>
           </Form>
-          <EmptyState description="Desktop 是 Tauri 桌面应用，与 Web Admin 共享后端 / 共享 ui 包" size="small" />
         </Space>
       </Card>
+      <div style={styles.footer}>智法云枢 · 桌面客户端 v0.0.1</div>
     </div>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
   page: {
+    position: "relative",
     minHeight: "100vh",
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    background: colors.bg,
+    background: `linear-gradient(135deg, ${colors.siderBg} 0%, ${colors.siderBgLight} 45%, ${colors.primary} 100%)`,
     padding: 16,
+  },
+  titlebar: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 36,
+    display: "flex",
   },
   card: {
     width: 420,
-    boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+    borderRadius: 12,
+    boxShadow: "0 16px 48px rgba(0,0,0,0.24)",
+    border: "none",
   },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    background: colors.primary,
-    marginRight: 8,
+  brand: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+  },
+  brandLogo: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    objectFit: "cover",
   },
   brandText: {
-    fontSize: 16,
-    fontWeight: 600,
+    fontSize: 20,
+    fontWeight: 700,
+    color: colors.text,
+    letterSpacing: 1,
+  },
+  slogan: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  footer: {
+    marginTop: 16,
+    fontSize: 12,
+    color: "rgba(255,255,255,0.6)",
   },
 };
