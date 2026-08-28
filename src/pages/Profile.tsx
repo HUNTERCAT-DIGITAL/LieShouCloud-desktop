@@ -20,12 +20,13 @@ import { useEffect, useState } from "react";
 
 import { useAuthStore } from "../stores/auth";
 import { AVATAR_COLORS, getAvatarColor, setAvatarColor } from "../utils/avatar";
-import { updateUser } from "../services/user";
+import { changeMyPassword } from "../services/user";
 import type { CurrentUser } from "@lieshoucloud/contract-types/business/auth";
 
 const { Text } = Typography;
 
 interface PwdValues {
+  oldPassword: string;
   newPassword: string;
   confirm: string;
 }
@@ -61,22 +62,18 @@ export default function Profile() {
     setAvatarColor(c);
   };
 
-  /** 改密码:复用管理端 updateUser(password) 能力;无权限时给出指引 */
+  /** 改密码:调自助接口(校验原密码;framework 业务源,普通用户即可用) */
   const submitPwd = async (v: PwdValues) => {
-    if (!me) return;
     try {
-      await updateUser(me.userId, {
-        displayName: me.username,
-        status: "ACTIVE",
-        roles: me.roles ?? [],
-        password: v.newPassword,
-      });
+      await changeMyPassword(v.oldPassword, v.newPassword);
       message.success("密码已更新,下次登录请使用新密码");
       pwdForm.resetFields();
     } catch (e) {
       const msg = String(e);
-      if (msg.includes("403") || msg.includes("权限") || msg.includes("forbidden")) {
-        message.error("当前账号无修改权限,请联系管理员在用户管理中重置密码");
+      if (msg.includes("OLD_PASSWORD_MISMATCH") || msg.includes("原密码")) {
+        message.error("原密码不正确");
+      } else if (msg.includes("INVALID_PASSWORD") || msg.includes("至少")) {
+        message.error("新密码至少 6 位");
       } else {
         message.error(msg);
       }
@@ -149,6 +146,13 @@ export default function Profile() {
         <Card size="small" title={<Space><LockOutlined />修改密码</Space>}>
           <Form form={pwdForm} layout="vertical" onFinish={submitPwd} requiredMark={false}>
             <Form.Item
+              label="当前密码"
+              name="oldPassword"
+              rules={[{ required: true, message: "请输入当前密码" }]}
+            >
+              <Input.Password placeholder="当前登录密码" />
+            </Form.Item>
+            <Form.Item
               label="新密码"
               name="newPassword"
               rules={[
@@ -179,7 +183,7 @@ export default function Profile() {
             </Button>
             <div style={{ marginTop: 8 }}>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                需管理员权限(平台/租户管理员);普通账号请联系管理员重置。
+                需校验当前密码;所有账号均可自助修改。
               </Text>
             </div>
           </Form>

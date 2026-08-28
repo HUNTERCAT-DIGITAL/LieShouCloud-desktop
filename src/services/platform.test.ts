@@ -8,7 +8,7 @@ const { mockRequest } = vi.hoisted(() => ({ mockRequest: vi.fn() }));
 
 vi.mock("@lieshoucloud/contract-api", () => ({ request: mockRequest }));
 
-import { createUser, deleteUser, listUsers, updateUser } from "./user";
+import { changeMyPassword, createUser, deleteUser, listUsers, updateUser } from "./user";
 import { createRole, deleteRole, listRoles, updateRole } from "./role";
 import { createTenant, deleteTenant, listTenants, updateTenant } from "./tenant";
 import { countAuditLogs, listAuditLogs } from "./audit";
@@ -48,6 +48,16 @@ describe("desktop user service", () => {
     mockRequest.mockResolvedValue(undefined);
     await deleteUser(9);
     expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/users/9" });
+  });
+
+  it("changeMyPassword → PUT /users/me/password + body", async () => {
+    mockRequest.mockResolvedValue(undefined);
+    await changeMyPassword("old123", "newpass123");
+    expect(mockRequest).toHaveBeenCalledWith({
+      method: "PUT",
+      path: "/users/me/password",
+      body: { oldPassword: "old123", newPassword: "newpass123" },
+    });
   });
 });
 

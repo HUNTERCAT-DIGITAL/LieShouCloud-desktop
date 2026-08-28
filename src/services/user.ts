@@ -28,6 +28,15 @@ export async function updateUser(id: number, body: UpdateUserRequest): Promise<U
   return request<User>({ method: "PUT", path: `/users/${id}`, body });
 }
 
+/** PUT /users/me/password — 自助修改密码(校验原密码,framework 业务源) */
+export async function changeMyPassword(oldPassword: string, newPassword: string): Promise<void> {
+  await request<void>({
+    method: "PUT",
+    path: "/users/me/password",
+    body: { oldPassword, newPassword },
+  });
+}
+
 /** DELETE /users/{id} — 删除用户 */
 export async function deleteUser(id: number): Promise<void> {
   return request<void>({ method: "DELETE", path: `/users/${id}` });
