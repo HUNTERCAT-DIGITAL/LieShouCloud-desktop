@@ -3,9 +3,9 @@
  *
  * 列表 → 详情（八阶段推进主链路）+ 案件 CRUD(新建/编辑/删除)。
  */
-import { PlusOutlined, ReloadOutlined, SearchOutlined } from "@ant-design/icons";
+import { ColumnHeightOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from "@ant-design/icons";
 import { EmptyState, StatusTag } from "@lieshoucloud/ui";
-import { App, Button, Card, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Typography } from "antd";
+import { App, Button, Card, Checkbox, Dropdown, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -21,6 +21,7 @@ import {
   type LegalCase,
 } from "@lieshoucloud/contract-types/business/legal";
 import { createCase, deleteCase, listCases, updateCase } from "../services/case";
+import { loadColumnPrefs, saveColumnPrefs } from "../utils/columnPrefs";
 
 const { Text } = Typography;
 
@@ -40,6 +41,19 @@ const PRIORITY_OPTIONS = (Object.keys(CASE_PRIORITY_META) as CasePriority[]).map
   label: CASE_PRIORITY_META[s].text,
   value: s,
 }));
+
+/** 可配置列(案号/标题/操作固定显示) */
+const COLS_KEY = "lm_cases_columns";
+const ALL_COLS = ["caseType", "stage", "status", "priority", "responsibleLawyer", "createdAt"] as const;
+type ColKey = (typeof ALL_COLS)[number];
+const COL_LABELS: Record<ColKey, string> = {
+  caseType: "类型",
+  stage: "办理阶段",
+  status: "状态",
+  priority: "关注度",
+  responsibleLawyer: "承办人",
+  createdAt: "创建时间",
+};
 
 interface CaseFormValues {
   caseNo: string;
@@ -75,6 +89,10 @@ export default function Cases() {
   );
   const [priority, setPriority] = useState<CasePriority | undefined>(
     (searchParams.get("priority") as CasePriority) || undefined,
+  );
+  // 列偏好(本地持久化)
+  const [visibleCols, setVisibleCols] = useState<string[]>(() =>
+    loadColumnPrefs(COLS_KEY, [...ALL_COLS]),
   );
   const [editing, setEditing] = useState<LegalCase | null>(null);
   const [open, setOpen] = useState(false);
@@ -155,6 +173,15 @@ export default function Cases() {
     }
   };
 
+  /** 切换列显隐(持久化;案号/标题/操作固定) */
+  const toggleCol = (col: ColKey) => {
+    const next = visibleCols.includes(col)
+      ? visibleCols.filter((c) => c !== col)
+      : [...visibleCols, col];
+    setVisibleCols(next);
+    saveColumnPrefs(COLS_KEY, next);
+  };
+
   const onDelete = (c: LegalCase) => {
     Modal.confirm({
       title: `删除案件 ${c.caseNo}？`,
@@ -232,6 +259,12 @@ export default function Cases() {
     },
   ];
 
+  /** 按用户偏好过滤可配置列(案号/标题/操作固定) */
+  const visibleColumns = columns.filter((c) => {
+    if (!("dataIndex" in c) || !c.dataIndex) return true;
+    return c.dataIndex === "caseNo" || c.dataIndex === "title" || c.dataIndex === "action" || visibleCols.includes(String(c.dataIndex));
+  });
+
   return (
     <Card>
       <Space style={{ marginBottom: 12 }}>
@@ -271,6 +304,26 @@ export default function Cases() {
         <Button icon={<ReloadOutlined />} onClick={() => void load(0)}>
           刷新
         </Button>
+        <Dropdown
+          trigger={["click"]}
+          dropdownRender={() => (
+            <Card size="small" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
+              <Space direction="vertical" size={4}>
+                {ALL_COLS.map((col) => (
+                  <Checkbox
+                    key={col}
+                    checked={visibleCols.includes(col)}
+                    onChange={() => toggleCol(col)}
+                  >
+                    {COL_LABELS[col]}
+                  </Checkbox>
+                ))}
+              </Space>
+            </Card>
+          )}
+        >
+          <Button icon={<ColumnHeightOutlined />}>列设置</Button>
+        </Dropdown>
         <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
           新建案件
         </Button>
@@ -290,7 +343,7 @@ export default function Cases() {
           showTotal: (t) => `共 ${t} 件案件`,
           onChange: (p) => void load(p - 1),
         }}
-        columns={columns}
+        columns={visibleColumns}
       />
       <Modal
         title={editing ? `编辑案件 ${editing.caseNo}` : "新建案件"}
