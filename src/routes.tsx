@@ -13,6 +13,8 @@ import { useAuthStore } from "./stores/auth";
 
 const Login = lazy(() => import("./pages/Login"));
 const Welcome = lazy(() => import("./pages/Welcome"));
+const Cases = lazy(() => import("./pages/Cases"));
+const CaseDetail = lazy(() => import("./pages/CaseDetail"));
 const Customers = lazy(() => import("./pages/Customers"));
 const CustomerDetail = lazy(() => import("./pages/CustomerDetail"));
 const Inventory = lazy(() => import("./pages/Inventory"));
@@ -51,6 +53,8 @@ export const routes = (
       <Route path="/login" element={<Login />} />
       <Route element={<ProtectedLayout />}>
         <Route path="/welcome" element={<Welcome />} />
+        <Route path="/cases" element={<Cases />} />
+        <Route path="/cases/:id" element={<CaseDetail />} />
         <Route path="/customers" element={<Customers />} />
         <Route path="/customers/:id" element={<CustomerDetail />} />
         <Route path="/inventory" element={<Inventory />} />
