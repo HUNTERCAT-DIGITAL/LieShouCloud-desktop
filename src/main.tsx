@@ -11,9 +11,10 @@ import { colors } from "./theme/colors";
 import zhCN from "antd/locale/zh_CN";
 import "./styles/global.css";
 
-// —— API 网关基址：env 优先（VITE_API_BASE_URL），缺省本地 Tauri 联调 ——
+// —— API 网关基址：env 优先（VITE_API_BASE，与发布脚本 publish-desktop-update.sh 注入一致），缺省本地 Tauri 联调 ——
 // 修复：未 setBaseUrl 时 request() 走空 base → 相对路径在 Tauri 里打到前端页面（HTML 而非 JSON）。
-setBaseUrl(resolveApiBase({ key: "API_BASE_URL", defaultBase: "http://localhost:9000" }));
+// 注意 key 必须与发布脚本注入的 VITE_API_BASE 对齐（API_BASE），否则生产构建回落 localhost:9000 导致登录 Failed to fetch。
+setBaseUrl(resolveApiBase({ key: "API_BASE", defaultBase: "http://localhost:9000" }));
 
 // —— 注入 core-web 端口（业务核心层 · 2026-09 铺开）——
 configureCore({
