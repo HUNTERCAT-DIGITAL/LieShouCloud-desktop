@@ -78,7 +78,7 @@ export function useUpdater(): UpdaterApi {
       console.warn("[updater] check 不可用（dev 构建或升级服务未就绪）", e);
       // 静默模式：失败不打扰
       if (silent) return;
-      setError("检查更新失败：当前环境暂不支持在线更新（开发构建或升级服务未就绪），请确认网络后重试");
+      setError(`检查更新失败：${String(e)}`);
       setPhase("error");
     }
   };
