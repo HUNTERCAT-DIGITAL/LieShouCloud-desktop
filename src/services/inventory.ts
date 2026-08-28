@@ -31,7 +31,7 @@ export interface StockMovement {
 
 export async function listProducts(keyword?: string): Promise<Product[]> {
   const qs = keyword ? `?keyword=${encodeURIComponent(keyword)}` : "";
-  return request<Product[]>({ method: "GET", path: `/api/products${qs}` });
+  return request<Product[]>({ method: "GET", path: `/products${qs}` });
 }
 
 export async function createProduct(body: {
@@ -41,19 +41,19 @@ export async function createProduct(body: {
   price?: number;
   remark?: string;
 }): Promise<Product> {
-  return request<Product>({ method: "POST", path: `/api/products`, body });
+  return request<Product>({ method: "POST", path: `/products`, body });
 }
 
 export async function stockIn(id: number, quantity: number, remark?: string): Promise<Product> {
-  return request<Product>({ method: "POST", path: `/api/products/${id}/stock-in`, body: { quantity, remark } });
+  return request<Product>({ method: "POST", path: `/products/${id}/stock-in`, body: { quantity, remark } });
 }
 
 export async function stockOut(id: number, quantity: number, remark?: string): Promise<Product> {
-  return request<Product>({ method: "POST", path: `/api/products/${id}/stock-out`, body: { quantity, remark } });
+  return request<Product>({ method: "POST", path: `/products/${id}/stock-out`, body: { quantity, remark } });
 }
 
 export async function listMovements(id: number): Promise<StockMovement[]> {
-  return request<StockMovement[]>({ method: "GET", path: `/api/products/${id}/movements` });
+  return request<StockMovement[]>({ method: "GET", path: `/products/${id}/movements` });
 }
 
 export const MOVEMENT_META: Record<StockMovementType, { text: string; color: string }> = {

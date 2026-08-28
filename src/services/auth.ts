@@ -14,7 +14,7 @@ import type { CurrentUser, LoginRequest, TokenResponse } from "@lieshoucloud/con
 export async function login(req: LoginRequest): Promise<TokenResponse> {
   return request<TokenResponse>({
     method: "POST",
-    path: `/api/auth/login`,
+    path: `/auth/login`,
     body: req,
   });
 }
@@ -22,7 +22,7 @@ export async function login(req: LoginRequest): Promise<TokenResponse> {
 export async function fetchCurrentUser(): Promise<CurrentUser> {
   return request<CurrentUser>({
     method: "GET",
-    path: `/api/auth/me`,
+    path: `/auth/me`,
   });
 }
 
@@ -58,7 +58,7 @@ export interface RegisterRequest {
 export async function register(req: RegisterRequest): Promise<TokenResponse> {
   return request<TokenResponse>({
     method: "POST",
-    path: `/api/auth/register`,
+    path: `/auth/register`,
     body: req,
     // 注册 400 = 参数错误,不走会话过期拦截
     skipAuth401: true,

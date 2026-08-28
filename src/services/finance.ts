@@ -25,11 +25,11 @@ export interface LedgerSummary {
 
 export async function listLedger(type?: LedgerType): Promise<LedgerEntry[]> {
   const qs = type ? `?type=${type}` : "";
-  return request<LedgerEntry[]>({ method: "GET", path: `/api/ledger${qs}` });
+  return request<LedgerEntry[]>({ method: "GET", path: `/ledger${qs}` });
 }
 
 export async function getSummary(): Promise<LedgerSummary> {
-  return request<LedgerSummary>({ method: "GET", path: `/api/ledger/summary` });
+  return request<LedgerSummary>({ method: "GET", path: `/ledger/summary` });
 }
 
 export async function createLedger(body: {
@@ -39,11 +39,11 @@ export async function createLedger(body: {
   occurredAt: string;
   remark?: string;
 }): Promise<LedgerEntry> {
-  return request<LedgerEntry>({ method: "POST", path: `/api/ledger`, body });
+  return request<LedgerEntry>({ method: "POST", path: `/ledger`, body });
 }
 
 export async function deleteLedger(id: number): Promise<void> {
-  return request<void>({ method: "DELETE", path: `/api/ledger/${id}` });
+  return request<void>({ method: "DELETE", path: `/ledger/${id}` });
 }
 
 export const LEDGER_TYPE_META: Record<LedgerType, { text: string; color: string }> = {

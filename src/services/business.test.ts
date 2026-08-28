@@ -23,19 +23,19 @@ describe("desktop lead service", () => {
   it("listLeads 带 keyword+status → query", async () => {
     mockRequest.mockResolvedValue([]);
     await listLeads("张三", "NEW");
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/leads?keyword=%E5%BC%A0%E4%B8%89&status=NEW" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/leads?keyword=%E5%BC%A0%E4%B8%89&status=NEW" });
   });
 
   it("createLead → POST /leads", async () => {
     mockRequest.mockResolvedValue({ id: 1 });
     await createLead({ name: "线索A" });
-    expect(mockRequest).toHaveBeenCalledWith({ method: "POST", path: "/api/leads", body: { name: "线索A" } });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "POST", path: "/leads", body: { name: "线索A" } });
   });
 
   it("deleteLead → DELETE /leads/{id}", async () => {
     mockRequest.mockResolvedValue({ deleted: true });
     await deleteLead(5);
-    expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/api/leads/5" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/leads/5" });
   });
 });
 
@@ -43,7 +43,7 @@ describe("desktop contact service", () => {
   it("listContacts 带 customerId → query", async () => {
     mockRequest.mockResolvedValue([]);
     await listContacts(undefined, 3);
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/contacts?customerId=3" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/contacts?customerId=3" });
   });
 
   it("createContact → POST /contacts", async () => {
@@ -51,7 +51,7 @@ describe("desktop contact service", () => {
     await createContact({ customerId: 3, name: "张三" });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "POST",
-      path: "/api/contacts",
+      path: "/contacts",
       body: { customerId: 3, name: "张三" },
     });
   });
@@ -61,7 +61,7 @@ describe("desktop contract service", () => {
   it("listContracts 带 status → query", async () => {
     mockRequest.mockResolvedValue([]);
     await listContracts(undefined, "ACTIVE");
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/contracts?status=ACTIVE" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/contracts?status=ACTIVE" });
   });
 
   it("updateContract → PUT /contracts/{id}", async () => {
@@ -69,7 +69,7 @@ describe("desktop contract service", () => {
     await updateContract(1, { status: "TERMINATED" });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "PUT",
-      path: "/api/contracts/1",
+      path: "/contracts/1",
       body: { status: "TERMINATED" },
     });
   });
@@ -79,7 +79,7 @@ describe("desktop contract service", () => {
     await createContract({ customerId: 3, contractNo: "HT-001", title: "服务合同" });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "POST",
-      path: "/api/contracts",
+      path: "/contracts",
       body: { customerId: 3, contractNo: "HT-001", title: "服务合同" },
     });
   });
@@ -89,7 +89,7 @@ describe("desktop member service", () => {
   it("listMembers 带 status → query", async () => {
     mockRequest.mockResolvedValue([]);
     await listMembers("ACTIVE");
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/members?status=ACTIVE" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/members?status=ACTIVE" });
   });
 
   it("createMember → POST /members", async () => {
@@ -97,7 +97,7 @@ describe("desktop member service", () => {
     await createMember({ customerId: 3, memberNo: "M001", level: "GOLD" });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "POST",
-      path: "/api/members",
+      path: "/members",
       body: { customerId: 3, memberNo: "M001", level: "GOLD" },
     });
   });
@@ -107,7 +107,7 @@ describe("desktop quality service", () => {
   it("listBatches → GET /batches", async () => {
     mockRequest.mockResolvedValue([]);
     await listBatches();
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/batches" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/batches" });
   });
 
   it("createBatch → POST /batches", async () => {
@@ -115,7 +115,7 @@ describe("desktop quality service", () => {
     await createBatch({ productId: 1, batchNo: "B001", quantity: 100 });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "POST",
-      path: "/api/batches",
+      path: "/batches",
       body: { productId: 1, batchNo: "B001", quantity: 100 },
     });
   });
@@ -125,7 +125,7 @@ describe("desktop quality service", () => {
     await listInspections({ type: "IQC", result: "FAIL" });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "GET",
-      path: "/api/inspections?type=IQC&result=FAIL",
+      path: "/inspections?type=IQC&result=FAIL",
     });
   });
 
@@ -134,7 +134,7 @@ describe("desktop quality service", () => {
     await createInspection({ productId: 1, batchId: 2, type: "FQC", result: "PASS", quantity: 50 });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "POST",
-      path: "/api/inspections",
+      path: "/inspections",
       body: { productId: 1, batchId: 2, type: "FQC", result: "PASS", quantity: 50 },
     });
   });
@@ -144,7 +144,7 @@ describe("desktop notification service", () => {
   it("listNotifications → GET /notifications?page=0&size=50", async () => {
     mockRequest.mockResolvedValue([]);
     await listNotifications();
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/notifications?page=0&size=50" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/notifications?page=0&size=50" });
   });
 
   it("unreadNotificationCount → GET /notifications/unread-count", async () => {

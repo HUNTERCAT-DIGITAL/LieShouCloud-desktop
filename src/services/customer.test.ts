@@ -20,7 +20,7 @@ describe("desktop customer service", () => {
   it("listCustomers 无参数 → GET /customers（无 query）", async () => {
     mockRequest.mockResolvedValue([]);
     await listCustomers();
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/customers" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/customers" });
   });
 
   it("listCustomers 带 keyword + status → query 编码", async () => {
@@ -28,26 +28,26 @@ describe("desktop customer service", () => {
     await listCustomers("张三 诊所", "CONVERTED");
     expect(mockRequest).toHaveBeenCalledWith({
       method: "GET",
-      path: "/api/customers?keyword=%E5%BC%A0%E4%B8%89%20%E8%AF%8A%E6%89%80&status=CONVERTED",
+      path: "/customers?keyword=%E5%BC%A0%E4%B8%89%20%E8%AF%8A%E6%89%80&status=CONVERTED",
     });
   });
 
   it("listCustomers 只带 status → 只有 status query", async () => {
     mockRequest.mockResolvedValue([]);
     await listCustomers(undefined, "LOST");
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/customers?status=LOST" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/customers?status=LOST" });
   });
 
   it("countCustomers → GET /customers/count", async () => {
     mockRequest.mockResolvedValue(5);
     await expect(countCustomers()).resolves.toBe(5);
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/customers/count" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/customers/count" });
   });
 
   it("getCustomer 动态 id → GET /customers/{id}", async () => {
     mockRequest.mockResolvedValue({ id: 42 });
     await getCustomer(42);
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/customers/42" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/customers/42" });
   });
 
   it("STATUS_META 四种状态齐全且有中文文案", () => {

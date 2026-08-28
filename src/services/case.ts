@@ -46,7 +46,7 @@ export interface CaseQuery {
 export async function listCases(q: CaseQuery = {}): Promise<CasePage> {
   return request<CasePage>({
     method: "GET",
-    path: "/api/legal/cases",
+    path: "/legal/cases",
     query: {
       keyword: q.keyword,
       stage: q.stage,
@@ -60,22 +60,22 @@ export async function listCases(q: CaseQuery = {}): Promise<CasePage> {
 
 /** 案件详情 */
 export async function getCase(id: number): Promise<LegalCase> {
-  return request<LegalCase>({ method: "GET", path: `/api/legal/cases/${id}` });
+  return request<LegalCase>({ method: "GET", path: `/legal/cases/${id}` });
 }
 
 /** 新建案件 */
 export async function createCase(body: CreateCaseRequest): Promise<LegalCase> {
-  return request<LegalCase>({ method: "POST", path: "/api/legal/cases", body });
+  return request<LegalCase>({ method: "POST", path: "/legal/cases", body });
 }
 
 /** 编辑案件（status/stage 仅允许前进） */
 export async function updateCase(id: number, body: UpdateCaseRequest): Promise<LegalCase> {
-  return request<LegalCase>({ method: "PUT", path: `/api/legal/cases/${id}`, body });
+  return request<LegalCase>({ method: "PUT", path: `/legal/cases/${id}`, body });
 }
 
 /** 删除案件 */
 export async function deleteCase(id: number): Promise<void> {
-  return request<void>({ method: "DELETE", path: `/api/legal/cases/${id}` });
+  return request<void>({ method: "DELETE", path: `/legal/cases/${id}` });
 }
 
 /**
@@ -99,22 +99,22 @@ export function advanceStage(
 
 /** 案件时间线事件 */
 export async function listCaseEvents(caseId: number): Promise<CaseEvent[]> {
-  return request<CaseEvent[]>({ method: "GET", path: `/api/legal/cases/${caseId}/events` });
+  return request<CaseEvent[]>({ method: "GET", path: `/legal/cases/${caseId}/events` });
 }
 
 /** 新增时间线事件 */
 export async function addCaseEvent(caseId: number, body: CaseEventRequest): Promise<CaseEvent> {
-  return request<CaseEvent>({ method: "POST", path: `/api/legal/cases/${caseId}/events`, body });
+  return request<CaseEvent>({ method: "POST", path: `/legal/cases/${caseId}/events`, body });
 }
 
 /** 编辑事件(类型/时间/标题/详情) */
 export async function updateCaseEvent(caseId: number, eventId: number, body: CaseEventRequest): Promise<CaseEvent> {
-  return request<CaseEvent>({ method: "PUT", path: `/api/legal/cases/${caseId}/events/${eventId}`, body });
+  return request<CaseEvent>({ method: "PUT", path: `/legal/cases/${caseId}/events/${eventId}`, body });
 }
 
 /** 删除事件(软删) */
 export async function deleteCaseEvent(caseId: number, eventId: number): Promise<void> {
-  return request<void>({ method: "DELETE", path: `/api/legal/cases/${caseId}/events/${eventId}` });
+  return request<void>({ method: "DELETE", path: `/legal/cases/${caseId}/events/${eventId}` });
 }
 
 // ============================================================
@@ -123,75 +123,75 @@ export async function deleteCaseEvent(caseId: number, eventId: number): Promise<
 
 /** 案件计时列表 */
 export async function listTimeEntries(caseId: number): Promise<LegalPage<TimeEntry>> {
-  return request<LegalPage<TimeEntry>>({ method: "GET", path: `/api/legal/cases/${caseId}/time-entries` });
+  return request<LegalPage<TimeEntry>>({ method: "GET", path: `/legal/cases/${caseId}/time-entries` });
 }
 
 /** 案件计时汇总(小时/金额/待确认) */
 export async function getTimeSummary(caseId: number): Promise<TimeEntrySummary> {
-  return request<TimeEntrySummary>({ method: "GET", path: `/api/legal/cases/${caseId}/time-entries/summary` });
+  return request<TimeEntrySummary>({ method: "GET", path: `/legal/cases/${caseId}/time-entries/summary` });
 }
 
 /** 登记计时 */
 export async function createTimeEntry(caseId: number, body: TimeEntryRequest): Promise<TimeEntry> {
-  return request<TimeEntry>({ method: "POST", path: `/api/legal/cases/${caseId}/time-entries`, body });
+  return request<TimeEntry>({ method: "POST", path: `/legal/cases/${caseId}/time-entries`, body });
 }
 
 /** 确认计时(PENDING → CONFIRMED,幂等;记录确认人/时间) */
 export async function confirmTimeEntry(id: number): Promise<TimeEntry> {
-  return request<TimeEntry>({ method: "PUT", path: `/api/legal/time-entries/${id}/confirm` });
+  return request<TimeEntry>({ method: "PUT", path: `/legal/time-entries/${id}/confirm` });
 }
 
 /** 编辑计时(工时/费率/律师/日期,金额服务端重算) */
 export async function updateTimeEntry(id: number, body: TimeEntryRequest): Promise<TimeEntry> {
-  return request<TimeEntry>({ method: "PUT", path: `/api/legal/time-entries/${id}`, body });
+  return request<TimeEntry>({ method: "PUT", path: `/legal/time-entries/${id}`, body });
 }
 
 /** 删除计时(软删) */
 export async function deleteTimeEntry(id: number): Promise<void> {
-  return request<void>({ method: "DELETE", path: `/api/legal/time-entries/${id}` });
+  return request<void>({ method: "DELETE", path: `/legal/time-entries/${id}` });
 }
 
 /** 案件费用列表 */
 export async function listExpenses(caseId: number): Promise<LegalPage<Expense>> {
-  return request<LegalPage<Expense>>({ method: "GET", path: `/api/legal/cases/${caseId}/expenses` });
+  return request<LegalPage<Expense>>({ method: "GET", path: `/legal/cases/${caseId}/expenses` });
 }
 
 /** 案件费用汇总 */
 export async function getExpenseSummary(caseId: number): Promise<ExpenseSummary> {
-  return request<ExpenseSummary>({ method: "GET", path: `/api/legal/cases/${caseId}/expenses/summary` });
+  return request<ExpenseSummary>({ method: "GET", path: `/legal/cases/${caseId}/expenses/summary` });
 }
 
 /** 登记费用 */
 export async function createExpense(caseId: number, body: ExpenseRequest): Promise<Expense> {
-  return request<Expense>({ method: "POST", path: `/api/legal/cases/${caseId}/expenses`, body });
+  return request<Expense>({ method: "POST", path: `/legal/cases/${caseId}/expenses`, body });
 }
 
 /** 编辑费用(类型/说明/金额/日期) */
 export async function updateExpense(id: number, body: ExpenseRequest): Promise<Expense> {
-  return request<Expense>({ method: "PUT", path: `/api/legal/expenses/${id}`, body });
+  return request<Expense>({ method: "PUT", path: `/legal/expenses/${id}`, body });
 }
 
 /** 删除费用(软删) */
 export async function deleteExpense(id: number): Promise<void> {
-  return request<void>({ method: "DELETE", path: `/api/legal/expenses/${id}` });
+  return request<void>({ method: "DELETE", path: `/legal/expenses/${id}` });
 }
 
 /** 案件卷宗文书列表 */
 export async function listDocuments(caseId: number): Promise<LegalPage<LegalDocument>> {
-  return request<LegalPage<LegalDocument>>({ method: "GET", path: `/api/legal/cases/${caseId}/documents` });
+  return request<LegalPage<LegalDocument>>({ method: "GET", path: `/legal/cases/${caseId}/documents` });
 }
 
 /** 登记文书(标题必填;正文/附件URL/类型/日期可选) */
 export async function createDocument(caseId: number, body: DocumentRequest): Promise<LegalDocument> {
-  return request<LegalDocument>({ method: "POST", path: `/api/legal/cases/${caseId}/documents`, body });
+  return request<LegalDocument>({ method: "POST", path: `/legal/cases/${caseId}/documents`, body });
 }
 
 /** 编辑文书 */
 export async function updateDocument(id: number, body: DocumentRequest): Promise<LegalDocument> {
-  return request<LegalDocument>({ method: "PUT", path: `/api/legal/documents/${id}`, body });
+  return request<LegalDocument>({ method: "PUT", path: `/legal/documents/${id}`, body });
 }
 
 /** 删除文书(软删) */
 export async function deleteDocument(id: number): Promise<void> {
-  return request<void>({ method: "DELETE", path: `/api/legal/documents/${id}` });
+  return request<void>({ method: "DELETE", path: `/legal/documents/${id}` });
 }

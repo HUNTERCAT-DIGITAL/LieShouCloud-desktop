@@ -17,10 +17,10 @@ export async function listAuditLogs(query: AuditQuery = {}): Promise<AuditLog[]>
   if (query.resourceType) params.set("resourceType", query.resourceType);
   if (query.limit) params.set("limit", String(query.limit));
   const qs = params.toString();
-  return request<AuditLog[]>({ method: "GET", path: `/api/audit-logs${qs ? `?${qs}` : ""}` });
+  return request<AuditLog[]>({ method: "GET", path: `/audit-logs${qs ? `?${qs}` : ""}` });
 }
 
 /** GET /audit-logs/count */
 export async function countAuditLogs(): Promise<number> {
-  return request<number>({ method: "GET", path: "/api/audit-logs/count" });
+  return request<number>({ method: "GET", path: "/audit-logs/count" });
 }

@@ -20,20 +20,20 @@ export async function listContracts(
   if (status) params.push(`status=${status}`);
   if (keyword) params.push(`keyword=${encodeURIComponent(keyword)}`);
   const qs = params.length > 0 ? `?${params.join("&")}` : "";
-  return request<Contract[]>({ method: "GET", path: `/api/contracts${qs}` });
+  return request<Contract[]>({ method: "GET", path: `/contracts${qs}` });
 }
 
 /** POST /contracts — 新建合同 */
 export async function createContract(body: CreateContractRequest): Promise<Contract> {
-  return request<Contract>({ method: "POST", path: "/api/contracts", body });
+  return request<Contract>({ method: "POST", path: "/contracts", body });
 }
 
 /** PUT /contracts/{id} — 更新合同 */
 export async function updateContract(id: number, body: UpdateContractRequest): Promise<Contract> {
-  return request<Contract>({ method: "PUT", path: `/api/contracts/${id}`, body });
+  return request<Contract>({ method: "PUT", path: `/contracts/${id}`, body });
 }
 
 /** DELETE /contracts/{id} — 删除合同 */
 export async function deleteContract(id: number): Promise<void> {
-  return request<void>({ method: "DELETE", path: `/api/contracts/${id}` });
+  return request<void>({ method: "DELETE", path: `/contracts/${id}` });
 }

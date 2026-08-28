@@ -30,15 +30,15 @@ export async function listCustomers(keyword?: string, status?: CustomerStatus): 
   if (keyword) query.push(`keyword=${encodeURIComponent(keyword)}`);
   if (status) query.push(`status=${status}`);
   const qs = query.length > 0 ? `?${query.join("&")}` : "";
-  return request<Customer[]>({ method: "GET", path: `/api/customers${qs}` });
+  return request<Customer[]>({ method: "GET", path: `/customers${qs}` });
 }
 
 export async function countCustomers(): Promise<number> {
-  return request<number>({ method: "GET", path: `/api/customers/count` });
+  return request<number>({ method: "GET", path: `/customers/count` });
 }
 
 export async function getCustomer(id: number): Promise<Customer> {
-  return request<Customer>({ method: "GET", path: `/api/customers/${id}` });
+  return request<Customer>({ method: "GET", path: `/customers/${id}` });
 }
 
 export interface CreateCustomerRequest {
@@ -65,17 +65,17 @@ export interface UpdateCustomerRequest {
 
 /** POST /customers — 新建客户 */
 export async function createCustomer(body: CreateCustomerRequest): Promise<Customer> {
-  return request<Customer>({ method: "POST", path: `/api/customers`, body });
+  return request<Customer>({ method: "POST", path: `/customers`, body });
 }
 
 /** PUT /customers/{id} — 编辑客户 */
 export async function updateCustomer(id: number, body: UpdateCustomerRequest): Promise<Customer> {
-  return request<Customer>({ method: "PUT", path: `/api/customers/${id}`, body });
+  return request<Customer>({ method: "PUT", path: `/customers/${id}`, body });
 }
 
 /** DELETE /customers/{id} — 删除客户 */
 export async function deleteCustomer(id: number): Promise<void> {
-  return request<void>({ method: "DELETE", path: `/api/customers/${id}` });
+  return request<void>({ method: "DELETE", path: `/customers/${id}` });
 }
 
 export const STATUS_META: Record<CustomerStatus, { text: string; color: string }> = {
