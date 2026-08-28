@@ -12,6 +12,7 @@ import {
   type CaseEvent,
   type CaseEventRequest,
   type CreateCaseRequest,
+  type DocumentRequest,
   type Expense,
   type ExpenseRequest,
   type ExpenseSummary,
@@ -168,4 +169,19 @@ export async function deleteExpense(id: number): Promise<void> {
 /** 案件卷宗文书列表 */
 export async function listDocuments(caseId: number): Promise<LegalPage<LegalDocument>> {
   return request<LegalPage<LegalDocument>>({ method: "GET", path: `/legal/cases/${caseId}/documents` });
+}
+
+/** 登记文书(标题必填;正文/附件URL/类型/日期可选) */
+export async function createDocument(caseId: number, body: DocumentRequest): Promise<LegalDocument> {
+  return request<LegalDocument>({ method: "POST", path: `/legal/cases/${caseId}/documents`, body });
+}
+
+/** 编辑文书 */
+export async function updateDocument(id: number, body: DocumentRequest): Promise<LegalDocument> {
+  return request<LegalDocument>({ method: "PUT", path: `/legal/documents/${id}`, body });
+}
+
+/** 删除文书(软删) */
+export async function deleteDocument(id: number): Promise<void> {
+  return request<void>({ method: "DELETE", path: `/legal/documents/${id}` });
 }

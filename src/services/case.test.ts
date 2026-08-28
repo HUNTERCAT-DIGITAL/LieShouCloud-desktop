@@ -14,13 +14,16 @@ import {
   advanceStage,
   confirmTimeEntry,
   createCase,
+  createDocument,
   deleteCase,
+  deleteDocument,
   deleteExpense,
   deleteTimeEntry,
   getCase,
   listCases,
   listCaseEvents,
   updateCase,
+  updateDocument,
   updateExpense,
   updateTimeEntry,
 } from "./case";
@@ -165,6 +168,34 @@ describe("desktop case service", () => {
       mockRequest.mockResolvedValue(undefined);
       await deleteExpense(5);
       expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/legal/expenses/5" });
+    });
+  });
+
+  describe("文书登记/编辑/删除(后端 LegalDocumentController)", () => {
+    it("createDocument → POST /legal/cases/{id}/documents + body", async () => {
+      mockRequest.mockResolvedValue({ id: 11 });
+      await createDocument(1, { title: "民事起诉状", docType: "PLEADING", content: "诉状全文" });
+      expect(mockRequest).toHaveBeenCalledWith({
+        method: "POST",
+        path: "/legal/cases/1/documents",
+        body: { title: "民事起诉状", docType: "PLEADING", content: "诉状全文" },
+      });
+    });
+
+    it("updateDocument → PUT /legal/documents/{id} + body", async () => {
+      mockRequest.mockResolvedValue({ id: 11 });
+      await updateDocument(11, { title: "民事起诉状(修订)" });
+      expect(mockRequest).toHaveBeenCalledWith({
+        method: "PUT",
+        path: "/legal/documents/11",
+        body: { title: "民事起诉状(修订)" },
+      });
+    });
+
+    it("deleteDocument → DELETE /legal/documents/{id}", async () => {
+      mockRequest.mockResolvedValue(undefined);
+      await deleteDocument(8);
+      expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/legal/documents/8" });
     });
   });
 });

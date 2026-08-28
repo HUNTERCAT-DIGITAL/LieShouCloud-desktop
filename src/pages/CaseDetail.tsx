@@ -43,6 +43,7 @@ import {
   TIME_ENTRY_STATUS_META,
   stageIndex,
   type CaseEvent,
+  type DocumentRequest,
   type Expense,
   type ExpenseRequest,
   type LegalCase,
@@ -54,8 +55,10 @@ import {
   addCaseEvent,
   advanceStage,
   confirmTimeEntry,
+  createDocument,
   createExpense,
   createTimeEntry,
+  deleteDocument,
   deleteExpense,
   deleteTimeEntry,
   getCase,
@@ -66,6 +69,7 @@ import {
   listExpenses,
   listTimeEntries,
   updateCase,
+  updateDocument,
   updateExpense,
   updateTimeEntry,
 } from "../services/case";
@@ -89,11 +93,14 @@ export default function CaseDetail() {
   const [eventOpen, setEventOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
   const [expenseOpen, setExpenseOpen] = useState(false);
+  const [docOpen, setDocOpen] = useState(false);
   const [editingTime, setEditingTime] = useState<TimeEntry | null>(null);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [editingDoc, setEditingDoc] = useState<LegalDocument | null>(null);
   const [eventForm] = Form.useForm();
   const [timeForm] = Form.useForm();
   const [expenseForm] = Form.useForm();
+  const [docForm] = Form.useForm();
 
   useEffect(() => {
     if (!id) return;
@@ -125,6 +132,58 @@ export default function CaseDetail() {
   if (!detail) return <EmptyState description="案件不存在或无权查看" />;
 
   const cid = Number(id);
+
+  const submitDoc = async (v: DocumentRequest) => {
+    try {
+      if (editingDoc) {
+        await updateDocument(editingDoc.id, v);
+        message.success("文书已更新");
+      } else {
+        await createDocument(cid, v);
+        message.success("文书已登记");
+      }
+      setDocOpen(false);
+      setEditingDoc(null);
+      docForm.resetFields();
+      void loadDocuments();
+    } catch (e) {
+      message.error(String(e));
+    }
+  };
+
+  /** 打开登记文书 */
+  const openCreateDoc = () => {
+    setEditingDoc(null);
+    docForm.resetFields();
+    setDocOpen(true);
+  };
+
+  /** 打开编辑文书(预填) */
+  const openEditDoc = (row: LegalDocument) => {
+    setEditingDoc(row);
+    docForm.setFieldsValue({
+      title: row.title,
+      docType: row.docType,
+      content: row.content ?? undefined,
+      fileUrl: row.fileUrl ?? undefined,
+      docDate: row.docDate ?? undefined,
+    });
+    setDocOpen(true);
+  };
+
+  /** 删除文书(软删) */
+  const doDeleteDoc = (row: LegalDocument) => {
+    Modal.confirm({
+      title: "删除这份文书？",
+      content: `${DOC_TYPE_META[row.docType]?.text ?? row.docType} ${row.title}(软删,可联系管理员恢复)`,
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        await deleteDocument(row.id);
+        message.success("已删除");
+        void loadDocuments();
+      },
+    });
+  };
 
   const loadEvents = async () => {
     try {
@@ -467,6 +526,21 @@ export default function CaseDetail() {
     { title: "类型", dataIndex: "docType", key: "docType", width: 110, render: (t: LegalDocument["docType"]) => <Tag color={DOC_TYPE_META[t]?.color}>{DOC_TYPE_META[t]?.text ?? t}</Tag> },
     { title: "标题", dataIndex: "title", key: "title", ellipsis: true },
     { title: "日期", dataIndex: "docDate", key: "docDate", width: 110, render: (v?: string) => v ?? "—" },
+    {
+      title: "操作",
+      key: "action",
+      width: 110,
+      render: (_, row) => (
+        <Space size={4}>
+          <Button size="small" type="link" onClick={(e) => { e.stopPropagation(); openEditDoc(row); }}>
+            编辑
+          </Button>
+          <Button size="small" danger type="link" onClick={(e) => { e.stopPropagation(); doDeleteDoc(row); }}>
+            删除
+          </Button>
+        </Space>
+      ),
+    },
   ];
 
   /** 打开附件/外链(tauri shell.open;web 回退 window.open) */
@@ -722,14 +796,28 @@ export default function CaseDetail() {
             key: "doc",
             label: `卷宗文书 (${documents.length})`,
             children: (
-              <Card title="卷宗文书">
+              <Card
+                title="卷宗文书"
+                extra={
+                  <Button size="small" type="primary" icon={<PlusOutlined />} onClick={openCreateDoc}>
+                    登记文书
+                  </Button>
+                }
+              >
                 <Table<LegalDocument>
                   rowKey="id"
                   columns={docColumns}
                   dataSource={documents}
                   pagination={false}
+                  onRow={(doc) => ({
+                    onClick: () => setDocDetail(doc),
+                    style: { cursor: "pointer" },
+                  })}
                   locale={{ emptyText: <EmptyState description="暂无文书" /> }}
                 />
+                <Text type="secondary" style={{ fontSize: 12 }}>
+                  点击文书行查看正文与附件
+                </Text>
               </Card>
             ),
           },
@@ -814,6 +902,41 @@ export default function CaseDetail() {
               <Input placeholder="YYYY-MM-DD" />
             </Form.Item>
           </Space>
+        </Form>
+      </Modal>
+
+      {/* 登记/编辑文书 */}
+      <Modal
+        title={editingDoc ? "编辑文书" : "登记文书"}
+        open={docOpen}
+        onCancel={() => {
+          setDocOpen(false);
+          setEditingDoc(null);
+        }}
+        onOk={() => docForm.submit()}
+        destroyOnClose
+        width={560}
+      >
+        <Form form={docForm} layout="vertical" onFinish={submitDoc} requiredMark={false}>
+          <Form.Item label="标题" name="title" rules={[{ required: true, message: "请输入文书标题" }]}>
+            <Input placeholder="如:民事起诉状" />
+          </Form.Item>
+          <Form.Item label="文书类型" name="docType">
+            <Select
+              allowClear
+              placeholder="默认其他"
+              options={Object.entries(DOC_TYPE_META).map(([v, m]) => ({ value: v, label: m.text }))}
+            />
+          </Form.Item>
+          <Form.Item label="正文内容" name="content">
+            <Input.TextArea rows={6} placeholder="文书全文(可选)" />
+          </Form.Item>
+          <Form.Item label="附件 URL" name="fileUrl">
+            <Input placeholder="https://...(可选,外部文件/卷宗引用)" />
+          </Form.Item>
+          <Form.Item label="日期" name="docDate">
+            <Input placeholder="YYYY-MM-DD(可选)" />
+          </Form.Item>
         </Form>
       </Modal>
 
