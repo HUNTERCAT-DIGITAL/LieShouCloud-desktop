@@ -17,7 +17,10 @@ import type { HealthStatus } from "@lieshoucloud/contract-types";
 import { resolveApiBase } from '@lieshoucloud/contract-config';
 
 /** 网关基址：env 优先（VITE_API_BASE），缺省本地 Tauri 联调 */
-const GATEWAY_BASE = resolveApiBase({ defaultBase: 'http://localhost:9000' });
+const GATEWAY_BASE = resolveApiBase({ defaultBase: "http://localhost:9000" });
+
+/** 网关基址导出（供 UI 调试面板展示实际请求地址） */
+export const API_BASE = GATEWAY_BASE;
 
 /** Tauri command - 调用 Rust 端 fetch_health */
 export async function fetchTauriBridgeHealth(): Promise<{

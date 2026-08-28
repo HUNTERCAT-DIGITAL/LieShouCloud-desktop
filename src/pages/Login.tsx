@@ -6,13 +6,14 @@
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { getVersion } from "@tauri-apps/api/app";
 import { DEFAULT_TENANT_CODE } from "@lieshoucloud/contract-config";
-import { Alert, Button, Card, Form, Input, Space, Typography } from "antd";
+import { Alert, Button, Card, Descriptions, Form, Input, Modal, Space, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 import WindowControls from "../components/WindowControls";
 import { useUpdaterContext } from "../components/Updater";
 import { getBranding, getEdition } from "../config/editions";
+import { API_BASE } from "../services/api";
 import { isApiError } from "../services/auth";
 import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
@@ -33,6 +34,7 @@ export default function Login() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [appVersion, setAppVersion] = useState<string>("");
+  const [debugOpen, setDebugOpen] = useState(false);
 
   const branding = getBranding();
   const tenantCode = branding.defaultTenant || DEFAULT_TENANT_CODE;
@@ -59,11 +61,10 @@ export default function Login() {
       const from = (location.state as { from?: string } | null)?.from ?? "/welcome";
       navigate(from, { replace: true });
     } catch (e) {
-      if (isApiError(e)) {
-        setErrorMsg(`登录失败（${e.message || "未知"}）`);
-      } else {
-        setErrorMsg(`登录失败: ${String(e)}`);
-      }
+      const detail = isApiError(e)
+        ? `${e.message || "未知"}`
+        : String(e);
+      setErrorMsg(`登录失败（${detail}）\nAPI 基址: ${API_BASE}`);
     } finally {
       setSubmitting(false);
     }
@@ -120,7 +121,34 @@ export default function Login() {
         >
           检查更新
         </Button>
+        <Button type="link" size="small" style={styles.checkUpdate} onClick={() => setDebugOpen(true)}>
+          调试
+        </Button>
       </div>
+      <Modal
+        title="开发者调试信息"
+        open={debugOpen}
+        footer={<Button onClick={() => setDebugOpen(false)}>关闭</Button>}
+        onCancel={() => setDebugOpen(false)}
+        width={520}
+      >
+        <Descriptions column={1} bordered size="small">
+          <Descriptions.Item label="应用版本">{appVersion || "—"}</Descriptions.Item>
+          <Descriptions.Item label="版别 (Edition)">{getEdition().id}</Descriptions.Item>
+          <Descriptions.Item label="租户">{tenantCode}</Descriptions.Item>
+          <Descriptions.Item label="API 基址">{API_BASE}</Descriptions.Item>
+          <Descriptions.Item label="登录请求 URL">
+            {`${API_BASE}/auth/login`}
+          </Descriptions.Item>
+          <Descriptions.Item label="升级清单">
+            https://legalmind.lieshoucloud.huntercat.cn/updates/latest.json
+          </Descriptions.Item>
+        </Descriptions>
+        <Typography.Paragraph type="secondary" style={{ marginTop: 12, fontSize: 12 }}>
+          API 基址由构建时 VITE_API_BASE 注入；缺省会回落 localhost:9000（仅开发联调）。
+          若此处显示 localhost:9000，说明生产构建未注入环境变量。
+        </Typography.Paragraph>
+      </Modal>
     </div>
   );
 }
