@@ -25,6 +25,11 @@ const UserList = lazy(() => import("./pages/UserList"));
 const RoleList = lazy(() => import("./pages/RoleList"));
 const TenantList = lazy(() => import("./pages/TenantList"));
 const AuditList = lazy(() => import("./pages/AuditList"));
+const LeadList = lazy(() => import("./pages/LeadList"));
+const ContactList = lazy(() => import("./pages/ContactList"));
+const ContractList = lazy(() => import("./pages/ContractList"));
+const MemberList = lazy(() => import("./pages/MemberList"));
+const QualityList = lazy(() => import("./pages/QualityList"));
 
 /** 客户专属路由槽（extraRoutes · 2026-09 客户聚合仓）：内容由客户仓注入 */
 function ExtraRoute({ route }: { route: { path: string; load: () => Promise<{ default: ComponentType }> } }) {
@@ -73,6 +78,11 @@ export const routes = (
         <Route path="/role/list" element={<RoleList />} />
         <Route path="/tenant/list" element={<TenantList />} />
         <Route path="/audit/list" element={<AuditList />} />
+        <Route path="/lead/list" element={<LeadList />} />
+        <Route path="/contact/list" element={<ContactList />} />
+        <Route path="/contract/list" element={<ContractList />} />
+        <Route path="/member/list" element={<MemberList />} />
+        <Route path="/quality/list" element={<QualityList />} />
         {EXTRA_ROUTES.map((r) => (
           <Route key={r.path} path={r.path} element={<ExtraRoute route={r} />} />
         ))}

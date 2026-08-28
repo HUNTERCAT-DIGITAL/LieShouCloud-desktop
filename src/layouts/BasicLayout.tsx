@@ -44,6 +44,15 @@ const PLATFORM_NAV: NavItem[] = [
   { key: "/audit/list", label: "审计日志", path: "/audit/list" },
 ];
 
+/** 业务模块（2026-08 补入 desktop;简化版） */
+const BUSINESS_NAV: NavItem[] = [
+  { key: "/lead/list", label: "线索管理", path: "/lead/list" },
+  { key: "/contact/list", label: "联系人", path: "/contact/list" },
+  { key: "/contract/list", label: "合同管理", path: "/contract/list" },
+  { key: "/member/list", label: "会员管理", path: "/member/list" },
+  { key: "/quality/list", label: "质量管理", path: "/quality/list" },
+];
+
 
 export default function BasicLayout() {
   const navigate = useNavigate();
@@ -69,6 +78,11 @@ export default function BasicLayout() {
       key: "platform",
       label: "平台管理",
       children: PLATFORM_NAV.map((n) => ({ key: n.path, label: n.label })),
+    },
+    {
+      key: "business",
+      label: "业务管理",
+      children: BUSINESS_NAV.map((n) => ({ key: n.path, label: n.label })),
     },
   ];
 
