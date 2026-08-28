@@ -17,8 +17,9 @@ test.describe("登录页", () => {
 
   test("登录成功进入工作台", async ({ page }) => {
     await login(page, { roles: ["USER"], username: "e2euser" });
-    // legalmind 客户版登录后进入今日作战台(页面标题 h4)
-    await expect(page.getByRole("heading", { name: "今日作战台" })).toBeVisible();
+    // daizhang 客户版：侧边栏客户菜单 + 顶栏用户名已渲染（布局壳）
+    await expect(page.getByText("银行账户", { exact: true })).toBeVisible();
+    await expect(page.getByText("e2euser")).toBeVisible();
   });
 
   test("普通用户(USER)不显示平台管理菜单", async ({ page }) => {
@@ -32,8 +33,8 @@ test.describe("登录页", () => {
     await login(page, { roles: ["PLATFORM_ADMIN"] });
     const platformMenu = page.getByText("平台管理", { exact: true });
     await expect(platformMenu).toBeVisible();
-    // 展开子菜单
-    await platformMenu.click();
+    // 展开子菜单（inline Menu 展开触发重渲染 → force 跳过稳定性检查）
+    await platformMenu.click({ force: true });
     await expect(page.getByText("用户管理")).toBeVisible();
     await expect(page.getByText("租户管理")).toBeVisible();
     await expect(page.getByText("审计日志")).toBeVisible();
