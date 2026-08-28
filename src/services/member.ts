@@ -15,20 +15,20 @@ export async function listMembers(status?: MemberStatus, keyword?: string): Prom
   if (status) params.push(`status=${status}`);
   if (keyword) params.push(`keyword=${encodeURIComponent(keyword)}`);
   const qs = params.length > 0 ? `?${params.join("&")}` : "";
-  return request<Member[]>({ method: "GET", path: `/members${qs}` });
+  return request<Member[]>({ method: "GET", path: `/api/members${qs}` });
 }
 
 /** POST /members — 新建会员 */
 export async function createMember(body: CreateMemberRequest): Promise<Member> {
-  return request<Member>({ method: "POST", path: "/members", body });
+  return request<Member>({ method: "POST", path: "/api/members", body });
 }
 
 /** PUT /members/{id} — 更新会员 */
 export async function updateMember(id: number, body: UpdateMemberRequest): Promise<Member> {
-  return request<Member>({ method: "PUT", path: `/members/${id}`, body });
+  return request<Member>({ method: "PUT", path: `/api/members/${id}`, body });
 }
 
 /** DELETE /members/{id} — 删除会员 */
 export async function deleteMember(id: number): Promise<void> {
-  return request<void>({ method: "DELETE", path: `/members/${id}` });
+  return request<void>({ method: "DELETE", path: `/api/members/${id}` });
 }

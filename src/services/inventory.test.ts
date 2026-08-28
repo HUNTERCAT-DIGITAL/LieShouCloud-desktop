@@ -17,7 +17,7 @@ describe("desktop inventory service", () => {
   it("listProducts 无 keyword → GET /products", async () => {
     mockRequest.mockResolvedValue([]);
     await listProducts();
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/products" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/products" });
   });
 
   it("listProducts 带 keyword → query 编码", async () => {
@@ -25,7 +25,7 @@ describe("desktop inventory service", () => {
     await listProducts("感冒灵");
     expect(mockRequest).toHaveBeenCalledWith({
       method: "GET",
-      path: "/products?keyword=%E6%84%9F%E5%86%92%E7%81%B5",
+      path: "/api/products?keyword=%E6%84%9F%E5%86%92%E7%81%B5",
     });
   });
 
@@ -33,7 +33,7 @@ describe("desktop inventory service", () => {
     mockRequest.mockResolvedValue({ id: 1 });
     const body = { name: "阿莫西林", unit: "盒", price: 18.5 };
     await createProduct(body);
-    expect(mockRequest).toHaveBeenCalledWith({ method: "POST", path: "/products", body });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "POST", path: "/api/products", body });
   });
 
   it("stockIn → POST /products/{id}/stock-in + body", async () => {
@@ -41,7 +41,7 @@ describe("desktop inventory service", () => {
     await stockIn(1, 10, "补货");
     expect(mockRequest).toHaveBeenCalledWith({
       method: "POST",
-      path: "/products/1/stock-in",
+      path: "/api/products/1/stock-in",
       body: { quantity: 10, remark: "补货" },
     });
   });
@@ -51,7 +51,7 @@ describe("desktop inventory service", () => {
     await stockOut(1, 5);
     expect(mockRequest).toHaveBeenCalledWith({
       method: "POST",
-      path: "/products/1/stock-out",
+      path: "/api/products/1/stock-out",
       body: { quantity: 5, remark: undefined },
     });
   });
@@ -59,7 +59,7 @@ describe("desktop inventory service", () => {
   it("listMovements → GET /products/{id}/movements", async () => {
     mockRequest.mockResolvedValue([]);
     await listMovements(7);
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/products/7/movements" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/products/7/movements" });
   });
 
   it("MOVEMENT_META 出入库文案", () => {

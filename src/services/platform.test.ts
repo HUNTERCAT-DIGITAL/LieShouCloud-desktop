@@ -21,7 +21,7 @@ describe("desktop user service", () => {
   it("listUsers → GET /users", async () => {
     mockRequest.mockResolvedValue([]);
     await listUsers();
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/users" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/users" });
   });
 
   it("createUser → POST /users + body", async () => {
@@ -29,7 +29,7 @@ describe("desktop user service", () => {
     await createUser({ username: "u1", displayName: "用户一", password: "pw123456" });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "POST",
-      path: "/users",
+      path: "/api/users",
       body: { username: "u1", displayName: "用户一", password: "pw123456" },
     });
   });
@@ -39,7 +39,7 @@ describe("desktop user service", () => {
     await updateUser(1, { displayName: "改名", status: "ACTIVE", roles: ["USER"] });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "PUT",
-      path: "/users/1",
+      path: "/api/users/1",
       body: { displayName: "改名", status: "ACTIVE", roles: ["USER"] },
     });
   });
@@ -47,7 +47,7 @@ describe("desktop user service", () => {
   it("deleteUser → DELETE /users/{id}", async () => {
     mockRequest.mockResolvedValue(undefined);
     await deleteUser(9);
-    expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/users/9" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/api/users/9" });
   });
 
   it("changeMyPassword → PUT /users/me/password + body", async () => {
@@ -55,7 +55,7 @@ describe("desktop user service", () => {
     await changeMyPassword("old123", "newpass123");
     expect(mockRequest).toHaveBeenCalledWith({
       method: "PUT",
-      path: "/users/me/password",
+      path: "/api/users/me/password",
       body: { oldPassword: "old123", newPassword: "newpass123" },
     });
   });
@@ -65,7 +65,7 @@ describe("desktop role service", () => {
   it("listRoles → GET /roles", async () => {
     mockRequest.mockResolvedValue([]);
     await listRoles();
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/roles" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/roles" });
   });
 
   it("createRole → POST /roles", async () => {
@@ -73,7 +73,7 @@ describe("desktop role service", () => {
     await createRole({ code: "BUSINESS", name: "业务专员", scope: "TENANT" });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "POST",
-      path: "/roles",
+      path: "/api/roles",
       body: { code: "BUSINESS", name: "业务专员", scope: "TENANT" },
     });
   });
@@ -83,7 +83,7 @@ describe("desktop role service", () => {
     await updateRole(1, { name: "高级专员" });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "PUT",
-      path: "/roles/1",
+      path: "/api/roles/1",
       body: { name: "高级专员" },
     });
   });
@@ -91,7 +91,7 @@ describe("desktop role service", () => {
   it("deleteRole → DELETE /roles/{id}", async () => {
     mockRequest.mockResolvedValue(undefined);
     await deleteRole(3);
-    expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/roles/3" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/api/roles/3" });
   });
 });
 
@@ -99,7 +99,7 @@ describe("desktop tenant service", () => {
   it("listTenants → GET /tenants", async () => {
     mockRequest.mockResolvedValue([]);
     await listTenants();
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/tenants" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/tenants" });
   });
 
   it("createTenant → POST /tenants", async () => {
@@ -107,7 +107,7 @@ describe("desktop tenant service", () => {
     await createTenant({ name: "测试租户", code: "test01" });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "POST",
-      path: "/tenants",
+      path: "/api/tenants",
       body: { name: "测试租户", code: "test01" },
     });
   });
@@ -117,14 +117,14 @@ describe("desktop tenant service", () => {
     await updateTenant(1, { status: "DISABLED" });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "PUT",
-      path: "/tenants/1",
+      path: "/api/tenants/1",
       body: { status: "DISABLED" },
     });
   });
   it("deleteTenant → DELETE /tenants/{id}", async () => {
     mockRequest.mockResolvedValue(undefined);
     await deleteTenant(2);
-    expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/tenants/2" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/api/tenants/2" });
   });
 });
 
@@ -132,7 +132,7 @@ describe("desktop audit service", () => {
   it("listAuditLogs 无参数 → GET /audit-logs", async () => {
     mockRequest.mockResolvedValue([]);
     await listAuditLogs();
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/audit-logs" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/audit-logs" });
   });
 
   it("listAuditLogs 带 action/limit → query", async () => {
@@ -140,13 +140,13 @@ describe("desktop audit service", () => {
     await listAuditLogs({ action: "DELETE", limit: 50 });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "GET",
-      path: "/audit-logs?action=DELETE&limit=50",
+      path: "/api/audit-logs?action=DELETE&limit=50",
     });
   });
 
   it("countAuditLogs → GET /audit-logs/count", async () => {
     mockRequest.mockResolvedValue(3);
     await countAuditLogs();
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/audit-logs/count" });
+    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/api/audit-logs/count" });
   });
 });

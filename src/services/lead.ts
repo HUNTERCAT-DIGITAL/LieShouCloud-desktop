@@ -10,20 +10,20 @@ export async function listLeads(keyword?: string, status?: LeadStatus): Promise<
   if (keyword) params.push(`keyword=${encodeURIComponent(keyword)}`);
   if (status) params.push(`status=${status}`);
   const qs = params.length > 0 ? `?${params.join("&")}` : "";
-  return request<Lead[]>({ method: "GET", path: `/leads${qs}` });
+  return request<Lead[]>({ method: "GET", path: `/api/leads${qs}` });
 }
 
 /** POST /leads — 新建线索 */
 export async function createLead(body: LeadRequest): Promise<Lead> {
-  return request<Lead>({ method: "POST", path: "/leads", body });
+  return request<Lead>({ method: "POST", path: "/api/leads", body });
 }
 
 /** PUT /leads/{id} — 更新线索 */
 export async function updateLead(id: number, body: LeadRequest): Promise<Lead> {
-  return request<Lead>({ method: "PUT", path: `/leads/${id}`, body });
+  return request<Lead>({ method: "PUT", path: `/api/leads/${id}`, body });
 }
 
 /** DELETE /leads/{id} — 删除线索 */
 export async function deleteLead(id: number): Promise<{ deleted: boolean }> {
-  return request<{ deleted: boolean }>({ method: "DELETE", path: `/leads/${id}` });
+  return request<{ deleted: boolean }>({ method: "DELETE", path: `/api/leads/${id}` });
 }
