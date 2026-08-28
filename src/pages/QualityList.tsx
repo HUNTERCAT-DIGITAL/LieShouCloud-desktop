@@ -16,7 +16,7 @@ import { App, Button, Card, Form, Input, InputNumber, Modal, Select, Space, Tabl
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 
-import { createBatch, listBatches, listInspections } from "../services/quality";
+import { createBatch, createInspection, listBatches, listInspections } from "../services/quality";
 
 
 interface BatchFormValues {
@@ -24,6 +24,17 @@ interface BatchFormValues {
   batchNo: string;
   quantity: number;
   supplier?: string;
+  remark?: string;
+}
+
+interface InspectionFormValues {
+  productId: number;
+  batchId?: number;
+  type: InspectionType;
+  result: InspectionResult;
+  quantity: number;
+  inspector?: string;
+  inspectedAt?: string;
   remark?: string;
 }
 
@@ -35,7 +46,9 @@ export default function QualityList() {
   const [type, setType] = useState<InspectionType | undefined>(undefined);
   const [result, setResult] = useState<InspectionResult | undefined>(undefined);
   const [open, setOpen] = useState(false);
+  const [insOpen, setInsOpen] = useState(false);
   const [form] = Form.useForm<BatchFormValues>();
+  const [insForm] = Form.useForm<InspectionFormValues>();
 
   const load = async () => {
     setLoading(true);
@@ -69,6 +82,27 @@ export default function QualityList() {
       message.success("批次已创建");
       setOpen(false);
       form.resetFields();
+      void load();
+    } catch (e) {
+      message.error(String(e));
+    }
+  };
+
+  const submitIns = async (v: InspectionFormValues) => {
+    try {
+      await createInspection({
+        productId: v.productId,
+        batchId: v.batchId || undefined,
+        type: v.type,
+        result: v.result,
+        quantity: v.quantity,
+        inspector: v.inspector || undefined,
+        inspectedAt: v.inspectedAt || undefined,
+        remark: v.remark || undefined,
+      });
+      message.success("质检记录已创建");
+      setInsOpen(false);
+      insForm.resetFields();
       void load();
     } catch (e) {
       message.error(String(e));
@@ -170,9 +204,53 @@ export default function QualityList() {
               onChange={(v) => setResult(v)}
               options={Object.entries(INSPECTION_RESULT_META).map(([v, m]) => ({ value: v, label: m.text }))}
             />
+            <Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => setInsOpen(true)}>
+              新建质检
+            </Button>
           </Space>
         }
       />
+      <Modal
+        title="新建质检记录"
+        open={insOpen}
+        onCancel={() => setInsOpen(false)}
+        onOk={() => insForm.submit()}
+        destroyOnClose
+        width={480}
+      >
+        <Form<InspectionFormValues> form={insForm} layout="vertical" onFinish={submitIns} requiredMark={false}>
+          <Form.Item label="产品 ID" name="productId" rules={[{ required: true }]}>
+            <InputNumber style={{ width: "100%" }} min={1} placeholder="产品 ID" />
+          </Form.Item>
+          <Form.Item label="批次 ID" name="batchId">
+            <InputNumber style={{ width: "100%" }} min={1} placeholder="批次 ID(可选)" />
+          </Form.Item>
+          <Space size="middle" style={{ display: "flex" }}>
+            <Form.Item label="检验类型" name="type" style={{ flex: 1 }} rules={[{ required: true }]}>
+              <Select
+                options={Object.entries(INSPECTION_TYPE_META).map(([v, m]) => ({ value: v, label: m.text }))}
+              />
+            </Form.Item>
+            <Form.Item label="结果" name="result" style={{ flex: 1 }} rules={[{ required: true }]}>
+              <Select
+                options={Object.entries(INSPECTION_RESULT_META).map(([v, m]) => ({ value: v, label: m.text }))}
+              />
+            </Form.Item>
+          </Space>
+          <Form.Item label="数量" name="quantity" rules={[{ required: true }]}>
+            <InputNumber style={{ width: "100%" }} min={0} placeholder="数量" />
+          </Form.Item>
+          <Form.Item label="检验员" name="inspector">
+            <Input placeholder="检验员(可选)" />
+          </Form.Item>
+          <Form.Item label="检验时间" name="inspectedAt">
+            <Input placeholder="YYYY-MM-DD(可选)" />
+          </Form.Item>
+          <Form.Item label="备注" name="remark">
+            <Input.TextArea rows={2} />
+          </Form.Item>
+        </Form>
+      </Modal>
       <Modal
         title="新建批次"
         open={open}

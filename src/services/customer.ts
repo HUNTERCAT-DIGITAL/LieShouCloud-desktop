@@ -41,6 +41,43 @@ export async function getCustomer(id: number): Promise<Customer> {
   return request<Customer>({ method: "GET", path: `/customers/${id}` });
 }
 
+export interface CreateCustomerRequest {
+  name: string;
+  contactName?: string;
+  contactPhone?: string;
+  email?: string;
+  address?: string;
+  status?: CustomerStatus;
+  ownerId?: number;
+  remark?: string;
+}
+
+export interface UpdateCustomerRequest {
+  name?: string;
+  contactName?: string;
+  contactPhone?: string;
+  email?: string;
+  address?: string;
+  status?: CustomerStatus;
+  ownerId?: number;
+  remark?: string;
+}
+
+/** POST /customers — 新建客户 */
+export async function createCustomer(body: CreateCustomerRequest): Promise<Customer> {
+  return request<Customer>({ method: "POST", path: `/customers`, body });
+}
+
+/** PUT /customers/{id} — 编辑客户 */
+export async function updateCustomer(id: number, body: UpdateCustomerRequest): Promise<Customer> {
+  return request<Customer>({ method: "PUT", path: `/customers/${id}`, body });
+}
+
+/** DELETE /customers/{id} — 删除客户 */
+export async function deleteCustomer(id: number): Promise<void> {
+  return request<void>({ method: "DELETE", path: `/customers/${id}` });
+}
+
 export const STATUS_META: Record<CustomerStatus, { text: string; color: string }> = {
   NEW: { text: "新客户", color: "blue" },
   FOLLOWING: { text: "跟进中", color: "gold" },
