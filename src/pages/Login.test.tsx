@@ -10,17 +10,20 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import Login from "./Login";
+import { UpdaterProvider } from "../components/Updater";
 import { getBranding, getEdition } from "../config/editions";
 import { useAuthStore } from "../stores/auth";
 
 function renderLogin() {
   return render(
-    <MemoryRouter initialEntries={["/login"]}>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/welcome" element={<div>工作台页</div>} />
-      </Routes>
-    </MemoryRouter>,
+    <UpdaterProvider>
+      <MemoryRouter initialEntries={["/login"]}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/welcome" element={<div>工作台页</div>} />
+        </Routes>
+      </MemoryRouter>
+    </UpdaterProvider>,
   );
 }
 
