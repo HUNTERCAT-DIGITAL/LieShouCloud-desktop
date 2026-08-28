@@ -3,7 +3,7 @@
  *
  * 八阶段进度 + 时间线 + 基本信息 + 计时(收费)/费用(支出)/卷宗文书 Tabs。
  */
-import { ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, CopyOutlined, PlusOutlined, PrinterOutlined } from "@ant-design/icons";
 import { EmptyState, StatusTag } from "@lieshoucloud/ui";
 import {
   App,
@@ -64,6 +64,7 @@ import {
   listTimeEntries,
   updateCase,
 } from "../services/case";
+import { buildCaseSummaryText } from "../utils/caseSummary";
 
 const { Text, Title } = Typography;
 
@@ -196,6 +197,63 @@ export default function CaseDetail() {
     }
   };
 
+  /** 生成当前摘要文本 */
+  const buildSummary = () =>
+    buildCaseSummaryText({
+      detail,
+      events,
+      timeEntries,
+      timeSummary,
+      expenses,
+      expenseSummary,
+      documents,
+    });
+
+  /** 复制摘要到剪贴板 */
+  const copySummary = async () => {
+    const text = buildSummary();
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+    }
+    message.success("摘要已复制");
+  };
+
+  /** 打印摘要(隐藏 iframe + 系统打印对话框) */
+  const printSummary = () => {
+    const text = buildSummary();
+    const safe = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>案件摘要 ${detail.caseNo}</title>
+<style>
+  body { font-family: "Microsoft YaHei", sans-serif; color: #222; margin: 32px; }
+  pre { white-space: pre-wrap; word-break: break-all; font-family: inherit; line-height: 1.8; }
+  @media print { body { margin: 0; } }
+</style></head><body><pre>${safe}</pre></body></html>`;
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
+    const doc = iframe.contentDocument;
+    if (doc) {
+      doc.open();
+      doc.write(html);
+      doc.close();
+    }
+    window.setTimeout(() => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+      window.setTimeout(() => iframe.remove(), 500);
+    }, 300);
+  };
+
   const stageIdx = stageIndex(detail.stage);
   const stageMeta = CASE_STAGE_META[detail.stage];
   const statusMeta = CASE_STATUS_META[detail.status];
@@ -298,6 +356,12 @@ export default function CaseDetail() {
       <Space style={{ marginBottom: 12 }}>
         <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate("/cases")}>
           返回案件列表
+        </Button>
+        <Button icon={<PrinterOutlined />} onClick={printSummary}>
+          打印摘要
+        </Button>
+        <Button icon={<CopyOutlined />} onClick={() => void copySummary()}>
+          复制摘要
         </Button>
       </Space>
 
