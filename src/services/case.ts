@@ -9,7 +9,15 @@ import type {
   CaseEvent,
   CaseEventRequest,
   CreateCaseRequest,
+  Expense,
+  ExpenseRequest,
+  ExpenseSummary,
   LegalCase,
+  LegalDocument,
+  LegalPage,
+  TimeEntry,
+  TimeEntryRequest,
+  TimeEntrySummary,
   UpdateCaseRequest,
 } from "@lieshoucloud/contract-types/business/legal";
 
@@ -74,4 +82,43 @@ export async function listCaseEvents(caseId: number): Promise<CaseEvent[]> {
 /** 新增时间线事件 */
 export async function addCaseEvent(caseId: number, body: CaseEventRequest): Promise<CaseEvent> {
   return request<CaseEvent>({ method: "POST", path: `/legal/cases/${caseId}/events`, body });
+}
+
+// ============================================================
+// 律所特色:计时 / 费用 / 文书
+// ============================================================
+
+/** 案件计时列表 */
+export async function listTimeEntries(caseId: number): Promise<LegalPage<TimeEntry>> {
+  return request<LegalPage<TimeEntry>>({ method: "GET", path: `/legal/cases/${caseId}/time-entries` });
+}
+
+/** 案件计时汇总(小时/金额/待确认) */
+export async function getTimeSummary(caseId: number): Promise<TimeEntrySummary> {
+  return request<TimeEntrySummary>({ method: "GET", path: `/legal/cases/${caseId}/time-entries/summary` });
+}
+
+/** 登记计时 */
+export async function createTimeEntry(caseId: number, body: TimeEntryRequest): Promise<TimeEntry> {
+  return request<TimeEntry>({ method: "POST", path: `/legal/cases/${caseId}/time-entries`, body });
+}
+
+/** 案件费用列表 */
+export async function listExpenses(caseId: number): Promise<LegalPage<Expense>> {
+  return request<LegalPage<Expense>>({ method: "GET", path: `/legal/cases/${caseId}/expenses` });
+}
+
+/** 案件费用汇总 */
+export async function getExpenseSummary(caseId: number): Promise<ExpenseSummary> {
+  return request<ExpenseSummary>({ method: "GET", path: `/legal/cases/${caseId}/expenses/summary` });
+}
+
+/** 登记费用 */
+export async function createExpense(caseId: number, body: ExpenseRequest): Promise<Expense> {
+  return request<Expense>({ method: "POST", path: `/legal/cases/${caseId}/expenses`, body });
+}
+
+/** 案件卷宗文书列表 */
+export async function listDocuments(caseId: number): Promise<LegalPage<LegalDocument>> {
+  return request<LegalPage<LegalDocument>>({ method: "GET", path: `/legal/cases/${caseId}/documents` });
 }
