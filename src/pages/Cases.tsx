@@ -67,6 +67,7 @@ export default function Cases() {
   const [keyword, setKeyword] = useState("");
   const [stage, setStage] = useState<CaseStage | undefined>(undefined);
   const [status, setStatus] = useState<CaseStatus | undefined>(undefined);
+  const [priority, setPriority] = useState<CasePriority | undefined>(undefined);
   const [editing, setEditing] = useState<LegalCase | null>(null);
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm<CaseFormValues>();
@@ -74,7 +75,7 @@ export default function Cases() {
   const load = async (p = 0) => {
     setLoading(true);
     try {
-      const res = await listCases({ keyword: keyword || undefined, stage, status, page: p, size: 20 });
+      const res = await listCases({ keyword: keyword || undefined, stage, status, priority, page: p, size: 20 });
       setData(res.items);
       setTotal(res.total);
     } catch {
@@ -88,7 +89,7 @@ export default function Cases() {
   useEffect(() => {
     void load(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stage, status]);
+  }, [stage, status, priority]);
 
   const openCreate = () => {
     setEditing(null);
@@ -250,6 +251,14 @@ export default function Cases() {
           options={STATUS_OPTIONS}
           allowClear
           style={{ width: 130 }}
+        />
+        <Select
+          placeholder="关注度"
+          value={priority}
+          onChange={setPriority}
+          options={PRIORITY_OPTIONS}
+          allowClear
+          style={{ width: 120 }}
         />
         <Button icon={<ReloadOutlined />} onClick={() => void load(0)}>
           刷新

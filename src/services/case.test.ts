@@ -36,7 +36,7 @@ describe("desktop case service", () => {
 
   it("listCases 带筛选 → query 透传", async () => {
     mockRequest.mockResolvedValue({ items: [], total: 0, page: 0, size: 20 });
-    await listCases({ keyword: "合同", status: "FILED", page: 2, size: 50 });
+    await listCases({ keyword: "合同", status: "FILED", priority: "HIGH", page: 2, size: 50 });
     expect(mockRequest).toHaveBeenCalledWith({
       method: "GET",
       path: "/legal/cases",
@@ -44,7 +44,7 @@ describe("desktop case service", () => {
         keyword: "合同",
         stage: undefined,
         status: "FILED",
-        priority: undefined,
+        priority: "HIGH",
         page: 2,
         size: 50,
       },
