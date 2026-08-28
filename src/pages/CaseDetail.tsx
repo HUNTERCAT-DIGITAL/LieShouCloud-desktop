@@ -65,6 +65,7 @@ import {
   listExpenses,
   listTimeEntries,
   updateCase,
+  updateTimeEntry,
 } from "../services/case";
 import { buildCaseSummaryText } from "../utils/caseSummary";
 
@@ -86,6 +87,7 @@ export default function CaseDetail() {
   const [eventOpen, setEventOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
   const [expenseOpen, setExpenseOpen] = useState(false);
+  const [editingTime, setEditingTime] = useState<TimeEntry | null>(null);
   const [eventForm] = Form.useForm();
   const [timeForm] = Form.useForm();
   const [expenseForm] = Form.useForm();
@@ -177,14 +179,40 @@ export default function CaseDetail() {
 
   const submitTime = async (v: TimeEntryRequest) => {
     try {
-      await createTimeEntry(cid, v);
-      message.success("计时已登记");
+      if (editingTime) {
+        await updateTimeEntry(editingTime.id, v);
+        message.success("计时已更新(金额已重算)");
+      } else {
+        await createTimeEntry(cid, v);
+        message.success("计时已登记");
+      }
       setTimeOpen(false);
+      setEditingTime(null);
       timeForm.resetFields();
       void loadTime();
     } catch (e) {
       message.error(String(e));
     }
+  };
+
+  /** 打开登记计时 */
+  const openCreateTime = () => {
+    setEditingTime(null);
+    timeForm.resetFields();
+    setTimeOpen(true);
+  };
+
+  /** 打开编辑计时(预填) */
+  const openEditTime = (row: TimeEntry) => {
+    setEditingTime(row);
+    timeForm.setFieldsValue({
+      lawyer: row.lawyer,
+      workDate: row.workDate,
+      hours: row.hours,
+      rate: row.rate,
+      description: row.description ?? undefined,
+    });
+    setTimeOpen(true);
   };
 
   const submitExpense = async (v: ExpenseRequest) => {
@@ -355,6 +383,9 @@ export default function CaseDetail() {
       width: 120,
       render: (_, row) => (
         <Space size={4}>
+          <Button size="small" type="link" onClick={() => openEditTime(row)}>
+            编辑
+          </Button>
           {row.status === "PENDING" && (
             <Button size="small" type="primary" onClick={() => void doConfirmTime(row)}>
               确认
@@ -578,7 +609,7 @@ export default function CaseDetail() {
                 <Card
                   title="计时明细"
                   extra={
-                    <Button size="small" type="primary" icon={<PlusOutlined />} onClick={() => setTimeOpen(true)}>
+                    <Button size="small" type="primary" icon={<PlusOutlined />} onClick={openCreateTime}>
                       登记计时
                     </Button>
                   }
@@ -666,8 +697,18 @@ export default function CaseDetail() {
         </Form>
       </Modal>
 
-      {/* 登记计时 */}
-      <Modal title="登记计时" open={timeOpen} onCancel={() => setTimeOpen(false)} onOk={() => timeForm.submit()} destroyOnClose width={460}>
+      {/* 登记/编辑计时 */}
+      <Modal
+        title={editingTime ? "编辑计时" : "登记计时"}
+        open={timeOpen}
+        onCancel={() => {
+          setTimeOpen(false);
+          setEditingTime(null);
+        }}
+        onOk={() => timeForm.submit()}
+        destroyOnClose
+        width={460}
+      >
         <Form form={timeForm} layout="vertical" onFinish={submitTime} requiredMark={false}>
           <Form.Item label="律师" name="lawyer" rules={[{ required: true }]}>
             <Input placeholder="承办律师" />
