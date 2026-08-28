@@ -40,7 +40,9 @@ configureCore({
       const p = path.startsWith("/api/") ? path.slice(4) : path;
       // 透传 skipAuth401:登录/注册等认证接口的 401 不走会话过期拦截(由 contract-api 支持)
       const skipAuth401 = (init as { skipAuth401?: boolean } | undefined)?.skipAuth401;
-      return request({ method, path: p, body, skipAuth401 });
+      // 透传 asBlob:文件下载/预览(由 contract-api 返回 Blob,自动带 Authorization)
+      const asBlob = (init as { asBlob?: boolean } | undefined)?.asBlob;
+      return request({ method, path: p, body, skipAuth401, asBlob });
     },
   },
 });

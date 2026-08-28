@@ -1,54 +1,28 @@
 /**
- * Desktop finance service（Phase 9 · 多端接入）.
+ * 财务记账 API service —— 2026-10 上收 lieshou-core-web（业务逻辑唯一源）.
+ * 本文件保留导出路径兼容既有页面/测试（实现已移至 core-web）。
+ * getSummary 别名保留（旧页面导入名 → core-web getLedgerSummary，同端点 /api/ledger/summary）。
+ * META 展示常量保留本地（core-web 不承载 UI 元数据）。
  */
-import { request } from "@lieshoucloud/contract-api";
-
-export type LedgerType = "INCOME" | "EXPENSE";
-
-export interface LedgerEntry {
-  id: number;
-  tenantId: number;
-  type: LedgerType;
-  amount: number;
-  category?: string | null;
-  occurredAt: string;
-  remark?: string | null;
-  createdAt: string;
-}
-
-export interface LedgerSummary {
-  income: number;
-  expense: number;
-  balance: number;
-  count: number;
-}
-
-export async function listLedger(type?: LedgerType): Promise<LedgerEntry[]> {
-  const qs = type ? `?type=${type}` : "";
-  return request<LedgerEntry[]>({ method: "GET", path: `/ledger${qs}` });
-}
-
-export async function getSummary(): Promise<LedgerSummary> {
-  return request<LedgerSummary>({ method: "GET", path: `/ledger/summary` });
-}
-
-export async function createLedger(body: {
-  type: LedgerType;
-  amount: number;
-  category?: string;
-  occurredAt: string;
-  remark?: string;
-}): Promise<LedgerEntry> {
-  return request<LedgerEntry>({ method: "POST", path: `/ledger`, body });
-}
-
-export async function deleteLedger(id: number): Promise<void> {
-  return request<void>({ method: "DELETE", path: `/ledger/${id}` });
-}
-
-export const LEDGER_TYPE_META: Record<LedgerType, { text: string; color: string }> = {
-  INCOME: { text: "收入", color: "green" },
-  EXPENSE: { text: "支出", color: "red" },
-};
-
-export const LEDGER_CATEGORIES = ["销售收入", "服务收入", "房租", "工资", "采购", "税费", "办公", "其他"];
+export {
+  listLedger,
+  getLedgerSummary,
+  getLedgerSummary as getSummary,
+  getMonthlySummary,
+  getLedger,
+  createLedger,
+  updateLedger,
+  deleteLedger,
+} from '@lieshoucloud/core-web';
+export type {
+  CreateLedgerRequest,
+  LedgerEntry,
+  LedgerSummary,
+  LedgerType,
+  MonthlySummary,
+  UpdateLedgerRequest,
+} from '@lieshoucloud/contract-types/business/finance';
+export {
+  LEDGER_TYPE_META,
+  LEDGER_CATEGORIES,
+} from '@lieshoucloud/contract-types/business/finance';

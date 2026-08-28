@@ -1,45 +1,29 @@
 /**
- * Desktop quality service（业务模块 · 质量）.
+ * 质检追溯 API service（ADR-0037 · inventory-service）.
+ *
+ * 2026-10 上收 lieshou-core-web（业务逻辑唯一源，同 auth/approval 模式）：
+ * 实现移至 core-web features/quality/quality.api.ts（走注入的 ApiPort 传输），
+ * 本文件保留导出路径兼容既有页面/测试。
  */
-import { request } from "@lieshoucloud/contract-api";
-import type {
+export {
+  listBatches,
+  countBatches,
+  createBatch,
+  getBatchDetail,
+  listInspections,
+  countInspections,
+  createInspection,
+  getInspection,
+  getProductTrace,
+} from '@lieshoucloud/core-web';
+export type {
   Batch,
+  BatchDetail,
   CreateBatchRequest,
   CreateInspectionRequest,
+  InspectionDetail,
   InspectionResult,
   InspectionType,
+  ProductTrace,
   QualityInspection,
-} from "@lieshoucloud/contract-types/business/quality";
-
-/** GET /batches — 批次列表 */
-export async function listBatches(productId?: number, keyword?: string): Promise<Batch[]> {
-  const params: string[] = [];
-  if (productId) params.push(`productId=${productId}`);
-  if (keyword) params.push(`keyword=${encodeURIComponent(keyword)}`);
-  const qs = params.length > 0 ? `?${params.join("&")}` : "";
-  return request<Batch[]>({ method: "GET", path: `/batches${qs}` });
-}
-
-/** POST /batches — 新建批次 */
-export async function createBatch(body: CreateBatchRequest): Promise<Batch> {
-  return request<Batch>({ method: "POST", path: "/batches", body });
-}
-
-/** GET /inspections — 质检记录列表 */
-export async function listInspections(params?: {
-  productId?: number;
-  type?: InspectionType;
-  result?: InspectionResult;
-}): Promise<QualityInspection[]> {
-  const search = new URLSearchParams();
-  if (params?.productId) search.set("productId", String(params.productId));
-  if (params?.type) search.set("type", params.type);
-  if (params?.result) search.set("result", params.result);
-  const qs = search.toString();
-  return request<QualityInspection[]>({ method: "GET", path: `/inspections${qs ? `?${qs}` : ""}` });
-}
-
-/** POST /inspections — 新建质检记录 */
-export async function createInspection(body: CreateInspectionRequest): Promise<QualityInspection> {
-  return request<QualityInspection>({ method: "POST", path: "/inspections", body });
-}
+} from '@lieshoucloud/contract-types/business/quality';

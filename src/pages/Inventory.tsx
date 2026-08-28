@@ -70,8 +70,8 @@ export default function Inventory() {
   const onStock = async (values: { quantity: number; remark?: string }) => {
     if (!stockProduct) return;
     try {
-      if (stockType === "IN") await stockIn(stockProduct.id, values.quantity, values.remark);
-      else await stockOut(stockProduct.id, values.quantity, values.remark);
+      if (stockType === "IN") await stockIn(stockProduct.id, { quantity: values.quantity, remark: values.remark });
+      else await stockOut(stockProduct.id, { quantity: values.quantity, remark: values.remark });
       messageApi.success(stockType === "IN" ? "入库成功" : "出库成功");
       setStockOpen(false);
       stockForm.resetFields();

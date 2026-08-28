@@ -1,11 +1,16 @@
 /**
- * Desktop approval service 单测（ADR-0032 · 多端接入）.
+ * 审批流 service 单测（ADR-0032 · 2026-10 上收 core-web 后改测 ApiPort 传输）.
+ *
+ * 上收后 services/approval.ts 为 core-web 薄 re-export，实现走 requestApi →
+ * 注入的 ApiPort。注入 portRequest spy，验证 URL path / query / body 透传（全路径带 /api 前缀）。
  */
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockRequest } = vi.hoisted(() => ({ mockRequest: vi.fn() }));
+import { configureCore } from '@lieshoucloud/core-web';
 
-vi.mock("@lieshoucloud/contract-api", () => ({ request: mockRequest }));
+const { portRequest } = vi.hoisted(() => ({
+  portRequest: vi.fn(),
+}));
 
 import {
   APPROVAL_STATUS_META,
@@ -16,87 +21,94 @@ import {
   getApprovalCounts,
   listApprovals,
   rejectApproval,
-} from "./approval";
+} from './approval';
 
 beforeEach(() => {
-  mockRequest.mockReset();
+  portRequest.mockReset();
+  configureCore({
+    storage: { get: () => null, set: () => {}, remove: () => {} },
+    notifier: { success: () => {}, error: () => {} },
+    navigation: { to: () => {}, replace: () => {} },
+    api: { request: portRequest },
+  });
 });
 
-describe("desktop approval service", () => {
-  it("listApprovals 无参数 → GET /approvals", async () => {
-    mockRequest.mockResolvedValue([]);
+const JSON_HEADERS = { 'Content-Type': 'application/json' };
+
+describe('approval service（core-web 上收 · ApiPort 传输）', () => {
+  it('listApprovals 无参数 → GET /api/approvals', async () => {
+    portRequest.mockResolvedValue([]);
     await listApprovals();
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/approvals", query: {} });
+    expect(portRequest).toHaveBeenCalledWith('/api/approvals', undefined);
   });
 
-  it("listApprovals 带 role/status/type → query", async () => {
-    mockRequest.mockResolvedValue([]);
-    await listApprovals({ role: "inbox", status: "PENDING", type: "EXPENSE" });
-    expect(mockRequest).toHaveBeenCalledWith({
-      method: "GET",
-      path: "/approvals",
-      query: { role: "inbox", status: "PENDING", type: "EXPENSE" },
-    });
+  it('listApprovals 带 role/status/type → query', async () => {
+    portRequest.mockResolvedValue([]);
+    await listApprovals({ role: 'inbox', status: 'PENDING', type: 'EXPENSE' });
+    expect(portRequest).toHaveBeenCalledWith(
+      '/api/approvals?role=inbox&status=PENDING&type=EXPENSE',
+      undefined,
+    );
   });
 
-  it("getApprovalCounts → GET /approvals/counts", async () => {
-    mockRequest.mockResolvedValue({ inbox: 3, mine: 1 });
+  it('getApprovalCounts → GET /api/approvals/counts', async () => {
+    portRequest.mockResolvedValue({ inbox: 3, mine: 1 });
     await expect(getApprovalCounts()).resolves.toEqual({ inbox: 3, mine: 1 });
-    expect(mockRequest).toHaveBeenCalledWith({ method: "GET", path: "/approvals/counts" });
+    expect(portRequest).toHaveBeenCalledWith('/api/approvals/counts', undefined);
   });
 
-  it("createApproval body 透传", async () => {
-    mockRequest.mockResolvedValue({ id: 1 });
-    await createApproval({ type: "PURCHASE", title: "采购原料", approverId: 10 });
-    expect(mockRequest).toHaveBeenCalledWith({
-      method: "POST",
-      path: "/approvals",
-      body: { type: "PURCHASE", title: "采购原料", approverId: 10 },
+  it('createApproval body 透传', async () => {
+    portRequest.mockResolvedValue({ id: 1 });
+    await createApproval({ type: 'PURCHASE', title: '采购原料', approverId: 10 });
+    expect(portRequest).toHaveBeenCalledWith('/api/approvals', {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ type: 'PURCHASE', title: '采购原料', approverId: 10 }),
     });
   });
 
-  it("approveApproval 无意见 → 空 body", async () => {
-    mockRequest.mockResolvedValue({ id: 1, status: "APPROVED" });
+  it('approveApproval 无意见 → 空 body', async () => {
+    portRequest.mockResolvedValue({ id: 1, status: 'APPROVED' });
     await approveApproval(1);
-    expect(mockRequest).toHaveBeenCalledWith({
-      method: "POST",
-      path: "/approvals/1/approve",
-      body: {},
+    expect(portRequest).toHaveBeenCalledWith('/api/approvals/1/approve', {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({}),
     });
   });
 
-  it("approveApproval 带意见", async () => {
-    mockRequest.mockResolvedValue({ id: 1 });
-    await approveApproval(1, "同意");
-    expect(mockRequest).toHaveBeenCalledWith({
-      method: "POST",
-      path: "/approvals/1/approve",
-      body: { comment: "同意" },
+  it('approveApproval 带意见（body 对象签名）', async () => {
+    portRequest.mockResolvedValue({ id: 1 });
+    await approveApproval(1, { comment: '同意' });
+    expect(portRequest).toHaveBeenCalledWith('/api/approvals/1/approve', {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ comment: '同意' }),
     });
   });
 
-  it("rejectApproval → POST /approvals/{id}/reject（comment 必填）", async () => {
-    mockRequest.mockResolvedValue({ id: 1 });
-    await rejectApproval(1, "金额超预算");
-    expect(mockRequest).toHaveBeenCalledWith({
-      method: "POST",
-      path: "/approvals/1/reject",
-      body: { comment: "金额超预算" },
+  it('rejectApproval → POST /api/approvals/{id}/reject（comment 必填）', async () => {
+    portRequest.mockResolvedValue({ id: 1 });
+    await rejectApproval(1, '金额超预算');
+    expect(portRequest).toHaveBeenCalledWith('/api/approvals/1/reject', {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ comment: '金额超预算' }),
     });
   });
 
-  it("cancelApproval → POST /approvals/{id}/cancel", async () => {
-    mockRequest.mockResolvedValue({ id: 1 });
+  it('cancelApproval → POST /api/approvals/{id}/cancel', async () => {
+    portRequest.mockResolvedValue({ id: 1 });
     await cancelApproval(1);
-    expect(mockRequest).toHaveBeenCalledWith({
-      method: "POST",
-      path: "/approvals/1/cancel",
-      body: {},
+    expect(portRequest).toHaveBeenCalledWith('/api/approvals/1/cancel', {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({}),
     });
   });
 
-  it("类型/状态元数据", () => {
-    expect(APPROVAL_TYPE_META.EXPENSE.text).toBe("支出报销");
-    expect(APPROVAL_STATUS_META.PENDING.text).toBe("待审批");
+  it('类型/状态元数据（contract-types 共享源）', () => {
+    expect(APPROVAL_TYPE_META.EXPENSE.text).toBe('支出报销');
+    expect(APPROVAL_STATUS_META.PENDING.text).toBe('待审批');
   });
 });

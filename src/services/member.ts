@@ -1,34 +1,22 @@
 /**
- * Desktop member service（业务模块 · 会员）.
+ * 会员 API service（ADR-0025 · crm-service）.
+ *
+ * 2026-10 上收 lieshou-core-web（业务逻辑唯一源，同 auth/approval 模式）：
+ * 实现移至 core-web features/member/member.api.ts（走注入的 ApiPort 传输），
+ * 本文件保留导出路径兼容既有页面/测试。
  */
-import { request } from "@lieshoucloud/contract-api";
-import type {
+export {
+  listMembers,
+  countMembers,
+  getMember,
+  createMember,
+  updateMember,
+  deleteMember,
+} from '@lieshoucloud/core-web';
+export type {
   CreateMemberRequest,
   Member,
+  MemberLevel,
   MemberStatus,
   UpdateMemberRequest,
-} from "@lieshoucloud/contract-types/business/member";
-
-/** GET /members — 会员列表 */
-export async function listMembers(status?: MemberStatus, keyword?: string): Promise<Member[]> {
-  const params: string[] = [];
-  if (status) params.push(`status=${status}`);
-  if (keyword) params.push(`keyword=${encodeURIComponent(keyword)}`);
-  const qs = params.length > 0 ? `?${params.join("&")}` : "";
-  return request<Member[]>({ method: "GET", path: `/members${qs}` });
-}
-
-/** POST /members — 新建会员 */
-export async function createMember(body: CreateMemberRequest): Promise<Member> {
-  return request<Member>({ method: "POST", path: "/members", body });
-}
-
-/** PUT /members/{id} — 更新会员 */
-export async function updateMember(id: number, body: UpdateMemberRequest): Promise<Member> {
-  return request<Member>({ method: "PUT", path: `/members/${id}`, body });
-}
-
-/** DELETE /members/{id} — 删除会员 */
-export async function deleteMember(id: number): Promise<void> {
-  return request<void>({ method: "DELETE", path: `/members/${id}` });
-}
+} from '@lieshoucloud/contract-types/business/member';
