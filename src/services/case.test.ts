@@ -15,11 +15,13 @@ import {
   confirmTimeEntry,
   createCase,
   deleteCase,
+  deleteExpense,
   deleteTimeEntry,
   getCase,
   listCases,
   listCaseEvents,
   updateCase,
+  updateExpense,
   updateTimeEntry,
 } from "./case";
 
@@ -145,6 +147,24 @@ describe("desktop case service", () => {
       mockRequest.mockResolvedValue(undefined);
       await deleteTimeEntry(9);
       expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/legal/time-entries/9" });
+    });
+  });
+
+  describe("费用编辑/删除(后端 ExpenseController)", () => {
+    it("updateExpense → PUT /legal/expenses/{id} + body", async () => {
+      mockRequest.mockResolvedValue({ id: 3 });
+      await updateExpense(3, { expenseType: "COURT_FEE", description: "诉讼费", amount: 5000, expenseDate: "2026-08-02" });
+      expect(mockRequest).toHaveBeenCalledWith({
+        method: "PUT",
+        path: "/legal/expenses/3",
+        body: { expenseType: "COURT_FEE", description: "诉讼费", amount: 5000, expenseDate: "2026-08-02" },
+      });
+    });
+
+    it("deleteExpense → DELETE /legal/expenses/{id}", async () => {
+      mockRequest.mockResolvedValue(undefined);
+      await deleteExpense(5);
+      expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/legal/expenses/5" });
     });
   });
 });

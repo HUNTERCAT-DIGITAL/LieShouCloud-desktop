@@ -56,6 +56,7 @@ import {
   confirmTimeEntry,
   createExpense,
   createTimeEntry,
+  deleteExpense,
   deleteTimeEntry,
   getCase,
   getExpenseSummary,
@@ -65,6 +66,7 @@ import {
   listExpenses,
   listTimeEntries,
   updateCase,
+  updateExpense,
   updateTimeEntry,
 } from "../services/case";
 import { buildCaseSummaryText } from "../utils/caseSummary";
@@ -88,6 +90,7 @@ export default function CaseDetail() {
   const [timeOpen, setTimeOpen] = useState(false);
   const [expenseOpen, setExpenseOpen] = useState(false);
   const [editingTime, setEditingTime] = useState<TimeEntry | null>(null);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [eventForm] = Form.useForm();
   const [timeForm] = Form.useForm();
   const [expenseForm] = Form.useForm();
@@ -217,14 +220,53 @@ export default function CaseDetail() {
 
   const submitExpense = async (v: ExpenseRequest) => {
     try {
-      await createExpense(cid, v);
-      message.success("费用已登记");
+      if (editingExpense) {
+        await updateExpense(editingExpense.id, v);
+        message.success("费用已更新");
+      } else {
+        await createExpense(cid, v);
+        message.success("费用已登记");
+      }
       setExpenseOpen(false);
+      setEditingExpense(null);
       expenseForm.resetFields();
       void loadExpenses();
     } catch (e) {
       message.error(String(e));
     }
+  };
+
+  /** 打开登记费用 */
+  const openCreateExpense = () => {
+    setEditingExpense(null);
+    expenseForm.resetFields();
+    setExpenseOpen(true);
+  };
+
+  /** 打开编辑费用(预填) */
+  const openEditExpense = (row: Expense) => {
+    setEditingExpense(row);
+    expenseForm.setFieldsValue({
+      expenseType: row.expenseType,
+      description: row.description ?? undefined,
+      amount: row.amount,
+      expenseDate: row.expenseDate,
+    });
+    setExpenseOpen(true);
+  };
+
+  /** 删除费用(软删) */
+  const doDeleteExpense = (row: Expense) => {
+    Modal.confirm({
+      title: "删除这条费用？",
+      content: `${EXPENSE_TYPE_META[row.expenseType]?.text ?? row.expenseType} ¥${row.amount.toLocaleString()} ${row.expenseDate}(软删,可联系管理员恢复)`,
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        await deleteExpense(row.id);
+        message.success("已删除");
+        void loadExpenses();
+      },
+    });
   };
 
   /** 生成当前摘要文本 */
@@ -404,6 +446,21 @@ export default function CaseDetail() {
     { title: "说明", dataIndex: "description", key: "description", ellipsis: true },
     { title: "金额(元)", dataIndex: "amount", key: "amount", width: 110, render: (v: number) => `¥${v.toLocaleString()}` },
     { title: "日期", dataIndex: "expenseDate", key: "expenseDate", width: 110 },
+    {
+      title: "操作",
+      key: "action",
+      width: 110,
+      render: (_, row) => (
+        <Space size={4}>
+          <Button size="small" type="link" onClick={() => openEditExpense(row)}>
+            编辑
+          </Button>
+          <Button size="small" danger type="link" onClick={() => doDeleteExpense(row)}>
+            删除
+          </Button>
+        </Space>
+      ),
+    },
   ];
 
   const docColumns: ColumnsType<LegalDocument> = [
@@ -645,7 +702,7 @@ export default function CaseDetail() {
                 <Card
                   title="费用明细"
                   extra={
-                    <Button size="small" type="primary" icon={<PlusOutlined />} onClick={() => setExpenseOpen(true)}>
+                    <Button size="small" type="primary" icon={<PlusOutlined />} onClick={openCreateExpense}>
                       登记费用
                     </Button>
                   }
@@ -730,8 +787,18 @@ export default function CaseDetail() {
         </Form>
       </Modal>
 
-      {/* 登记费用 */}
-      <Modal title="登记费用" open={expenseOpen} onCancel={() => setExpenseOpen(false)} onOk={() => expenseForm.submit()} destroyOnClose width={460}>
+      {/* 登记/编辑费用 */}
+      <Modal
+        title={editingExpense ? "编辑费用" : "登记费用"}
+        open={expenseOpen}
+        onCancel={() => {
+          setExpenseOpen(false);
+          setEditingExpense(null);
+        }}
+        onOk={() => expenseForm.submit()}
+        destroyOnClose
+        width={460}
+      >
         <Form form={expenseForm} layout="vertical" onFinish={submitExpense} requiredMark={false}>
           <Form.Item label="费用类型" name="expenseType" rules={[{ required: true }]}>
             <Select options={Object.entries(EXPENSE_TYPE_META).map(([v, m]) => ({ value: v, label: m.text }))} />

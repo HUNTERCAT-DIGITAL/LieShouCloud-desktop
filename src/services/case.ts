@@ -155,6 +155,16 @@ export async function createExpense(caseId: number, body: ExpenseRequest): Promi
   return request<Expense>({ method: "POST", path: `/legal/cases/${caseId}/expenses`, body });
 }
 
+/** 编辑费用(类型/说明/金额/日期) */
+export async function updateExpense(id: number, body: ExpenseRequest): Promise<Expense> {
+  return request<Expense>({ method: "PUT", path: `/legal/expenses/${id}`, body });
+}
+
+/** 删除费用(软删) */
+export async function deleteExpense(id: number): Promise<void> {
+  return request<void>({ method: "DELETE", path: `/legal/expenses/${id}` });
+}
+
 /** 案件卷宗文书列表 */
 export async function listDocuments(caseId: number): Promise<LegalPage<LegalDocument>> {
   return request<LegalPage<LegalDocument>>({ method: "GET", path: `/legal/cases/${caseId}/documents` });
