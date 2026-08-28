@@ -35,6 +35,15 @@ const BASE_NAV: NavItem[] = [
   { key: "/approval", label: "审批流", path: "/approval" },
 ];
 
+/** 平台管理（2026-08 补入 desktop;简化版,按权限后续裁剪） */
+const PLATFORM_NAV: NavItem[] = [
+  { key: "/admin", label: "管理总览", path: "/admin" },
+  { key: "/user/list", label: "用户管理", path: "/user/list" },
+  { key: "/role/list", label: "角色管理", path: "/role/list" },
+  { key: "/tenant/list", label: "租户管理", path: "/tenant/list" },
+  { key: "/audit/list", label: "审计日志", path: "/audit/list" },
+];
+
 
 export default function BasicLayout() {
   const navigate = useNavigate();
@@ -51,10 +60,17 @@ export default function BasicLayout() {
       : n,
   ).filter((n) => !isMenuHidden(edition, n.path));
 
-  const items: MenuProps["items"] = visibleNav.map((n) => ({
-    key: n.path,
-    label: n.label,
-  }));
+  const items: MenuProps["items"] = [
+    ...visibleNav.map((n) => ({
+      key: n.path,
+      label: n.label,
+    })),
+    {
+      key: "platform",
+      label: "平台管理",
+      children: PLATFORM_NAV.map((n) => ({ key: n.path, label: n.label })),
+    },
+  ];
 
   const userMenu: MenuProps["items"] = [
     {
