@@ -21,13 +21,15 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { RoleTag } from "@lieshoucloud/ui";
-import { Avatar, Dropdown, Layout, Menu, Space } from "antd";
+import { Avatar, Badge, Button, Dropdown, Layout, Menu, Space } from "antd";
 import type { MenuProps } from "antd";
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import WindowControls from "../components/WindowControls";
 import { useUpdaterContext } from "../components/Updater";
+import { unreadNotificationCount } from "../services/notification";
 import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
 
@@ -110,6 +112,24 @@ export default function BasicLayout() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const updater = useUpdaterContext();
+
+  // 通知未读数：首拉 + 60s 轮询 + 页面切换刷新
+  const [unread, setUnread] = useState(0);
+  useEffect(() => {
+    const refresh = () => {
+      unreadNotificationCount()
+        .then(setUnread)
+        .catch(() => undefined);
+    };
+    refresh();
+    const timer = setInterval(refresh, 60_000);
+    return () => clearInterval(timer);
+  }, []);
+  useEffect(() => {
+    unreadNotificationCount()
+      .then(setUnread)
+      .catch(() => undefined);
+  }, [location.pathname]);
 
   // 平台管理可见性：按角色过滤（me 响应 roles 为准;PLATFORM_ADMIN/TENANT_ADMIN 可见）
   const roles = user?.roles ?? [];
@@ -228,6 +248,17 @@ export default function BasicLayout() {
               {allNav.find((n) => n.path === location.pathname)?.label ?? ""}
             </span>
           </div>
+          <Button
+            type="text"
+            aria-label="通知中心"
+            onClick={() => navigate("/notification")}
+            style={{ color: "#fff", padding: "4px 10px" }}
+            icon={
+              <Badge count={unread} size="small" overflowCount={99}>
+                <BellOutlined style={{ fontSize: 16 }} />
+              </Badge>
+            }
+          />
           <Dropdown menu={{ items: userMenu }} placement="bottomRight">
             <Space style={{ cursor: "pointer", padding: "0 8px" }}>
               <Avatar size="small" icon={<UserOutlined />} style={{ background: colors.primary }}>
