@@ -64,7 +64,7 @@ export default function Login() {
       const detail = isApiError(e)
         ? `${e.message || "未知"}`
         : String(e);
-      setErrorMsg(`登录失败（${detail}）\nAPI 基址: ${API_BASE}`);
+      setErrorMsg(`登录失败（${detail}）\n租户: ${tenantCode} · API 基址: ${API_BASE}`);
     } finally {
       setSubmitting(false);
     }
@@ -113,6 +113,7 @@ export default function Login() {
       <div style={styles.footer}>
         {branding.footerText}
         {appVersion ? ` · v${appVersion}` : ""}
+        {` · 租户 ${tenantCode}`}
         <Button
           type="link"
           size="small"
