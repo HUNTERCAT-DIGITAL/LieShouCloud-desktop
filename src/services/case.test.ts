@@ -8,7 +8,17 @@ const { mockRequest } = vi.hoisted(() => ({ mockRequest: vi.fn() }));
 
 vi.mock("@lieshoucloud/contract-api", () => ({ request: mockRequest }));
 
-import { addCaseEvent, createCase, deleteCase, getCase, listCases, listCaseEvents, updateCase } from "./case";
+import type { CaseStage } from "@lieshoucloud/contract-types/business/legal";
+import {
+  addCaseEvent,
+  advanceStage,
+  createCase,
+  deleteCase,
+  getCase,
+  listCases,
+  listCaseEvents,
+  updateCase,
+} from "./case";
 
 beforeEach(() => {
   mockRequest.mockReset();
@@ -86,6 +96,25 @@ describe("desktop case service", () => {
       method: "POST",
       path: "/legal/cases/5/events",
       body: { eventType: "HEARING", occurredAt: "2026-08-28T09:00:00Z", title: "第一次开庭" },
+    });
+  });
+
+  describe("advanceStage(八阶段只前进)", () => {
+    it("progress<100 → 标记当前阶段完成(100)", () => {
+      expect(advanceStage("CLIENT_MEETING", 40)).toEqual({ stage: "CLIENT_MEETING", stageProgress: 100 });
+    });
+
+    it("progress=100 → 进入下一阶段,进度归 0", () => {
+      expect(advanceStage("CLIENT_MEETING", 100)).toEqual({ stage: "CASE_BRIEF", stageProgress: 0 });
+      expect(advanceStage("LEGAL_RESEARCH", 100)).toEqual({ stage: "STRATEGY_REPORT", stageProgress: 0 });
+    });
+
+    it("最后阶段且 100 → 返回 null(不可再推进)", () => {
+      expect(advanceStage("FINAL_OUTCOME", 100)).toBeNull();
+    });
+
+    it("未知阶段 → null", () => {
+      expect(advanceStage("UNKNOWN" as CaseStage, 100)).toBeNull();
     });
   });
 });

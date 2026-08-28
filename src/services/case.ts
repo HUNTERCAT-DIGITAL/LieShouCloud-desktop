@@ -5,20 +5,23 @@
  * path 只写业务路径(/legal/**),避免 baseUrl(/api) 叠加造成 /api/api 双写。
  */
 import { request } from "@lieshoucloud/contract-api";
-import type {
-  CaseEvent,
-  CaseEventRequest,
-  CreateCaseRequest,
-  Expense,
-  ExpenseRequest,
-  ExpenseSummary,
-  LegalCase,
-  LegalDocument,
-  LegalPage,
-  TimeEntry,
-  TimeEntryRequest,
-  TimeEntrySummary,
-  UpdateCaseRequest,
+import {
+  CASE_STAGE_FLOW,
+  stageIndex,
+  type CaseStage,
+  type CaseEvent,
+  type CaseEventRequest,
+  type CreateCaseRequest,
+  type Expense,
+  type ExpenseRequest,
+  type ExpenseSummary,
+  type LegalCase,
+  type LegalDocument,
+  type LegalPage,
+  type TimeEntry,
+  type TimeEntryRequest,
+  type TimeEntrySummary,
+  type UpdateCaseRequest,
 } from "@lieshoucloud/contract-types/business/legal";
 
 /** 案件分页响应（后端返回 { items, total, page, size }） */
@@ -72,6 +75,25 @@ export async function updateCase(id: number, body: UpdateCaseRequest): Promise<L
 /** 删除案件 */
 export async function deleteCase(id: number): Promise<void> {
   return request<void>({ method: "DELETE", path: `/legal/cases/${id}` });
+}
+
+/**
+ * 八阶段只前进 · 计算推进后的 stage/stageProgress（纯函数，可单测）。
+ * 规则：
+ *  - progress < 100 → 标记当前阶段完成（stageProgress = 100）
+ *  - progress = 100 且非最后阶段 → 进入下一阶段（stage 前进，进度归 0）
+ *  - 已是最后阶段且 100 → 返回 null（不可再推进）
+ */
+export function advanceStage(
+  stage: CaseStage,
+  progress: number,
+): { stage: CaseStage; stageProgress: number } | null {
+  const idx = stageIndex(stage);
+  if (idx < 0) return null;
+  if (progress < 100) return { stage, stageProgress: 100 };
+  const next = CASE_STAGE_FLOW[idx + 1];
+  if (!next) return null;
+  return { stage: next.key, stageProgress: 0 };
 }
 
 /** 案件时间线事件 */

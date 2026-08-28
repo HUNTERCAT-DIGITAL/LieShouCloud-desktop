@@ -52,6 +52,7 @@ import {
 } from "@lieshoucloud/contract-types/business/legal";
 import {
   addCaseEvent,
+  advanceStage,
   createExpense,
   createTimeEntry,
   getCase,
@@ -61,6 +62,7 @@ import {
   listDocuments,
   listExpenses,
   listTimeEntries,
+  updateCase,
 } from "../services/case";
 
 const { Text, Title } = Typography;
@@ -198,6 +200,55 @@ export default function CaseDetail() {
   const statusMeta = CASE_STATUS_META[detail.status];
   const priorityMeta = CASE_PRIORITY_META[detail.priority];
 
+  /** 标记当前阶段完成(progress → 100) */
+  const markStageComplete = async () => {
+    try {
+      const next = await updateCase(cid, {
+        caseNo: detail.caseNo,
+        title: detail.title,
+        stage: detail.stage,
+        stageProgress: 100,
+      });
+      setDetail(next);
+      message.success("本阶段已标记完成");
+      void addCaseEvent(cid, {
+        eventType: "OTHER",
+        occurredAt: new Date().toISOString().slice(0, 10),
+        title: `阶段完成:${CASE_STAGE_FLOW[stageIdx]?.name ?? detail.stage}`,
+      });
+      void loadEvents();
+    } catch (e) {
+      message.error(String(e));
+    }
+  };
+
+  /** 推进到下一阶段(progress=100 时触发) */
+  const advanceToNextStage = async () => {
+    const next = advanceStage(detail.stage, detail.stageProgress);
+    if (!next) {
+      message.info("已到最后阶段");
+      return;
+    }
+    try {
+      const updated = await updateCase(cid, {
+        caseNo: detail.caseNo,
+        title: detail.title,
+        stage: next.stage,
+        stageProgress: next.stageProgress,
+      });
+      setDetail(updated);
+      message.success(`已进入「${CASE_STAGE_FLOW[stageIndex(next.stage)]?.name ?? next.stage}」阶段`);
+      void addCaseEvent(cid, {
+        eventType: "OTHER",
+        occurredAt: new Date().toISOString().slice(0, 10),
+        title: `进入阶段:${CASE_STAGE_FLOW[stageIndex(next.stage)]?.name ?? next.stage}`,
+      });
+      void loadEvents();
+    } catch (e) {
+      message.error(String(e));
+    }
+  };
+
   const timeColumns: ColumnsType<TimeEntry> = [
     { title: "律师", dataIndex: "lawyer", key: "lawyer", width: 100 },
     { title: "工作日期", dataIndex: "workDate", key: "workDate", width: 110 },
@@ -252,7 +303,27 @@ export default function CaseDetail() {
         </Space>
       </Card>
 
-      <Card title="八阶段办理主线" style={{ marginBottom: 12 }}>
+      <Card
+        title="八阶段办理主线"
+        style={{ marginBottom: 12 }}
+        extra={
+          <Space>
+            {stageIdx < CASE_STAGE_FLOW.length - 1 && detail.stageProgress < 100 && (
+              <Button size="small" type="primary" onClick={markStageComplete}>
+                标记本阶段完成
+              </Button>
+            )}
+            {stageIdx < CASE_STAGE_FLOW.length - 1 && detail.stageProgress >= 100 && (
+              <Button size="small" type="primary" onClick={advanceToNextStage}>
+                进入下一阶段
+              </Button>
+            )}
+            {stageIdx >= CASE_STAGE_FLOW.length - 1 && detail.stageProgress >= 100 && (
+              <Tag color="green">全部阶段已完成</Tag>
+            )}
+          </Space>
+        }
+      >
         <Steps current={stageIdx} size="small" items={CASE_STAGE_FLOW.map((f) => ({ title: f.name }))} />
         <div style={{ marginTop: 16 }}>
           <Space>
@@ -262,6 +333,9 @@ export default function CaseDetail() {
               style={{ width: 280 }}
               status={detail.stageProgress >= 100 ? "success" : undefined}
             />
+            {stageIdx < CASE_STAGE_FLOW.length - 1 && detail.stageProgress >= 100 && (
+              <Text type="secondary">已完成,可进入下一阶段</Text>
+            )}
           </Space>
         </div>
         {CASE_STAGE_FLOW[stageIdx] && (
