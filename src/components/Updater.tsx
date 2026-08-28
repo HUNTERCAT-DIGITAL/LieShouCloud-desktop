@@ -42,6 +42,9 @@ export function useUpdater(): UpdaterApi {
   const [current, setCurrent] = useState<string>("—");
   const [next, setNext] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  /** 下载进度（字节）：Started 事件给总量 contentLength,Progress 累计 chunkLength */
+  const [downloaded, setDownloaded] = useState(0);
+  const [total, setTotal] = useState(0);
   /** 已检查到的更新实例（startDownload 直接复用，避免二次检查） */
   const updateRef = useRef<Update | null>(null);
 
@@ -50,6 +53,8 @@ export function useUpdater(): UpdaterApi {
     setError(null);
     setCurrent("—");
     setNext(null);
+    setDownloaded(0);
+    setTotal(0);
     if (!silent) {
       // 手动触发：先弹「检查中」对话框
       setPhase("checking");
@@ -92,11 +97,16 @@ export function useUpdater(): UpdaterApi {
     }
     setError(null);
     setBusy(true);
+    setDownloaded(0);
+    setTotal(0);
     try {
+      let acc = 0;
       await update.downloadAndInstall((event) => {
-        // 当前插件 Progress 仅上报 chunkLength（增量），无总量，进度条用不确定模式
-        if (event.event === "Progress") {
-          console.debug("[updater] downloading chunk", event.data.chunkLength);
+        if (event.event === "Started") {
+          setTotal(event.data.contentLength ?? 0);
+        } else if (event.event === "Progress") {
+          acc += event.data.chunkLength;
+          setDownloaded(acc);
         }
       });
       message.loading({ content: "升级包已就绪，正在重启完成安装…", duration: 0 });
@@ -137,13 +147,19 @@ export function useUpdater(): UpdaterApi {
               当前版本 <Typography.Text strong>{current}</Typography.Text> → 新版本{" "}
               <Typography.Text strong>{next ?? "—"}</Typography.Text>
             </Typography.Text>
-            {busy && (
-              <Progress
-                percent={undefined}
-                status="active"
-                strokeColor={{ from: "#108ee9", to: "#87d068" }}
-              />
-            )}
+            {busy &&
+              (total > 0 ? (
+                <Progress
+                  percent={Math.min(99, Math.round((downloaded / total) * 100))}
+                  status="active"
+                />
+              ) : (
+                <Progress
+                  percent={undefined}
+                  status="active"
+                  strokeColor={{ from: "#108ee9", to: "#87d068" }}
+                />
+              ))}
             {error && <Typography.Text type="danger">{error}</Typography.Text>}
           </Space>
         );
