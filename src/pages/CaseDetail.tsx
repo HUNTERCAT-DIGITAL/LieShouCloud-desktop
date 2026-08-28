@@ -53,8 +53,10 @@ import {
 import {
   addCaseEvent,
   advanceStage,
+  confirmTimeEntry,
   createExpense,
   createTimeEntry,
+  deleteTimeEntry,
   getCase,
   getExpenseSummary,
   getTimeSummary,
@@ -254,6 +256,31 @@ export default function CaseDetail() {
     }, 300);
   };
 
+  /** 确认计时(PENDING → CONFIRMED) */
+  const doConfirmTime = async (row: TimeEntry) => {
+    try {
+      await confirmTimeEntry(row.id);
+      message.success("计时已确认");
+      void loadTime();
+    } catch (e) {
+      message.error(String(e));
+    }
+  };
+
+  /** 删除计时(软删) */
+  const doDeleteTime = (row: TimeEntry) => {
+    Modal.confirm({
+      title: "删除这条计时？",
+      content: `${row.lawyer} ${row.workDate} ${row.hours}h(软删,可联系管理员恢复)`,
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        await deleteTimeEntry(row.id);
+        message.success("已删除");
+        void loadTime();
+      },
+    });
+  };
+
   const stageIdx = stageIndex(detail.stage);
   const stageMeta = CASE_STAGE_META[detail.stage];
   const statusMeta = CASE_STATUS_META[detail.status];
@@ -321,6 +348,23 @@ export default function CaseDetail() {
       key: "status",
       width: 90,
       render: (s: TimeEntry["status"]) => <StatusTag meta={TIME_ENTRY_STATUS_META[s]} />,
+    },
+    {
+      title: "操作",
+      key: "action",
+      width: 120,
+      render: (_, row) => (
+        <Space size={4}>
+          {row.status === "PENDING" && (
+            <Button size="small" type="primary" onClick={() => void doConfirmTime(row)}>
+              确认
+            </Button>
+          )}
+          <Button size="small" danger type="link" onClick={() => doDeleteTime(row)}>
+            删除
+          </Button>
+        </Space>
+      ),
     },
   ];
 

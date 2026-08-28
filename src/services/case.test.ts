@@ -12,12 +12,15 @@ import type { CaseStage } from "@lieshoucloud/contract-types/business/legal";
 import {
   addCaseEvent,
   advanceStage,
+  confirmTimeEntry,
   createCase,
   deleteCase,
+  deleteTimeEntry,
   getCase,
   listCases,
   listCaseEvents,
   updateCase,
+  updateTimeEntry,
 } from "./case";
 
 beforeEach(() => {
@@ -115,6 +118,33 @@ describe("desktop case service", () => {
 
     it("未知阶段 → null", () => {
       expect(advanceStage("UNKNOWN" as CaseStage, 100)).toBeNull();
+    });
+  });
+
+  describe("计时确认流(后端 TimeEntryController)", () => {
+    it("confirmTimeEntry → PUT /legal/time-entries/{id}/confirm", async () => {
+      mockRequest.mockResolvedValue({ id: 7, status: "CONFIRMED" });
+      await confirmTimeEntry(7);
+      expect(mockRequest).toHaveBeenCalledWith({
+        method: "PUT",
+        path: "/legal/time-entries/7/confirm",
+      });
+    });
+
+    it("updateTimeEntry → PUT /legal/time-entries/{id} + body", async () => {
+      mockRequest.mockResolvedValue({ id: 7 });
+      await updateTimeEntry(7, { lawyer: "王律师", workDate: "2026-08-01", hours: 3, rate: 800 });
+      expect(mockRequest).toHaveBeenCalledWith({
+        method: "PUT",
+        path: "/legal/time-entries/7",
+        body: { lawyer: "王律师", workDate: "2026-08-01", hours: 3, rate: 800 },
+      });
+    });
+
+    it("deleteTimeEntry → DELETE /legal/time-entries/{id}", async () => {
+      mockRequest.mockResolvedValue(undefined);
+      await deleteTimeEntry(9);
+      expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/legal/time-entries/9" });
     });
   });
 });

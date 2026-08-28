@@ -125,6 +125,21 @@ export async function createTimeEntry(caseId: number, body: TimeEntryRequest): P
   return request<TimeEntry>({ method: "POST", path: `/legal/cases/${caseId}/time-entries`, body });
 }
 
+/** 确认计时(PENDING → CONFIRMED,幂等;记录确认人/时间) */
+export async function confirmTimeEntry(id: number): Promise<TimeEntry> {
+  return request<TimeEntry>({ method: "PUT", path: `/legal/time-entries/${id}/confirm` });
+}
+
+/** 编辑计时(工时/费率/律师/日期,金额服务端重算) */
+export async function updateTimeEntry(id: number, body: TimeEntryRequest): Promise<TimeEntry> {
+  return request<TimeEntry>({ method: "PUT", path: `/legal/time-entries/${id}`, body });
+}
+
+/** 删除计时(软删) */
+export async function deleteTimeEntry(id: number): Promise<void> {
+  return request<void>({ method: "DELETE", path: `/legal/time-entries/${id}` });
+}
+
 /** 案件费用列表 */
 export async function listExpenses(caseId: number): Promise<LegalPage<Expense>> {
   return request<LegalPage<Expense>>({ method: "GET", path: `/legal/cases/${caseId}/expenses` });
