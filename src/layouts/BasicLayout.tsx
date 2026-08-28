@@ -3,11 +3,27 @@
  *
  * 简化版：admin 用 ProLayout，desktop 是独立 WebView 进程，自己写一个
  * 轻量 sidebar + topbar。注意复用 @lieshoucloud/ui 的 RoleTag / StatusTag。
+ *
+ * 菜单结构（2026-10 菜单治理，与 admin-web 对齐）：
+ *   客户专属菜单（extraRoutes.menu，可分组）→ 通用 BASE_NAV（hiddenMenus 裁剪）
+ *   → 平台管理（PLATFORM_ADMIN/TENANT_ADMIN 角色可见）→ 业务管理（hiddenMenus 裁剪）。
  */
-import { BellOutlined, CloudSyncOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  AccountBookOutlined,
+  AppstoreOutlined,
+  BellOutlined,
+  CloudSyncOutlined,
+  DashboardOutlined,
+  FileTextOutlined,
+  LineChartOutlined,
+  LogoutOutlined,
+  SwapOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { RoleTag } from "@lieshoucloud/ui";
 import { Avatar, Dropdown, Layout, Menu, Space } from "antd";
 import type { MenuProps } from "antd";
+import type { ReactNode } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import WindowControls from "../components/WindowControls";
@@ -23,7 +39,19 @@ interface NavItem {
   key: string;
   label: string;
   path: string;
+  icon?: ReactNode;
+  /** 客户菜单分组（extraRoutes.menu.group · 2026-10 菜单治理） */
+  group?: string;
 }
+
+/** 菜单图标映射（icon 字符串 key → antd 图标；缺省回退 AppstoreOutlined） */
+const ICON_MAP: Record<string, ReactNode> = {
+  dashboard: <DashboardOutlined />,
+  "account-book": <AccountBookOutlined />,
+  swap: <SwapOutlined />,
+  "file-text": <FileTextOutlined />,
+  "line-chart": <LineChartOutlined />,
+};
 
 /** 通用菜单（所有版别基础；客户层可用 hiddenMenus 裁剪） */
 const BASE_NAV: NavItem[] = [
@@ -53,6 +81,28 @@ const BUSINESS_NAV: NavItem[] = [
   { key: "/quality/list", label: "质量管理", path: "/quality/list" },
 ];
 
+/** 构建 antd Menu items：同 group 项收进分组（type: 'group'），无 group 平铺；保持传入顺序 */
+function buildMenuItems(nav: NavItem[]): NonNullable<MenuProps["items"]> {
+  const groups = new Map<string, NonNullable<MenuProps["items"]>>();
+  const top: NonNullable<MenuProps["items"]> = [];
+  for (const n of nav) {
+    const item = { key: n.path, label: n.label, icon: n.icon };
+    if (n.group) {
+      const g = groups.get(n.group) ?? [];
+      g.push(item);
+      groups.set(n.group, g);
+    } else {
+      top.push(item);
+    }
+  }
+  const grouped = [...groups.entries()].map(([label, children]) => ({
+    key: `group:${label}`,
+    label,
+    type: "group" as const,
+    children,
+  }));
+  return [...top, ...grouped];
+}
 
 export default function BasicLayout() {
   const navigate = useNavigate();
@@ -67,17 +117,34 @@ export default function BasicLayout() {
 
   const edition = getEdition();
   const homePath = getExtraEdition().homePath;
-  const visibleNav: NavItem[] = BASE_NAV.map((n) =>
-    n.key === "/welcome" && homePath
-      ? { key: homePath, label: "今日作战台", path: homePath }
-      : n,
-  ).filter((n) => !isMenuHidden(edition, n.path));
+
+  // 客户专属菜单（extraRoutes.menu · 2026-10 菜单治理，与 admin-web 对齐）：
+  // 按 order 排序；menu.group 同组收进分组；无 menu 声明的路由只挂路由不进菜单
+  const extraMenuItems: NavItem[] =
+    (getExtraEdition().extraRoutes ?? [])
+      .filter((r) => r.menu)
+      .sort((a, b) => (a.menu?.order ?? 99) - (b.menu?.order ?? 99))
+      .map((r) => ({
+        key: r.path,
+        label: r.menu?.name ?? r.path,
+        path: r.path,
+        group: r.menu?.group,
+        icon: ICON_MAP[r.menu?.icon ?? ""] ?? <AppstoreOutlined />,
+      }));
+
+  const hasClientMenu = extraMenuItems.length > 0;
+  const baseNav: NavItem[] = BASE_NAV.flatMap((n) => {
+    // 客户菜单接管工作台入口：客户版去掉 BASE_NAV 的 /welcome（避免与 extraRoutes 工作台重复）
+    if (n.key === "/welcome" && hasClientMenu) return [];
+    // 无客户菜单但声明了 homePath（旧版客户）：/welcome 项替换为 homePath
+    if (n.key === "/welcome" && homePath) {
+      return [{ ...n, key: homePath, label: "今日作战台", path: homePath }];
+    }
+    return [n];
+  }).filter((n) => !isMenuHidden(edition, n.path));
 
   const items: MenuProps["items"] = [
-    ...visibleNav.map((n) => ({
-      key: n.path,
-      label: n.label,
-    })),
+    ...buildMenuItems([...extraMenuItems, ...baseNav]),
     ...(isPlatformAdmin
       ? [
           {
@@ -100,6 +167,7 @@ export default function BasicLayout() {
         ]
       : []),
   ];
+  const allNav = [...extraMenuItems, ...baseNav];
 
   const userMenu: MenuProps["items"] = [
     {
@@ -157,7 +225,7 @@ export default function BasicLayout() {
         <Header style={styles.header}>
           <div data-tauri-drag-region style={styles.dragArea}>
             <span style={styles.title}>
-              {visibleNav.find((n) => n.path === location.pathname)?.label ?? ""}
+              {allNav.find((n) => n.path === location.pathname)?.label ?? ""}
             </span>
           </div>
           <Dropdown menu={{ items: userMenu }} placement="bottomRight">

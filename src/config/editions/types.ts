@@ -46,8 +46,14 @@ export interface DesktopEdition {
   capabilities?: string[];
   /**
    * 客户专属路由（客户聚合仓模式 · 2026-09）。由客户仓 deploy 生成注入（*.extra.ts）。
+   * menu 声明可让客户路由进侧边栏（2026-10 菜单治理，与 admin-web EditionExtraRoute 对齐）；
+   * group 可选：同 group 项收进分组（antd Menu group），缺省平铺。
    */
-  extraRoutes?: { path: string; load: () => Promise<{ default: ComponentType }> }[];
+  extraRoutes?: {
+    path: string;
+    load: () => Promise<{ default: ComponentType }>;
+    menu?: { name: string; icon?: string; order?: number; group?: string };
+  }[];
   /** 隐藏菜单路径前缀（客户级裁剪，如 '/customers' 隐藏 CRM） */
   hiddenMenus?: string[];
 }
