@@ -12,6 +12,8 @@ export interface DesktopEdition {
   id: DesktopEditionId;
   /** 品牌名（窗口标题/侧边栏等） */
   brandName: string;
+  /** 登录后首页（客户可注入专属作战台路径；缺省 /welcome） */
+  homePath?: string;
   /** 启用的行业能力（行业菜单显隐由此派生） */
   industries: IndustryId[];
   /**

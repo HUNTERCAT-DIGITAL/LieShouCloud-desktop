@@ -4,17 +4,18 @@
  * 简化版：admin 用 ProLayout，desktop 是独立 WebView 进程，自己写一个
  * 轻量 sidebar + topbar。注意复用 @lieshoucloud/ui 的 RoleTag / StatusTag。
  */
-import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { CloudSyncOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { RoleTag } from "@lieshoucloud/ui";
 import { Avatar, Dropdown, Layout, Menu, Space } from "antd";
 import type { MenuProps } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import WindowControls from "../components/WindowControls";
+import { useUpdater } from "../components/Updater";
 import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
 
-import { getEdition, isMenuHidden } from '../config/editions';
+import { getEdition, getExtraEdition, isMenuHidden } from '../config/editions';
 
 const { Header, Sider, Content } = Layout;
 
@@ -40,9 +41,15 @@ export default function BasicLayout() {
   const location = useLocation();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
+  const updater = useUpdater();
 
   const edition = getEdition();
-  const visibleNav: NavItem[] = BASE_NAV.filter((n) => !isMenuHidden(edition, n.path));
+  const homePath = getExtraEdition().homePath;
+  const visibleNav: NavItem[] = BASE_NAV.map((n) =>
+    n.key === "/welcome" && homePath
+      ? { key: homePath, label: "今日作战台", path: homePath }
+      : n,
+  ).filter((n) => !isMenuHidden(edition, n.path));
 
   const items: MenuProps["items"] = visibleNav.map((n) => ({
     key: n.path,
@@ -50,6 +57,12 @@ export default function BasicLayout() {
   }));
 
   const userMenu: MenuProps["items"] = [
+    {
+      key: "check-update",
+      icon: <CloudSyncOutlined />,
+      label: "检查更新",
+      onClick: () => void updater.checkForUpdates(),
+    },
     {
       key: "logout",
       icon: <LogoutOutlined />,
@@ -105,6 +118,7 @@ export default function BasicLayout() {
           <Outlet />
         </Content>
       </Layout>
+      {updater.renderModal()}
     </Layout>
   );
 }

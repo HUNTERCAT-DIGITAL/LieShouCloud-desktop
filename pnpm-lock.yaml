@@ -26,6 +26,12 @@ importers:
       '@tauri-apps/api':
         specifier: ~2.0.0
         version: 2.0.3
+      '@tauri-apps/plugin-process':
+        specifier: 2.3.1
+        version: 2.3.1
+      '@tauri-apps/plugin-updater':
+        specifier: 2.10.1
+        version: 2.10.1
       antd:
         specifier: 5.22.0
         version: 5.22.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -149,8 +155,8 @@ importers:
         specifier: workspace:*
         version: link:../contract-types
       zustand:
-        specifier: ^4.5.0
-        version: 4.5.7(@types/react@19.0.0)(react@19.0.0)
+        specifier: ^5.0.0
+        version: 5.0.2(@types/react@19.0.0)(react@19.0.0)(use-sync-external-store@1.6.0(react@19.0.0))
     devDependencies:
       '@types/react':
         specifier: ^19.0.0
@@ -177,10 +183,10 @@ importers:
         specifier: ^11.18.2
         version: 11.18.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react:
-        specifier: ^19.0.0
+        specifier: '>=18'
         version: 19.0.0
       react-dom:
-        specifier: ^19.0.0
+        specifier: '>=18'
         version: 19.0.0(react@19.0.0)
     devDependencies:
       '@eslint/js':
@@ -202,7 +208,7 @@ importers:
         specifier: 16.1.0
         version: 16.1.0(@testing-library/dom@10.4.1)(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@types/react':
-        specifier: ^19.0.0
+        specifier: '>=18'
         version: 19.0.0
       '@types/react-dom':
         specifier: ^19.0.0
@@ -954,6 +960,9 @@ packages:
   '@tauri-apps/api@2.0.3':
     resolution: {integrity: sha512-840qk6n8rbXBXMA5/aAgTYsg5JAubKO0nXw5wf7IzGnUuYKGbB4oFBIZtXOIWy+E0kNTDI3qhq5iqsoMJfwp8g==}
 
+  '@tauri-apps/api@2.11.1':
+    resolution: {integrity: sha512-M2FPuYND2m+wh5hfW9ZpSdxMPdEJovPBWwoHJmwUpysTYNHaOkVFN419m/K0LIgjb/7KU2vBgsUepJWugQCvAA==}
+
   '@tauri-apps/cli-darwin-arm64@2.0.4':
     resolution: {integrity: sha512-siH7rOHobb16rPbc11k64p1mxIpiRCkWmzs2qmL5IX21Gx9K5onI3Tk67Oqpf2uNupbYzItrOttaDT4NHFC7tw==}
     engines: {node: '>= 10'}
@@ -1022,6 +1031,12 @@ packages:
     resolution: {integrity: sha512-Hl9eFXz+O366+6su9PfaSzu2EJdFe1p8K8ghkWmi40dz8VmSE7vsMTaOStD0I71ckSOkh2ICDX7FQTBgjlpjWw==}
     engines: {node: '>= 10'}
     hasBin: true
+
+  '@tauri-apps/plugin-process@2.3.1':
+    resolution: {integrity: sha512-nCa4fGVaDL/B9ai03VyPOjfAHRHSBz5v6F/ObsB73r/dA3MHHhZtldaDMIc0V/pnUw9ehzr2iEG+XkSEyC0JJA==}
+
+  '@tauri-apps/plugin-updater@2.10.1':
+    resolution: {integrity: sha512-NFYMg+tWOZPJdzE/PpFj2qfqwAWwNS3kXrb1tm1gnBJ9mYzZ4WDRrwy8udzWoAnfGCHLuePNLY1WVCNHnh3eRA==}
 
   '@testing-library/dom@10.4.1':
     resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
@@ -2743,21 +2758,6 @@ packages:
   zrender@5.6.1:
     resolution: {integrity: sha512-OFXkDJKcrlx5su2XbzJvj/34Q3m6PvyCZkVPHGYpcCJ52ek4U/ymZyfuV1nKE23AyBJ51E/6Yr0mhZ7xGTO4ag==}
 
-  zustand@4.5.7:
-    resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
-    engines: {node: '>=12.7.0'}
-    peerDependencies:
-      '@types/react': '>=16.8'
-      immer: '>=9.0.6'
-      react: '>=16.8'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      immer:
-        optional: true
-      react:
-        optional: true
-
   zustand@5.0.2:
     resolution: {integrity: sha512-8qNdnJVJlHlrKXi50LDqqUNmUbuBjoKLrYQBnoChIbVph7vni+sY+YpvdjXG9YLd/Bxr6scMcR+rm5H3aSqPaw==}
     engines: {node: '>=12.20.0'}
@@ -3407,6 +3407,8 @@ snapshots:
 
   '@tauri-apps/api@2.0.3': {}
 
+  '@tauri-apps/api@2.11.1': {}
+
   '@tauri-apps/cli-darwin-arm64@2.0.4':
     optional: true
 
@@ -3449,6 +3451,14 @@ snapshots:
       '@tauri-apps/cli-win32-arm64-msvc': 2.0.4
       '@tauri-apps/cli-win32-ia32-msvc': 2.0.4
       '@tauri-apps/cli-win32-x64-msvc': 2.0.4
+
+  '@tauri-apps/plugin-process@2.3.1':
+    dependencies:
+      '@tauri-apps/api': 2.11.1
+
+  '@tauri-apps/plugin-updater@2.10.1':
+    dependencies:
+      '@tauri-apps/api': 2.11.1
 
   '@testing-library/dom@10.4.1':
     dependencies:
@@ -5269,6 +5279,7 @@ snapshots:
   use-sync-external-store@1.6.0(react@19.0.0):
     dependencies:
       react: 19.0.0
+    optional: true
 
   vite-node@3.0.5(@types/node@22.9.4):
     dependencies:
@@ -5519,13 +5530,6 @@ snapshots:
   zrender@5.6.1:
     dependencies:
       tslib: 2.3.0
-
-  zustand@4.5.7(@types/react@19.0.0)(react@19.0.0):
-    dependencies:
-      use-sync-external-store: 1.6.0(react@19.0.0)
-    optionalDependencies:
-      '@types/react': 19.0.0
-      react: 19.0.0
 
   zustand@5.0.2(@types/react@19.0.0)(react@19.0.0)(use-sync-external-store@1.6.0(react@19.0.0)):
     optionalDependencies:

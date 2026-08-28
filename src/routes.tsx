@@ -35,6 +35,9 @@ function ExtraRoute({ route }: { route: { path: string; load: () => Promise<{ de
 
 const EXTRA_ROUTES = getExtraEdition().extraRoutes ?? [];
 
+/** 客户定制首页（今日作战台等；缺省 /welcome 通用工作台） */
+const homePath = getExtraEdition().homePath;
+
 /**
  * 受保护布局：认证状态由端内 auth store 读取，注入共享 AuthGuard（L1-1 · 受控版）.
  */
@@ -52,7 +55,7 @@ export const routes = (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route element={<ProtectedLayout />}>
-        <Route path="/welcome" element={<Welcome />} />
+        <Route path="/welcome" element={homePath ? <Navigate to={homePath} replace /> : <Welcome />} />
         <Route path="/cases" element={<Cases />} />
         <Route path="/cases/:id" element={<CaseDetail />} />
         <Route path="/customers" element={<Customers />} />

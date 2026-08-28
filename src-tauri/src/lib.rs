@@ -28,6 +28,10 @@ fn fetch_health() -> HealthResponse {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        // 在线升级插件（Windows nsis · 升级清单见 tauri.conf.json plugins.updater.endpoints）
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        // 升级完成后 relaunch 重启
+        .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![fetch_health])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
