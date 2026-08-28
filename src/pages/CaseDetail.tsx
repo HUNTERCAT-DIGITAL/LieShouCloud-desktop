@@ -4,15 +4,20 @@
  * 八阶段进度（CASE_STAGE_FLOW）+ 阶段进度 + 时间线（CaseEvent）+ 基本信息。
  * 只前进不越级：当前 stage 由后端权威，前端按 stageIndex 渲染 Steps。
  */
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
 import { EmptyState, StatusTag } from "@lieshoucloud/ui";
 import {
+  App,
   Button,
   Card,
   Col,
   Descriptions,
+  Form,
+  Input,
+  Modal,
   Progress,
   Row,
+  Select,
   Skeleton,
   Space,
   Steps,
@@ -34,16 +39,19 @@ import {
   type CaseEvent,
   type LegalCase,
 } from "@lieshoucloud/contract-types/business/legal";
-import { getCase, listCaseEvents } from "../services/case";
+import { addCaseEvent, getCase, listCaseEvents } from "../services/case";
 
 const { Text, Title } = Typography;
 
 export default function CaseDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const [loading, setLoading] = useState(true);
   const [detail, setDetail] = useState<LegalCase | null>(null);
   const [events, setEvents] = useState<CaseEvent[]>([]);
+  const [eventOpen, setEventOpen] = useState(false);
+  const [eventForm] = Form.useForm();
 
   useEffect(() => {
     if (!id) return;
@@ -70,6 +78,31 @@ export default function CaseDetail() {
 
   if (loading) return <Skeleton active paragraph={{ rows: 8 }} style={{ padding: 16 }} />;
   if (!detail) return <EmptyState description="案件不存在或无权查看" />;
+
+  const loadEvents = async () => {
+    try {
+      setEvents(await listCaseEvents(Number(id)));
+    } catch {
+      setEvents([]);
+    }
+  };
+
+  const submitEvent = async (v: { eventType: string; occurredAt: string; title: string; detail?: string }) => {
+    try {
+      await addCaseEvent(Number(id), {
+        eventType: v.eventType as CaseEvent["eventType"],
+        occurredAt: v.occurredAt,
+        title: v.title,
+        detail: v.detail || undefined,
+      });
+      message.success("时间线已更新");
+      setEventOpen(false);
+      eventForm.resetFields();
+      void loadEvents();
+    } catch (e) {
+      message.error(String(e));
+    }
+  };
 
   const stageIdx = stageIndex(detail.stage);
   const stageMeta = CASE_STAGE_META[detail.stage];
@@ -161,7 +194,15 @@ export default function CaseDetail() {
           </Card>
         </Col>
         <Col span={10}>
-          <Card title="办案时间线" style={{ marginBottom: 12 }}>
+          <Card
+            title="办案时间线"
+            style={{ marginBottom: 12 }}
+            extra={
+              <Button size="small" type="primary" icon={<PlusOutlined />} onClick={() => setEventOpen(true)}>
+                新增事件
+              </Button>
+            }
+          >
             {events.length === 0 ? (
               <EmptyState description="暂无办案记录" />
             ) : (
@@ -193,6 +234,31 @@ export default function CaseDetail() {
               />
             )}
           </Card>
+          <Modal
+            title="新增办案事件"
+            open={eventOpen}
+            onCancel={() => setEventOpen(false)}
+            onOk={() => eventForm.submit()}
+            destroyOnClose
+            width={460}
+          >
+            <Form form={eventForm} layout="vertical" onFinish={submitEvent} requiredMark={false}>
+              <Form.Item label="事件类型" name="eventType" rules={[{ required: true }]}>
+                <Select
+                  options={Object.entries(EVENT_TYPE_META).map(([v, m]) => ({ value: v, label: m.text }))}
+                />
+              </Form.Item>
+              <Form.Item label="发生时间" name="occurredAt" rules={[{ required: true }]}>
+                <Input placeholder="YYYY-MM-DD 或 YYYY-MM-DD HH:mm" />
+              </Form.Item>
+              <Form.Item label="标题" name="title" rules={[{ required: true }]}>
+                <Input placeholder="如:第一次开庭" />
+              </Form.Item>
+              <Form.Item label="详情" name="detail">
+                <Input.TextArea rows={3} placeholder="事件描述(可选)" />
+              </Form.Item>
+            </Form>
+          </Modal>
         </Col>
       </Row>
     </div>
