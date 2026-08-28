@@ -58,6 +58,7 @@ import {
   createDocument,
   createExpense,
   createTimeEntry,
+  deleteCaseEvent,
   deleteDocument,
   deleteExpense,
   deleteTimeEntry,
@@ -69,6 +70,7 @@ import {
   listExpenses,
   listTimeEntries,
   updateCase,
+  updateCaseEvent,
   updateDocument,
   updateExpense,
   updateTimeEntry,
@@ -91,6 +93,7 @@ export default function CaseDetail() {
   const [documents, setDocuments] = useState<LegalDocument[]>([]);
   const [docDetail, setDocDetail] = useState<LegalDocument | null>(null);
   const [eventOpen, setEventOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<CaseEvent | null>(null);
   const [timeOpen, setTimeOpen] = useState(false);
   const [expenseOpen, setExpenseOpen] = useState(false);
   const [docOpen, setDocOpen] = useState(false);
@@ -224,19 +227,63 @@ export default function CaseDetail() {
 
   const submitEvent = async (v: { eventType: string; occurredAt: string; title: string; detail?: string }) => {
     try {
-      await addCaseEvent(cid, {
-        eventType: v.eventType as CaseEvent["eventType"],
-        occurredAt: v.occurredAt,
-        title: v.title,
-        detail: v.detail || undefined,
-      });
-      message.success("时间线已更新");
+      if (editingEvent) {
+        await updateCaseEvent(cid, editingEvent.id, {
+          eventType: v.eventType as CaseEvent["eventType"],
+          occurredAt: v.occurredAt,
+          title: v.title,
+          detail: v.detail || undefined,
+        });
+        message.success("事件已更新");
+      } else {
+        await addCaseEvent(cid, {
+          eventType: v.eventType as CaseEvent["eventType"],
+          occurredAt: v.occurredAt,
+          title: v.title,
+          detail: v.detail || undefined,
+        });
+        message.success("时间线已更新");
+      }
       setEventOpen(false);
+      setEditingEvent(null);
       eventForm.resetFields();
       void loadEvents();
     } catch (e) {
       message.error(String(e));
     }
+  };
+
+  /** 打开新增事件 */
+  const openCreateEvent = () => {
+    setEditingEvent(null);
+    eventForm.resetFields();
+    setEventOpen(true);
+  };
+
+  /** 打开编辑事件(预填) */
+  const openEditEvent = (row: CaseEvent) => {
+    setEditingEvent(row);
+    eventForm.setFieldsValue({
+      eventType: row.eventType,
+      occurredAt: row.occurredAt,
+      title: row.title,
+      detail: row.detail ?? undefined,
+    });
+    setEventOpen(true);
+  };
+
+  /** 删除事件(软删) */
+  const doDeleteEvent = (row: CaseEvent) => {
+    Modal.confirm({
+      title: "删除这条事件？",
+      content: `${EVENT_TYPE_META[row.eventType]?.text ?? row.eventType} ${row.title}(软删,可联系管理员恢复)`,
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        await deleteCaseEvent(cid, row.id);
+        message.success("已删除");
+        void loadEvents();
+      },
+    });
   };
 
   const submitTime = async (v: TimeEntryRequest) => {
@@ -675,7 +722,7 @@ export default function CaseDetail() {
                   <Card
                     title="办案时间线"
                     extra={
-                      <Button size="small" type="primary" icon={<PlusOutlined />} onClick={() => setEventOpen(true)}>
+                      <Button size="small" type="primary" icon={<PlusOutlined />} onClick={openCreateEvent}>
                         新增事件
                       </Button>
                     }
@@ -693,6 +740,12 @@ export default function CaseDetail() {
                                 <Space size={6}>
                                   {meta && <Tag color={meta.color}>{meta.text}</Tag>}
                                   <Text strong>{ev.title}</Text>
+                                  <Button size="small" type="link" onClick={() => openEditEvent(ev)}>
+                                    编辑
+                                  </Button>
+                                  <Button size="small" danger type="link" onClick={() => doDeleteEvent(ev)}>
+                                    删除
+                                  </Button>
                                 </Space>
                                 {ev.detail && (
                                   <div>
@@ -825,7 +878,18 @@ export default function CaseDetail() {
       />
 
       {/* 新增事件 */}
-      <Modal title="新增办案事件" open={eventOpen} onCancel={() => setEventOpen(false)} onOk={() => eventForm.submit()} destroyOnClose width={460}>
+      {/* 新增/编辑事件 */}
+      <Modal
+        title={editingEvent ? "编辑事件" : "新增事件"}
+        open={eventOpen}
+        onCancel={() => {
+          setEventOpen(false);
+          setEditingEvent(null);
+        }}
+        onOk={() => eventForm.submit()}
+        destroyOnClose
+        width={460}
+      >
         <Form form={eventForm} layout="vertical" onFinish={submitEvent} requiredMark={false}>
           <Form.Item label="事件类型" name="eventType" rules={[{ required: true }]}>
             <Select options={Object.entries(EVENT_TYPE_META).map(([v, m]) => ({ value: v, label: m.text }))} />

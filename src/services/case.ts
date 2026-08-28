@@ -107,6 +107,16 @@ export async function addCaseEvent(caseId: number, body: CaseEventRequest): Prom
   return request<CaseEvent>({ method: "POST", path: `/legal/cases/${caseId}/events`, body });
 }
 
+/** 编辑事件(类型/时间/标题/详情) */
+export async function updateCaseEvent(caseId: number, eventId: number, body: CaseEventRequest): Promise<CaseEvent> {
+  return request<CaseEvent>({ method: "PUT", path: `/legal/cases/${caseId}/events/${eventId}`, body });
+}
+
+/** 删除事件(软删) */
+export async function deleteCaseEvent(caseId: number, eventId: number): Promise<void> {
+  return request<void>({ method: "DELETE", path: `/legal/cases/${caseId}/events/${eventId}` });
+}
+
 // ============================================================
 // 律所特色:计时 / 费用 / 文书
 // ============================================================

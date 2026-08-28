@@ -16,6 +16,7 @@ import {
   createCase,
   createDocument,
   deleteCase,
+  deleteCaseEvent,
   deleteDocument,
   deleteExpense,
   deleteTimeEntry,
@@ -23,6 +24,7 @@ import {
   listCases,
   listCaseEvents,
   updateCase,
+  updateCaseEvent,
   updateDocument,
   updateExpense,
   updateTimeEntry,
@@ -196,6 +198,24 @@ describe("desktop case service", () => {
       mockRequest.mockResolvedValue(undefined);
       await deleteDocument(8);
       expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/legal/documents/8" });
+    });
+  });
+
+  describe("事件编辑/删除(后端新增 PUT/DELETE events)", () => {
+    it("updateCaseEvent → PUT /legal/cases/{caseId}/events/{eventId} + body", async () => {
+      mockRequest.mockResolvedValue({ id: 4 });
+      await updateCaseEvent(1, 4, { eventType: "HEARING", title: "第一次开庭(改期)", occurredAt: "2026-08-30" });
+      expect(mockRequest).toHaveBeenCalledWith({
+        method: "PUT",
+        path: "/legal/cases/1/events/4",
+        body: { eventType: "HEARING", title: "第一次开庭(改期)", occurredAt: "2026-08-30" },
+      });
+    });
+
+    it("deleteCaseEvent → DELETE /legal/cases/{caseId}/events/{eventId}", async () => {
+      mockRequest.mockResolvedValue(undefined);
+      await deleteCaseEvent(1, 6);
+      expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/legal/cases/1/events/6" });
     });
   });
 });
