@@ -1,0 +1,9 @@
+dist
+node_modules
+node_modules.bak
+open
+src-tauri/target
+public
+playwright-report
+test-results
+pnpm-lock.yaml

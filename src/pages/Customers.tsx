@@ -61,7 +61,6 @@ export default function Customers() {
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
   const openCreate = () => {

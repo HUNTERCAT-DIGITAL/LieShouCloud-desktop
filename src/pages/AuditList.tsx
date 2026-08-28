@@ -38,7 +38,6 @@ export default function AuditList() {
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, resourceType]);
 
   const columns: ColumnsType<AuditLog> = [

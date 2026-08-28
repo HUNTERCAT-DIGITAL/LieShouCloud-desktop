@@ -114,7 +114,7 @@ export default function Cases() {
 
   useEffect(() => {
     void load(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [stage, status, priority]);
 
   const openCreate = () => {

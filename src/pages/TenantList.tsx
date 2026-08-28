@@ -14,7 +14,7 @@ import { createTenant, deleteTenant, listTenants, updateTenant } from "../servic
 
 interface TenantFormValues {
   name: string;
-  code?: string;
+  code: string;
   status: TenantStatus;
 }
 
@@ -39,7 +39,6 @@ export default function TenantList() {
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const openCreate = () => {
@@ -60,7 +59,7 @@ export default function TenantList() {
       if (editing) {
         await updateTenant(editing.id, { name: v.name, status: v.status });
       } else {
-        await createTenant({ name: v.name, code: v.code! });
+        await createTenant({ name: v.name, code: v.code });
       }
       message.success(editing ? "已保存" : "已开通");
       setOpen(false);

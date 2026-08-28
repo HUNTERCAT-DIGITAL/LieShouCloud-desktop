@@ -47,7 +47,6 @@ export default function Inventory() {
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onCreate = async (values: { name: string; code?: string; unit?: string; price?: number; remark?: string }) => {

@@ -59,6 +59,8 @@ if (typeof window !== "undefined" && "__TAURI_INTERNALS__" in window) {
     .catch(() => undefined);
 }
 
+// Vite 标准入口：root 由 index.html 保证存在
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ConfigProvider
