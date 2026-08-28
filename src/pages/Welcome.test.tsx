@@ -30,6 +30,19 @@ vi.mock("../services/notification", () => ({
   listNotifications: mocks.listNotifications,
 }));
 vi.mock("../services/contract", () => ({ listContracts: mocks.listContracts }));
+// legalmind 客户版注入物(legalmind.extra.ts)由客户仓 deploy 生成,开源本仓不存在。
+// 测试显式 mock 出版别裁剪行为,保留对“客户注入裁剪”场景的覆盖。
+vi.mock("../config/editions", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../config/editions")>();
+  return {
+    ...actual,
+    getEdition: () => ({
+      ...actual.EDITIONS.generic,
+      industries: ["legal"],
+      hiddenMenus: ["/customers", "/lead", "/inventory", "/finance"],
+    }),
+  };
+});
 
 function renderWelcome() {
   return render(
