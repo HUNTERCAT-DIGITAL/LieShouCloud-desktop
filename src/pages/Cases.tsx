@@ -8,7 +8,7 @@ import { EmptyState, StatusTag } from "@lieshoucloud/ui";
 import { App, Button, Card, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
   CASE_PRIORITY_META,
@@ -61,13 +61,21 @@ interface CaseFormValues {
 export default function Cases() {
   const navigate = useNavigate();
   const { message } = App.useApp();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<LegalCase[]>([]);
   const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState("");
-  const [stage, setStage] = useState<CaseStage | undefined>(undefined);
-  const [status, setStatus] = useState<CaseStatus | undefined>(undefined);
-  const [priority, setPriority] = useState<CasePriority | undefined>(undefined);
+  // 支持 URL query 直达筛选(?stage=&status=&priority=,客户包作战台统计卡跳转)
+  const [stage, setStage] = useState<CaseStage | undefined>(
+    (searchParams.get("stage") as CaseStage) || undefined,
+  );
+  const [status, setStatus] = useState<CaseStatus | undefined>(
+    (searchParams.get("status") as CaseStatus) || undefined,
+  );
+  const [priority, setPriority] = useState<CasePriority | undefined>(
+    (searchParams.get("priority") as CasePriority) || undefined,
+  );
   const [editing, setEditing] = useState<LegalCase | null>(null);
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm<CaseFormValues>();
