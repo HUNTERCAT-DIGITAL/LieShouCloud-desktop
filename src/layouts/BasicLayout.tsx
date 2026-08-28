@@ -11,7 +11,7 @@ import type { MenuProps } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import WindowControls from "../components/WindowControls";
-import { useUpdater } from "../components/Updater";
+import { useUpdaterContext } from "../components/Updater";
 import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
 
@@ -41,7 +41,7 @@ export default function BasicLayout() {
   const location = useLocation();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
-  const updater = useUpdater();
+  const updater = useUpdaterContext();
 
   const edition = getEdition();
   const homePath = getExtraEdition().homePath;
@@ -118,7 +118,6 @@ export default function BasicLayout() {
           <Outlet />
         </Content>
       </Layout>
-      {updater.renderModal()}
     </Layout>
   );
 }

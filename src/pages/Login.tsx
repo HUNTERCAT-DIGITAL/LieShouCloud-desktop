@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 import WindowControls from "../components/WindowControls";
+import { useUpdaterContext } from "../components/Updater";
 import { getBranding, getEdition } from "../config/editions";
 import { isApiError } from "../services/auth";
 import { useAuthStore } from "../stores/auth";
@@ -35,6 +36,7 @@ export default function Login() {
 
   const branding = getBranding();
   const tenantCode = branding.defaultTenant || DEFAULT_TENANT_CODE;
+  const updater = useUpdaterContext();
 
   // 运行时版本（Tauri 环境可取；浏览器 dev 环境静默跳过）
   useEffect(() => {
@@ -110,6 +112,14 @@ export default function Login() {
       <div style={styles.footer}>
         {branding.footerText}
         {appVersion ? ` · v${appVersion}` : ""}
+        <Button
+          type="link"
+          size="small"
+          style={styles.checkUpdate}
+          onClick={() => void updater.checkForUpdates()}
+        >
+          检查更新
+        </Button>
       </div>
     </div>
   );
@@ -166,5 +176,11 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: 16,
     fontSize: 12,
     color: "rgba(255,255,255,0.6)",
+  },
+  checkUpdate: {
+    padding: 0,
+    marginLeft: 8,
+    fontSize: 12,
+    color: "rgba(255,255,255,0.85)",
   },
 };

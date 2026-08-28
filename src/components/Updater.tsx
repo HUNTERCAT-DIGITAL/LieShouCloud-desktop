@@ -13,7 +13,7 @@
  *
  * @note dev / debug 构建下 updater 默认禁用，check() 会抛错，对话框走 error 态兜底。
  */
-import { useRef, useState } from "react";
+import { createContext, useContext, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Button, Modal, Progress, Space, Spin, Typography, message } from "antd";
 import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
@@ -25,8 +25,12 @@ import { relaunch } from "@tauri-apps/plugin-process";
 type UpdatePhase = "checking" | "found" | "latest" | "error";
 
 export interface UpdaterApi {
-  /** 触发检查（BasicLayout 用户菜单调用） */
-  checkForUpdates: () => Promise<void>;
+  /**
+   * 触发检查。
+   * silent=true（启动自动检查）：仅在有更新时弹窗，无更新/失败静默不打扰；
+   * 默认 false（用户手动触发）：完整对话框（检查中 → 结果）。
+   */
+  checkForUpdates: (silent?: boolean) => Promise<void>;
   /** Modal + 进度 UI（渲染到布局根部） */
   renderModal: () => ReactNode;
 }
@@ -41,16 +45,21 @@ export function useUpdater(): UpdaterApi {
   /** 已检查到的更新实例（startDownload 直接复用，避免二次检查） */
   const updateRef = useRef<Update | null>(null);
 
-  const checkForUpdates = async (): Promise<void> => {
+  const checkForUpdates = async (silent = false): Promise<void> => {
     updateRef.current = null;
     setError(null);
     setCurrent("—");
     setNext(null);
-    setPhase("checking");
-    setOpen(true);
+    if (!silent) {
+      // 手动触发：先弹「检查中」对话框
+      setPhase("checking");
+      setOpen(true);
+    }
     try {
       const update = await check();
       if (!update) {
+        // 无更新：静默模式直接返回，不打扰用户
+        if (silent) return;
         setPhase("latest");
         return;
       }
@@ -64,8 +73,11 @@ export function useUpdater(): UpdaterApi {
       setCurrent(ver);
       setNext(update.version);
       setPhase("found");
+      setOpen(true); // 有更新必须弹（静默模式也一样）
     } catch (e) {
       console.warn("[updater] check 不可用（dev 构建或升级服务未就绪）", e);
+      // 静默模式：失败不打扰
+      if (silent) return;
       setError("检查更新失败：当前环境暂不支持在线更新（开发构建或升级服务未就绪），请确认网络后重试");
       setPhase("error");
     }
@@ -192,4 +204,30 @@ export function useUpdater(): UpdaterApi {
   };
 
   return { checkForUpdates, renderModal };
+}
+
+// ============================================================
+// 全局 UpdaterProvider：登录页 / 主布局 / 启动自动检查共用同一实例
+// ============================================================
+
+const UpdaterContext = createContext<UpdaterApi | null>(null);
+
+/** 全局挂载：渲染升级 Modal，并向整棵树提供 checkForUpdates */
+export function UpdaterProvider({ children }: { children: ReactNode }) {
+  const updater = useUpdater();
+  return (
+    <UpdaterContext.Provider value={updater}>
+      {children}
+      {updater.renderModal()}
+    </UpdaterContext.Provider>
+  );
+}
+
+/** 任意页面/组件取检查更新能力（须在 <UpdaterProvider> 内） */
+export function useUpdaterContext(): UpdaterApi {
+  const ctx = useContext(UpdaterContext);
+  if (!ctx) {
+    throw new Error("useUpdaterContext 必须在 <UpdaterProvider> 内使用");
+  }
+  return ctx;
 }
