@@ -3,10 +3,10 @@
  *
  * 复用 ui 包 EmptyState；轻量 antd Form。失败展示后端 message。
  */
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { LinkOutlined, LockOutlined, MailOutlined, SafetyOutlined, UserOutlined } from "@ant-design/icons";
 import { getVersion } from "@tauri-apps/api/app";
 import { DEFAULT_TENANT_CODE } from "@lieshoucloud/contract-config";
-import { Alert, Button, Card, Descriptions, Form, Input, Modal, Space, Typography } from "antd";
+import { Alert, Button, Card, Descriptions, Form, Input, Modal, Select, Space, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
@@ -14,7 +14,8 @@ import WindowControls from "../components/WindowControls";
 import { useUpdaterContext } from "../components/Updater";
 import { getBranding, getEdition } from "../config/editions";
 import { API_BASE } from "../services/api";
-import { isApiError } from "../services/auth";
+import { isApiError, register, sendCode } from "../services/auth";
+import type { CodeChannel } from "../services/auth";
 import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
 
@@ -35,6 +36,7 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [appVersion, setAppVersion] = useState<string>("");
   const [debugOpen, setDebugOpen] = useState(false);
+  const [registerOpen, setRegisterOpen] = useState(false);
 
   const branding = getBranding();
   const tenantCode = branding.defaultTenant || DEFAULT_TENANT_CODE;
@@ -108,6 +110,11 @@ export default function Login() {
               </Button>
             </Form.Item>
           </Form>
+          <div style={{ textAlign: "center" }}>
+            <Button type="link" size="small" onClick={() => setRegisterOpen(true)}>
+              注册账号
+            </Button>
+          </div>
         </Space>
       </Card>
       <div style={styles.footer}>
@@ -126,6 +133,11 @@ export default function Login() {
           调试
         </Button>
       </div>
+      <RegisterModal
+        open={registerOpen}
+        onClose={() => setRegisterOpen(false)}
+        defaultTenant={tenantCode}
+      />
       <Modal
         title="开发者调试信息"
         open={debugOpen}
@@ -151,6 +163,152 @@ export default function Login() {
         </Typography.Paragraph>
       </Modal>
     </div>
+  );
+}
+
+interface RegisterFormValues {
+  inviteCode?: string;
+  username: string;
+  displayName: string;
+  password: string;
+  channel: CodeChannel;
+  target: string;
+  code: string;
+}
+
+/** 注册账号 Modal（验证码注册,注册即登录 · ADR-0023） */
+function RegisterModal({
+  open,
+  onClose,
+  defaultTenant,
+}: {
+  open: boolean;
+  onClose: () => void;
+  defaultTenant: string;
+}) {
+  const [form] = Form.useForm<RegisterFormValues>();
+  const [submitting, setSubmitting] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const send = async () => {
+    const channel = form.getFieldValue("channel") as CodeChannel;
+    const target = form.getFieldValue("target") as string;
+    if (!target) {
+      setErr("请先输入手机号/邮箱");
+      return;
+    }
+    try {
+      await sendCode(channel, target, "REGISTER");
+      setErr("验证码已发送（dev 日志查看）");
+    } catch {
+      setErr("发送失败（60 秒内请勿重复）");
+    }
+  };
+
+  const submit = async (values: RegisterFormValues) => {
+    setSubmitting(true);
+    setErr(null);
+    try {
+      const token = await register({
+        tenantCode: defaultTenant,
+        username: values.username,
+        displayName: values.displayName,
+        password: values.password,
+        channel: values.channel,
+        target: values.target,
+        code: values.code,
+        inviteCode: values.inviteCode || undefined,
+      });
+      useAuthStore.getState().setSession(token);
+      onClose();
+    } catch (e) {
+      setErr(isApiError(e) ? e.message : `注册失败: ${String(e)}`);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Modal title="注册账号" open={open} onCancel={onClose} footer={null} destroyOnClose width={440}>
+      <Form<RegisterFormValues>
+        form={form}
+        layout="vertical"
+        onFinish={submit}
+        requiredMark={false}
+        initialValues={{ channel: "SMS" }}
+        style={{ marginTop: 16 }}
+      >
+        <Form.Item label="租户编码" tooltip="加入哪个企业;有邀请码时后端忽略">
+          <Input value={defaultTenant} disabled />
+        </Form.Item>
+        <Form.Item
+          label="邀请码（可选）"
+          name="inviteCode"
+          tooltip="租户管理员发的邀请码;填写后自动加入该租户并分配角色"
+        >
+          <Input prefix={<LinkOutlined />} placeholder="如:AB12CD34" />
+        </Form.Item>
+        <Form.Item
+          label="用户名"
+          name="username"
+          rules={[
+            { required: true, message: "请输入用户名" },
+            { pattern: /^[a-zA-Z0-9_]{3,64}$/, message: "3-64 位字母/数字/下划线" },
+          ]}
+        >
+          <Input prefix={<UserOutlined />} placeholder="登录名" />
+        </Form.Item>
+        <Form.Item
+          label="显示名"
+          name="displayName"
+          rules={[{ required: true, message: "请输入显示名" }]}
+        >
+          <Input placeholder="如:李四" />
+        </Form.Item>
+        <Form.Item
+          label="密码"
+          name="password"
+          rules={[
+            { required: true, message: "请输入密码" },
+            { min: 6, message: "至少 6 位" },
+          ]}
+        >
+          <Input.Password prefix={<LockOutlined />} placeholder="至少 6 位" />
+        </Form.Item>
+        <Form.Item label="验证方式" name="channel">
+          <Select
+            options={[
+              { label: "手机号", value: "SMS" },
+              { label: "邮箱", value: "EMAIL" },
+            ]}
+          />
+        </Form.Item>
+        <Form.Item
+          label="手机号 / 邮箱"
+          name="target"
+          rules={[{ required: true, message: "请输入手机号或邮箱" }]}
+        >
+          <Input prefix={<MailOutlined />} placeholder="13800000000 / user@example.com" />
+        </Form.Item>
+        <Form.Item label="验证码" name="code" rules={[{ required: true, message: "请输入验证码" }]}>
+          <Space.Compact style={{ width: "100%" }}>
+            <Input prefix={<SafetyOutlined />} placeholder="6 位验证码" />
+            <Button onClick={send}>获取验证码</Button>
+          </Space.Compact>
+        </Form.Item>
+        {err && (
+          <Alert
+            type={err.includes("已发送") ? "success" : "error"}
+            message={err}
+            showIcon
+            style={{ marginBottom: 12 }}
+          />
+        )}
+        <Button type="primary" htmlType="submit" loading={submitting} block>
+          注册并登录
+        </Button>
+      </Form>
+    </Modal>
   );
 }
 
