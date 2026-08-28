@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2.0.0",
   "productName": "LieShou Cloud Desktop",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "identifier": "cn.huntercat.lieshoucloudpro.desktop",
   "build": {
     "beforeDevCommand": "pnpm dev",

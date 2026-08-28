@@ -23,6 +23,7 @@ import { countCustomers } from "../services/customer";
 import { listApprovals, getApprovalCounts } from "../services/approval";
 import { listNotifications, unreadNotificationCount } from "../services/notification";
 import { listContracts } from "../services/contract";
+import { getEdition, isMenuHidden } from "../config/editions";
 import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
 import type { ApprovalRequest } from "../services/approval";
@@ -86,6 +87,10 @@ export default function Welcome() {
     { key: "/notification", label: "通知中心", icon: <BellOutlined />, color: "#faad14" },
   ];
 
+  // 快捷入口按版别裁剪(hiddenMenus)
+  const edition = getEdition();
+  const visibleLinks = quickLinks.filter((l) => !isMenuHidden(edition, l.key));
+
   return (
     <div style={{ padding: 0 }}>
       <h2 style={{ marginTop: 0 }}>欢迎回来，{user?.username ?? "用户"}</h2>
@@ -106,7 +111,7 @@ export default function Welcome() {
       {/* 快捷入口 */}
       <Card title="快捷入口" style={{ marginTop: 16 }}>
         <Row gutter={[12, 12]}>
-          {quickLinks.map((l) => (
+          {visibleLinks.map((l) => (
             <Col span={6} key={l.key}>
               <Card
                 hoverable

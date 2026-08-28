@@ -68,6 +68,16 @@ describe("desktop role service", () => {
     });
   });
 
+  it("updateRole → PUT /roles/{id}", async () => {
+    mockRequest.mockResolvedValue({ id: 1 });
+    await updateRole(1, { name: "高级专员" });
+    expect(mockRequest).toHaveBeenCalledWith({
+      method: "PUT",
+      path: "/roles/1",
+      body: { name: "高级专员" },
+    });
+  });
+
   it("deleteRole → DELETE /roles/{id}", async () => {
     mockRequest.mockResolvedValue(undefined);
     await deleteRole(3);
@@ -100,6 +110,11 @@ describe("desktop tenant service", () => {
       path: "/tenants/1",
       body: { status: "DISABLED" },
     });
+  });
+  it("deleteTenant → DELETE /tenants/{id}", async () => {
+    mockRequest.mockResolvedValue(undefined);
+    await deleteTenant(2);
+    expect(mockRequest).toHaveBeenCalledWith({ method: "DELETE", path: "/tenants/2" });
   });
 });
 

@@ -87,11 +87,18 @@ export default function BasicLayout() {
           },
         ]
       : []),
-    {
-      key: "business",
-      label: "业务管理",
-      children: BUSINESS_NAV.map((n) => ({ key: n.path, label: n.label })),
-    },
+    ...(BUSINESS_NAV.filter((n) => !isMenuHidden(edition, n.path)).length > 0
+      ? [
+          {
+            key: "business",
+            label: "业务管理",
+            children: BUSINESS_NAV.filter((n) => !isMenuHidden(edition, n.path)).map((n) => ({
+              key: n.path,
+              label: n.label,
+            })),
+          },
+        ]
+      : []),
   ];
 
   const userMenu: MenuProps["items"] = [

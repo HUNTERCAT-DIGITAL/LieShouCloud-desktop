@@ -4,7 +4,7 @@ import path from "node:path";
 
 export default defineConfig({
   test: {
-    exclude: ["open/**", "node_modules/**"],
+    exclude: ["open/**", "node_modules/**", "e2e/**"],
   },
   plugins: [react()],
   resolve: {
@@ -38,6 +38,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     passWithNoTests: true,
+    exclude: ["open/**", "node_modules/**", "e2e/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov"],
