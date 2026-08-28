@@ -59,7 +59,7 @@ describe('行业能力装配（industry 包机制 · 客户仓注入）', () => 
 describe('品牌配置（mergeBranding · 2026-09 可配置化）', () => {
   it('中性版（generic）回落中性默认值', () => {
     const b = mergeBranding(EDITIONS.generic);
-    expect(b.logo).toBe('/brand-logo.png');
+    expect(b.logo).toBe('/logo-default.svg'); // 2026-10 品牌产物 gitignore：generic 用内置 SVG
     expect(b.slogan).toBeTruthy();
     expect(b.footerText).toBeTruthy();
     expect(b.windowTitle).toBeTruthy();
@@ -75,7 +75,7 @@ describe('品牌配置（mergeBranding · 2026-09 可配置化）', () => {
     const b = mergeBranding(custom);
     expect(b.slogan).toBe('精密制造 · 数字化车间');
     expect(b.defaultTenant).toBe('jmzz');
-    expect(b.logo).toBe('/brand-logo.png');
+    expect(b.logo).toBe('/logo-default.svg'); // 未覆盖字段回落内置 SVG
     expect(b.colorPrimary).toBe('#02429B');
   });
 
