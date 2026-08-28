@@ -1,6 +1,6 @@
 {
   "name": "@lieshoucloud/desktop-app",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "private": true,
   "type": "module",
   "scripts": {
@@ -23,6 +23,7 @@
     "@lieshoucloud/ui": "workspace:*",
     "@tauri-apps/api": "~2.0.0",
     "@tauri-apps/plugin-process": "2.3.1",
+    "@tauri-apps/plugin-shell": "2.3.1",
     "@tauri-apps/plugin-updater": "2.10.1",
     "antd": "5.22.0",
     "dayjs": "~1.11.13",

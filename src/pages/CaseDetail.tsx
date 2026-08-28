@@ -79,6 +79,7 @@ export default function CaseDetail() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [expenseSummary, setExpenseSummary] = useState({ amount: 0, count: 0 });
   const [documents, setDocuments] = useState<LegalDocument[]>([]);
+  const [docDetail, setDocDetail] = useState<LegalDocument | null>(null);
   const [eventOpen, setEventOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
   const [expenseOpen, setExpenseOpen] = useState(false);
@@ -277,6 +278,20 @@ export default function CaseDetail() {
     { title: "标题", dataIndex: "title", key: "title", ellipsis: true },
     { title: "日期", dataIndex: "docDate", key: "docDate", width: 110, render: (v?: string) => v ?? "—" },
   ];
+
+  /** 打开附件/外链(tauri shell.open;web 回退 window.open) */
+  const openAttachment = async (url: string) => {
+    if (typeof window !== "undefined" && "__TAURI_INTERNALS__" in window) {
+      try {
+        const { open } = await import("@tauri-apps/plugin-shell");
+        await open(url);
+        return;
+      } catch {
+        // fallthrough
+      }
+    }
+    window.open(url, "_blank");
+  };
 
   return (
     <div style={{ padding: 16 }}>
@@ -584,6 +599,52 @@ export default function CaseDetail() {
             </Form.Item>
           </Space>
         </Form>
+      </Modal>
+
+      {/* 文书详情 */}
+      <Modal
+        title={docDetail ? `文书 · ${docDetail.title}` : "文书"}
+        open={!!docDetail}
+        onCancel={() => setDocDetail(null)}
+        footer={(() => {
+          const url = docDetail?.fileUrl ?? null;
+          return url ? (
+            <Button type="primary" onClick={() => void openAttachment(url)}>
+              打开附件
+            </Button>
+          ) : (
+            <Button onClick={() => setDocDetail(null)}>关闭</Button>
+          );
+        })()}
+        width={620}
+      >
+        {docDetail && (
+          <>
+            <Descriptions column={2} size="small" bordered style={{ marginBottom: 12 }}>
+              <Descriptions.Item label="文书类型">
+                <Tag color={DOC_TYPE_META[docDetail.docType]?.color}>{DOC_TYPE_META[docDetail.docType]?.text ?? docDetail.docType}</Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="日期">{docDetail.docDate ?? "—"}</Descriptions.Item>
+              <Descriptions.Item label="标题" span={2}>
+                {docDetail.title}
+              </Descriptions.Item>
+              {docDetail.fileUrl && (
+                <Descriptions.Item label="附件" span={2}>
+                  <Text style={{ wordBreak: "break-all" }} copyable={{ text: docDetail.fileUrl }}>
+                    {docDetail.fileUrl}
+                  </Text>
+                </Descriptions.Item>
+              )}
+            </Descriptions>
+            <div style={{ maxHeight: 320, overflow: "auto", background: "#fafafa", borderRadius: 6, padding: 12 }}>
+              {docDetail.content ? (
+                <Text style={{ whiteSpace: "pre-wrap", display: "block" }}>{docDetail.content}</Text>
+              ) : (
+                <Text type="secondary">该文书暂无正文内容</Text>
+              )}
+            </div>
+          </>
+        )}
       </Modal>
     </div>
   );
