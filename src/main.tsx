@@ -35,7 +35,12 @@ configureCore({
     request: (path, init) => {
       const method = (init?.method ?? "GET") as "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
       const body = typeof init?.body === "string" ? (JSON.parse(init.body) as unknown) : init?.body;
-      return request({ method, path, body });
+      // 桥接层归一:core-web 业务核心走全路径(含 /api 前缀,与 contract-api 契约一致);
+      // 避免 baseUrl(含 /api) 叠加 path(/api/...) 造成 /api/api/... 双写(404)。
+      const p = path.startsWith("/api/") ? path.slice(4) : path;
+      // 透传 skipAuth401:登录/注册等认证接口的 401 不走会话过期拦截(由 contract-api 支持)
+      const skipAuth401 = (init as { skipAuth401?: boolean } | undefined)?.skipAuth401;
+      return request({ method, path: p, body, skipAuth401 });
     },
   },
 });
