@@ -61,6 +61,10 @@ export default function BasicLayout() {
   const logout = useAuthStore((s) => s.logout);
   const updater = useUpdaterContext();
 
+  // 平台管理可见性：按角色过滤（me 响应 roles 为准;PLATFORM_ADMIN/TENANT_ADMIN 可见）
+  const roles = user?.roles ?? [];
+  const isPlatformAdmin = roles.some((r) => r === "PLATFORM_ADMIN" || r === "TENANT_ADMIN");
+
   const edition = getEdition();
   const homePath = getExtraEdition().homePath;
   const visibleNav: NavItem[] = BASE_NAV.map((n) =>
@@ -74,11 +78,15 @@ export default function BasicLayout() {
       key: n.path,
       label: n.label,
     })),
-    {
-      key: "platform",
-      label: "平台管理",
-      children: PLATFORM_NAV.map((n) => ({ key: n.path, label: n.label })),
-    },
+    ...(isPlatformAdmin
+      ? [
+          {
+            key: "platform",
+            label: "平台管理",
+            children: PLATFORM_NAV.map((n) => ({ key: n.path, label: n.label })),
+          },
+        ]
+      : []),
     {
       key: "business",
       label: "业务管理",
