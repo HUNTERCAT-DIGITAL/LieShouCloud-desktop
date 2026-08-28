@@ -3,7 +3,7 @@
  *
  * 复用 ui 包 EmptyState；轻量 antd Form。失败展示后端 message。
  */
-import { LinkOutlined, LockOutlined, MailOutlined, SafetyOutlined, UserOutlined } from "@ant-design/icons";
+import { LinkOutlined, LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import { getVersion } from "@tauri-apps/api/app";
 import { DEFAULT_TENANT_CODE } from "@lieshoucloud/contract-config";
 import { Alert, Button, Card, Descriptions, Form, Input, Modal, Select, Space, Typography } from "antd";
@@ -14,7 +14,7 @@ import WindowControls from "../components/WindowControls";
 import { useUpdaterContext } from "../components/Updater";
 import { getBranding, getEdition } from "../config/editions";
 import { API_BASE } from "../services/api";
-import { isApiError, register, sendCode } from "../services/auth";
+import { isApiError, register } from "../services/auth";
 import type { CodeChannel } from "../services/auth";
 import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
@@ -173,7 +173,6 @@ interface RegisterFormValues {
   password: string;
   channel: CodeChannel;
   target: string;
-  code: string;
 }
 
 /** 注册账号 Modal（验证码注册,注册即登录 · ADR-0023） */
@@ -190,21 +189,6 @@ function RegisterModal({
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  const send = async () => {
-    const channel = form.getFieldValue("channel") as CodeChannel;
-    const target = form.getFieldValue("target") as string;
-    if (!target) {
-      setErr("请先输入手机号/邮箱");
-      return;
-    }
-    try {
-      await sendCode(channel, target, "REGISTER");
-      setErr("验证码已发送（dev 日志查看）");
-    } catch {
-      setErr("发送失败（60 秒内请勿重复）");
-    }
-  };
-
   const submit = async (values: RegisterFormValues) => {
     setSubmitting(true);
     setErr(null);
@@ -216,7 +200,6 @@ function RegisterModal({
         password: values.password,
         channel: values.channel,
         target: values.target,
-        code: values.code,
         inviteCode: values.inviteCode || undefined,
       });
       useAuthStore.getState().setSession(token);
@@ -275,7 +258,7 @@ function RegisterModal({
         >
           <Input.Password prefix={<LockOutlined />} placeholder="至少 6 位" />
         </Form.Item>
-        <Form.Item label="验证方式" name="channel">
+        <Form.Item label="注册方式" name="channel">
           <Select
             options={[
               { label: "手机号", value: "SMS" },
@@ -290,19 +273,8 @@ function RegisterModal({
         >
           <Input prefix={<MailOutlined />} placeholder="13800000000 / user@example.com" />
         </Form.Item>
-        <Form.Item label="验证码" name="code" rules={[{ required: true, message: "请输入验证码" }]}>
-          <Space.Compact style={{ width: "100%" }}>
-            <Input prefix={<SafetyOutlined />} placeholder="6 位验证码" />
-            <Button onClick={send}>获取验证码</Button>
-          </Space.Compact>
-        </Form.Item>
         {err && (
-          <Alert
-            type={err.includes("已发送") ? "success" : "error"}
-            message={err}
-            showIcon
-            style={{ marginBottom: 12 }}
-          />
+          <Alert type="error" message={err} showIcon style={{ marginBottom: 12 }} />
         )}
         <Button type="primary" htmlType="submit" loading={submitting} block>
           注册并登录

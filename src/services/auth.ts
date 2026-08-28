@@ -10,7 +10,6 @@
 import { request } from "@lieshoucloud/contract-api";
 import type { CurrentUser, LoginRequest, TokenResponse } from "@lieshoucloud/contract-types";
 
-import { API_BASE } from "./api";
 
 export async function login(req: LoginRequest): Promise<TokenResponse> {
   return request<TokenResponse>({
@@ -49,38 +48,19 @@ export interface RegisterRequest {
   username: string;
   displayName: string;
   password: string;
+  /** 注册方式：SMS=手机号 / EMAIL=邮箱（开放注册,无需验证码） */
   channel: CodeChannel;
   target: string;
-  code: string;
   inviteCode?: string;
 }
 
-/** POST /auth/send-code - 发送验证码（公开接口;fetch 直调,避免 200 空 body 的 JSON 解析问题） */
-export async function sendCode(
-  channel: CodeChannel,
-  target: string,
-  purpose: CodePurpose,
-): Promise<void> {
-  const res = await fetch(`${API_BASE}/auth/send-code`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ channel, target, purpose }),
-  });
-  if (!res.ok) {
-    // ApiError 为接口（鸭子类型）：构造带 code 的 Error,isApiError 可识别
-    const e = new Error(`HTTP ${res.status}`) as ApiError;
-    e.code = "SEND_CODE_FAILED";
-    throw e;
-  }
-}
-
-/** POST /auth/register - 注册（注册即登录） */
+/** POST /auth/register - 注册（开放注册,无需验证码;注册即登录） */
 export async function register(req: RegisterRequest): Promise<TokenResponse> {
   return request<TokenResponse>({
     method: "POST",
     path: `/auth/register`,
     body: req,
-    // 注册 400 = 参数/验证码错误,不走会话过期拦截
+    // 注册 400 = 参数错误,不走会话过期拦截
     skipAuth401: true,
   });
 }
