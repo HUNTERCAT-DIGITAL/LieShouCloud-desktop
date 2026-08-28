@@ -17,12 +17,12 @@ export async function listBatches(productId?: number, keyword?: string): Promise
   if (productId) params.push(`productId=${productId}`);
   if (keyword) params.push(`keyword=${encodeURIComponent(keyword)}`);
   const qs = params.length > 0 ? `?${params.join("&")}` : "";
-  return request<Batch[]>({ method: "GET", path: `/batches${qs}` });
+  return request<Batch[]>({ method: "GET", path: `/api/batches${qs}` });
 }
 
 /** POST /batches — 新建批次 */
 export async function createBatch(body: CreateBatchRequest): Promise<Batch> {
-  return request<Batch>({ method: "POST", path: "/batches", body });
+  return request<Batch>({ method: "POST", path: "/api/batches", body });
 }
 
 /** GET /inspections — 质检记录列表 */
@@ -36,10 +36,10 @@ export async function listInspections(params?: {
   if (params?.type) search.set("type", params.type);
   if (params?.result) search.set("result", params.result);
   const qs = search.toString();
-  return request<QualityInspection[]>({ method: "GET", path: `/inspections${qs ? `?${qs}` : ""}` });
+  return request<QualityInspection[]>({ method: "GET", path: `/api/inspections${qs ? `?${qs}` : ""}` });
 }
 
 /** POST /inspections — 新建质检记录 */
 export async function createInspection(body: CreateInspectionRequest): Promise<QualityInspection> {
-  return request<QualityInspection>({ method: "POST", path: "/inspections", body });
+  return request<QualityInspection>({ method: "POST", path: "/api/inspections", body });
 }
