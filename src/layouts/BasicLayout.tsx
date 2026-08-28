@@ -4,7 +4,7 @@
  * 简化版：admin 用 ProLayout，desktop 是独立 WebView 进程，自己写一个
  * 轻量 sidebar + topbar。注意复用 @lieshoucloud/ui 的 RoleTag / StatusTag。
  */
-import { CloudSyncOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { BellOutlined, CloudSyncOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { RoleTag } from "@lieshoucloud/ui";
 import { Avatar, Dropdown, Layout, Menu, Space } from "antd";
 import type { MenuProps } from "antd";
@@ -87,6 +87,18 @@ export default function BasicLayout() {
   ];
 
   const userMenu: MenuProps["items"] = [
+    {
+      key: "profile",
+      icon: <UserOutlined />,
+      label: "个人中心",
+      onClick: () => navigate("/profile"),
+    },
+    {
+      key: "notification",
+      icon: <BellOutlined />,
+      label: "通知中心",
+      onClick: () => navigate("/notification"),
+    },
     {
       key: "check-update",
       icon: <CloudSyncOutlined />,

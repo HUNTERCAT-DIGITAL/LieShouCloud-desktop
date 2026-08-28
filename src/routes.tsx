@@ -30,6 +30,8 @@ const ContactList = lazy(() => import("./pages/ContactList"));
 const ContractList = lazy(() => import("./pages/ContractList"));
 const MemberList = lazy(() => import("./pages/MemberList"));
 const QualityList = lazy(() => import("./pages/QualityList"));
+const Profile = lazy(() => import("./pages/Profile"));
+const NotificationList = lazy(() => import("./pages/NotificationList"));
 
 /** 客户专属路由槽（extraRoutes · 2026-09 客户聚合仓）：内容由客户仓注入 */
 function ExtraRoute({ route }: { route: { path: string; load: () => Promise<{ default: ComponentType }> } }) {
@@ -83,6 +85,8 @@ export const routes = (
         <Route path="/contract/list" element={<ContractList />} />
         <Route path="/member/list" element={<MemberList />} />
         <Route path="/quality/list" element={<QualityList />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/notification" element={<NotificationList />} />
         {EXTRA_ROUTES.map((r) => (
           <Route key={r.path} path={r.path} element={<ExtraRoute route={r} />} />
         ))}
