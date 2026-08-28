@@ -32,6 +32,7 @@ import { useUpdaterContext } from "../components/Updater";
 import { unreadNotificationCount } from "../services/notification";
 import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
+import { getAvatarColor } from "../utils/avatar";
 
 import { getBranding, getEdition, getExtraEdition, isMenuHidden } from '../config/editions';
 
@@ -261,7 +262,7 @@ export default function BasicLayout() {
           />
           <Dropdown menu={{ items: userMenu }} placement="bottomRight">
             <Space style={{ cursor: "pointer", padding: "0 8px" }}>
-              <Avatar size="small" icon={<UserOutlined />} style={{ background: colors.primary }}>
+              <Avatar size="small" icon={<UserOutlined />} style={{ background: getAvatarColor(user?.username) }}>
                 {user?.username?.charAt(0).toUpperCase() ?? "?"}
               </Avatar>
               <span style={{ color: "#fff" }}>{user?.username ?? "未登录"}</span>
