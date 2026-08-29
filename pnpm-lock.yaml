@@ -113,16 +113,29 @@ importers:
         version: 3.0.5(@types/node@22.9.4)(jsdom@30.0.1)
 
   open/contract-api:
+    dependencies:
+      '@lieshoucloud/i18n':
+        specifier: workspace:*
+        version: link:../i18n
     devDependencies:
+      '@eslint/js':
+        specifier: ^10.0.1
+        version: 10.0.1(eslint@10.9.1)
       '@lieshoucloud/contract-config':
         specifier: workspace:*
         version: link:../contract-config
+      eslint:
+        specifier: ^10.9.1
+        version: 10.9.1
       openapi-typescript:
         specifier: ^7.4.4
         version: 7.13.0(typescript@5.6.3)
       typescript:
         specifier: 5.6.3
         version: 5.6.3
+      typescript-eslint:
+        specifier: ^8.68.0
+        version: 8.68.0(eslint@10.9.1)(typescript@5.6.3)
       vitest:
         specifier: ^3.2.0
         version: 3.2.7(@types/node@26.4.0)(jsdom@30.0.1)
@@ -206,6 +219,21 @@ importers:
       vitest:
         specifier: ^4.1.11
         version: 4.1.11(@types/node@26.4.0)(jsdom@30.0.1)(vite@6.4.3(@types/node@26.4.0))
+
+  open/i18n:
+    devDependencies:
+      '@eslint/js':
+        specifier: ^10.0.1
+        version: 10.0.1(eslint@10.9.1)
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+      typescript-eslint:
+        specifier: ^8.68.0
+        version: 8.68.0(eslint@10.9.1)(typescript@5.6.3)
+      vitest:
+        specifier: ^3.2.0
+        version: 3.2.7(@types/node@26.4.0)(jsdom@30.0.1)
 
   open/ui:
     dependencies:

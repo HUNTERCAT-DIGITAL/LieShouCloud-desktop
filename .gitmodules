@@ -13,3 +13,6 @@
 [submodule "open/core-web"]
 	path = open/core-web
 	url = git@github.com:HUNTERCAT-DIGITAL/lieshou-core-web.git
+[submodule "open/i18n"]
+	path = open/i18n
+	url = git@github.com:HUNTERCAT-DIGITAL/lieshou-i18n.git
