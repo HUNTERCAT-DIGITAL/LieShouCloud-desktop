@@ -26,7 +26,10 @@ export default defineConfig({
       { find: "@lieshoucloud/i18n", replacement: path.resolve(__dirname, "open/i18n/src") },
       { find: /^@lieshoucloud\/ui($|\/)/, replacement: path.resolve(__dirname, "open/ui/src") + "$1" },
       // 客户包 antd 页面（../packages/<client>/src 位于端仓外）：antd 从 import 文件向上
-      // 解析不到端内 node_modules → 强制 alias（E13 同款 · react-router-dom/antd 等）
+      // 解析不到端内 node_modules → 强制 alias（E13 全套 · 对齐 admin-web）
+      { find: /^react($|\/)/, replacement: path.resolve(__dirname, "node_modules/react") + "$1" },
+      { find: /^react-dom($|\/)/, replacement: path.resolve(__dirname, "node_modules/react-dom") + "$1" },
+      { find: /^react-router-dom($|\/)/, replacement: path.resolve(__dirname, "node_modules/react-router-dom") + "$1" },
       { find: "antd", replacement: path.resolve(__dirname, "node_modules/antd") },
       { find: "@ant-design/icons", replacement: path.resolve(__dirname, "node_modules/@ant-design/icons") },
       { find: "@ant-design/pro-components", replacement: path.resolve(__dirname, "node_modules/@ant-design/pro-components") },
