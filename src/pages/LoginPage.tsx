@@ -19,7 +19,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  if (isAuthenticated) return <Navigate to="/home" replace />;
+  if (isAuthenticated) return <Navigate to={edition.homePath ?? '/home'} replace />;
 
   async function handleSubmit(e: FormEvent): Promise<void> {
     e.preventDefault();
@@ -27,7 +27,7 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       await login(username.trim(), password, tenantCode.trim() || undefined);
-      navigate('/home', { replace: true });
+      navigate(edition.homePath ?? '/home', { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {

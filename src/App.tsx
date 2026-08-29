@@ -44,7 +44,14 @@ function RequireAuth() {
 export default function App() {
   const edition = getEdition();
   const extraRoutes = edition.extraRoutes ?? [];
-  const layoutRoutes = extraRoutes.filter((r) => !r.standalone);
+  // 登录后落地页：客户 edition.homePath 优先（客户主页/工作台），缺省上游启动页
+  const fallbackPath = edition.homePath ?? '/home';
+  // 工作台/首页：客户可注入 path='/' 或 '/home' 覆盖骨架 HomePage（对齐 admin-web）
+  const homeRoute = extraRoutes.find((r) => r.path === '/' || r.path === '/home');
+  const homeElement = homeRoute ? <LazyRoute load={homeRoute.load} /> : <HomePage />;
+  const layoutRoutes = extraRoutes.filter(
+    (r) => !r.standalone && r.path !== '/' && r.path !== '/home',
+  );
   const standaloneRoutes = extraRoutes.filter((r) => r.standalone);
 
   return (
@@ -52,8 +59,8 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route element={<RequireAuth />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/home" element={<HomePage />} />
+          <Route path="/" element={homeElement} />
+          <Route path="/home" element={homeElement} />
           {layoutRoutes.map((r) => (
             <Route
               key={r.path}
@@ -69,7 +76,7 @@ export default function App() {
             element={<LazyRoute load={r.load} />}
           />
         ))}
-        <Route path="*" element={<Navigate to="/home" replace />} />
+        <Route path="*" element={<Navigate to={fallbackPath} replace />} />
       </Routes>
     </BrowserRouter>
   );
