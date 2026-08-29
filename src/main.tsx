@@ -10,6 +10,11 @@ import {
   setUnauthorizedHandler,
 } from '@lieshoucloud/contract-api';
 
+import { App as AntdApp, ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
+import dayjs from 'dayjs';
+import 'dayjs/locale/zh-cn';
+
 import App from './App';
 import { getEdition } from './config/editions';
 import './styles/global.css';
@@ -99,11 +104,21 @@ void useAuthStore.persist.rehydrate();
 const edition = getEdition();
 document.title = edition.brandName;
 
+dayjs.locale('zh-cn');
+
 const rootEl = document.getElementById('root');
 if (!rootEl) throw new Error('Missing #root mount element');
 
 ReactDOM.createRoot(rootEl).render(
   <React.StrictMode>
-    <App />
+    <ConfigProvider
+      locale={zhCN}
+      theme={{ token: { colorPrimary: edition.primaryColor ?? '#1677ff' } }}
+    >
+      {/* antd App：industry 页（dwjk 包）App.useApp() 需要上下文（message/notification） */}
+      <AntdApp>
+        <App />
+      </AntdApp>
+    </ConfigProvider>
   </React.StrictMode>,
 );
