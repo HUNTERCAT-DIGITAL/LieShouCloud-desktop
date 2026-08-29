@@ -44,21 +44,23 @@ export default defineConfig({
     },
     hmr: { protocol: "ws", host: "localhost", port: 21303 },
     // dev 同源反代：浏览器直接访问 http://localhost:21302 时 /api → gateway（无 CORS）
+    // ⚠️ changeOrigin 必须为 false：gateway CorsConfig「同源放行」依赖 Origin==Host
+    // （2026-08 修复），proxy 改 Host 会破坏同源判断 → 浏览器 POST 带 Origin 被拦 403
     proxy: {
       "/api": {
         target: process.env.VITE_PROXY_TARGET ?? "http://127.0.0.1:21000",
-        changeOrigin: true,
+        changeOrigin: false,
       },
     },
   },
   preview: {
     port: 21304,
     strictPort: true,
-    // preview（构建产物浏览器调试）同源反代，语义同 server.proxy
+    // preview（构建产物浏览器调试）同源反代，语义同 server.proxy（changeOrigin 同理必须 false）
     proxy: {
       "/api": {
         target: process.env.VITE_PROXY_TARGET ?? "http://127.0.0.1:21000",
-        changeOrigin: true,
+        changeOrigin: false,
       },
     },
   },
