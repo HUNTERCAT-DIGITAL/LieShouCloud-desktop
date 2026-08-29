@@ -76,6 +76,11 @@ import {
   updateTimeEntry,
 } from "../services/case";
 import { buildCaseSummaryText } from "../utils/caseSummary";
+import LettersTab from "../components/case/LettersTab";
+import ReviewsTab from "../components/case/ReviewsTab";
+import TeamTab from "../components/case/TeamTab";
+import LedgersTab from "../components/case/LedgersTab";
+import KnowledgeFlowTab from "../components/case/KnowledgeFlowTab";
 
 const { Text, Title } = Typography;
 
@@ -873,6 +878,31 @@ export default function CaseDetail() {
                 </Text>
               </Card>
             ),
+          },
+          {
+            key: "letters",
+            label: `函件`,
+            children: <LettersTab caseId={detail.id} />,
+          },
+          {
+            key: "reviews",
+            label: `评审`,
+            children: <ReviewsTab caseId={detail.id} />,
+          },
+          {
+            key: "team",
+            label: `分工与席位`,
+            children: <TeamTab caseId={detail.id} />,
+          },
+          {
+            key: "ledgers",
+            label: `台账`,
+            children: <LedgersTab caseId={detail.id} />,
+          },
+          {
+            key: "knowledge",
+            label: `知识流`,
+            children: <KnowledgeFlowTab caseId={detail.id} />,
           },
         ]}
       />
