@@ -9,8 +9,8 @@ const { mockRequest } = vi.hoisted(() => ({ mockRequest: vi.fn() }));
 vi.mock("@lieshoucloud/contract-api", () => ({ request: mockRequest }));
 
 import { createUser, deleteUser, listUsers, updateUser } from "./user";
-import { createRole, deleteRole, listRoles, updateRole } from "./role";
-import { createTenant, deleteTenant, listTenants, updateTenant } from "./tenant";
+import { createRole, deleteRole, listRoles } from "./role";
+import { createTenant, listTenants, updateTenant } from "./tenant";
 import { countAuditLogs, listAuditLogs } from "./audit";
 
 beforeEach(() => {

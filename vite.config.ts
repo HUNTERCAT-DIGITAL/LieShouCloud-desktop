@@ -31,6 +31,15 @@ export default defineConfig({
         find: "@lieshoucloud/ui",
         replacement: path.resolve(__dirname, "open/ui/src"),
       },
+      // 客户包页面依赖的端级包（从端自身 node_modules 解析）
+      {
+        find: "react-router-dom",
+        replacement: path.resolve(__dirname, "node_modules/react-router-dom"),
+      },
+      {
+        find: "@ant-design/icons",
+        replacement: path.resolve(__dirname, "node_modules/@ant-design/icons"),
+      },
       // 客户包兜底：@lieshoucloud/<client>[/<subpath>] → ../packages/<client>/src[/<subpath>]
       // （正则捕获组 + $1/$2 由 String.replace 展开）
       {

@@ -1,11 +1,11 @@
 /**
  * Desktop 主题色 - 与 apps/admin / apps/mobile / apps/mini-program 对齐.
- * 默认品牌蓝（客户版可由 Edition branding.colorPrimary 覆盖 · 2026-09）.
+ * 主色：海赞数智品牌蓝 #103070（集团投资管理门户 · 2026-09）. 
  */
 export const colors = {
-  primary: "#02429B",
-  primaryHover: "#1a5cb8",
-  primaryActive: "#01337a",
+  primary: "#103070",
+  primaryHover: "#1a4a9e",
+  primaryActive: "#0b2454",
   bg: "#ffffff",
   pageBg: "#f5f7fa",
   text: "#1f1f1f",
