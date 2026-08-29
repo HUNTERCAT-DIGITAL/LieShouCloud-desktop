@@ -24,6 +24,9 @@ export default defineConfig({
       { find: "@lieshoucloud/contract-types", replacement: path.resolve(__dirname, "open/contract-types/src") },
       { find: "@lieshoucloud/core-web", replacement: path.resolve(__dirname, "open/core-web/src") },
       { find: "@lieshoucloud/i18n", replacement: path.resolve(__dirname, "open/i18n/src") },
+      // 客户包 antd 页面（../packages/<client>/src 位于端仓外）：antd 从 import 文件向上
+      // 解析不到端内 node_modules → 强制 alias（E13 同款 · react-router-dom/antd 等）
+      { find: "antd", replacement: path.resolve(__dirname, "node_modules/antd") },
       // 客户包兜底：@lieshoucloud/<client>[/<subpath>] → ../packages/<client>/src[/<subpath>]
       // （正则捕获组 + $1/$2 由 Vite alias 字符串替换展开；共享包走显式 alias，排除避免误命中）
       {
