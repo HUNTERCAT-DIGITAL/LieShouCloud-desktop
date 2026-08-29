@@ -155,6 +155,8 @@ git push origin main
 
 ## 5. 部署（dev 环境实测链路）
 
+### dev.dwjk（开发联调 · dev server）
+
 ```
 https://dev.dwjk.lieshou.huntercat.cn/desktop
   DNS → 入口机 nginx(TLS, acme.sh 证书) → frps 5189 → frpc → 本地 nginx
@@ -163,10 +165,20 @@ https://dev.dwjk.lieshou.huntercat.cn/desktop
     /         → 21300 (admin-web)   /h5/ → 21301 (mobile-web)
 ```
 
-- 本地 nginx 配置：`delivery-dwjk/deploy/nginx-local/dev.dwjk.lieshou.huntercat.cn.conf`
-  （仓库版已含 /desktop/ 分流；安装：`sudo cp` → `/etc/nginx/conf.d/` → `nginx -t && reload`）。
-- **dev server 需常驻**：`VITE_BASE=/desktop/ VITE_API_BASE='' pnpm dev --port 21306`（建议 systemd 化）。
-- 生产静态托管（无 dev server）：nginx `location /desktop/ { alias dist/; try_files $uri $uri/ /desktop/index.html; }` + `location /api → gateway`。
+### dwjk.lieshou.huntercat.cn（生产 · 静态托管）
+
+```
+https://dwjk.lieshou.huntercat.cn/desktop
+  DNS(47.96.122.117) → 入口机 nginx(TLS) → frps 5189 → frpc → 本地 nginx
+    /desktop/ → desktop/dist 静态产物（VITE_BASE=/desktop/ VITE_API_BASE='' pnpm build）
+                alias + try_files SPA 回退 + index.html no-cache
+    /api/     → 21000（同源反代 · Host 透传）
+    /         → 21300 (admin-web dev，admin 生产静态化另行处理)
+```
+
+- 本地 nginx 配置：`delivery-dwjk/deploy/nginx-local/`（dev.dwjk / dwjk 两份；安装：`sudo cp` → `/etc/nginx/conf.d/` → `nginx -t && reload`）。
+- **dev server 需常驻**（dev 形态）：`VITE_BASE=/desktop/ VITE_API_BASE='' pnpm dev --port 21306`（建议 systemd 化）。
+- **生产更新流程**：`VITE_BASE=/desktop/ VITE_API_BASE='' pnpm build` → dist 即生效（nginx 静态托管，无需重启）。
 
 ---
 
