@@ -1,46 +1,39 @@
 /**
- * 桌面端 App 入口.
+ * 桌面端 · 路由装配（端自身骨架）
+ * /login 登录页；/、/home 启动页（登录守卫）。
  */
-import { useEffect } from "react";
-import { BrowserRouter, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+} from 'react-router-dom';
 
-import { UpdaterProvider, useUpdaterContext } from "./components/Updater";
-import { routes } from "./routes";
+import { getEdition } from './config/editions';
+import { isLoggedIn } from './lib/auth';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
 
-/** 启动自动检查更新（静默：有更新才弹窗，无更新/失败不打扰） */
-function AutoCheckUpdater() {
-  const updater = useUpdaterContext();
-  useEffect(() => {
-    void updater.checkForUpdates(true);
-  }, [updater]);
-  return null;
-}
-
-/**
- * 全局导航桥（客户包零路由假设：不 import react-router）。
- * 客户包页面通过 window 派发 CustomEvent("lm:navigate", detail=path) 跳转。
- */
-function GlobalNavigator() {
-  const navigate = useNavigate();
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const path = (e as CustomEvent<string>).detail;
-      if (typeof path === "string" && path.startsWith("/")) navigate(path);
-    };
-    window.addEventListener("lm:navigate", handler);
-    return () => window.removeEventListener("lm:navigate", handler);
-  }, [navigate]);
-  return null;
+/** 登录守卫：required=false（游客直达）时放行 */
+function RequireAuth() {
+  const edition = getEdition();
+  const required = edition.login?.required !== false;
+  if (required && !isLoggedIn()) return <Navigate to="/login" replace />;
+  return <Outlet />;
 }
 
 export default function App() {
   return (
-    <UpdaterProvider>
-      <BrowserRouter>
-        <AutoCheckUpdater />
-        <GlobalNavigator />
-        {routes}
-      </BrowserRouter>
-    </UpdaterProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route element={<RequireAuth />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/home" element={<HomePage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/home" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

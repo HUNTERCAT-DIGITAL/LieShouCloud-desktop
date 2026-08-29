@@ -1,63 +1,32 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
 import path from "node:path";
 
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
 /**
- * Vite 配置 - monorepo + Tauri 适配.
- *  - Tauri 默认固定端口 1420; devUrl 与 strictPort 必须对齐
- *  - watch 忽略 src-tauri/** (Rust 端变更由 cargo 监听)
- *  - alias 与 tsconfig.json paths 完全同步
- * @see .ai/decisions/0015-desktop.md
- *
- * 客户聚合仓模式（2026-09）：客户包 @lieshoucloud/<client> 由客户仓
- * deploy:prepare 生成 tsconfig.<client>.json（paths → ../packages/<client>/src），
- * 此处补充 Vite 运行时 alias（顺序：具体包在前，客户包正则兜底）。
- * 独立仓库（无客户仓）不 import 客户包，正则兜底不会命中，安全。
+ * Vite 配置 · 端自身骨架 + Tauri 适配.
+ *  - Tauri devUrl/strictPort 必须与下方端口对齐（tauri.conf.json devUrl）
+ *  - watch 忽略 src-tauri/**（Rust 端变更由 cargo 监听）
+ *  - 上游共享模块（contract-api / core-web / ui 等）待统一重构后接入，当前仅 @ alias
  */
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: [
-      { find: "@", replacement: path.resolve(__dirname, "src") },
-      {
-        find: "@lieshoucloud/contract-api",
-        replacement: path.resolve(__dirname, "open/contract-api/src"),
-      },
-      {
-        find: "@lieshoucloud/contract-types",
-        replacement: path.resolve(__dirname, "open/contract-types/src"),
-      },
-      {
-        find: "@lieshoucloud/ui",
-        replacement: path.resolve(__dirname, "open/ui/src"),
-      },
-      // 客户包兜底：@lieshoucloud/<client>[/<subpath>] → ../packages/<client>/src[/<subpath>]
-      // （正则捕获组 + $1/$2 由 String.replace 展开）
-      {
-        find: /^@lieshoucloud\/(?!contract-api|contract-config|contract-types|ui|core-web)([a-z-]+)(\/.*)?$/,
-        replacement: path.resolve(__dirname, "../packages/$1/src$2"),
-      },
-    ],
+    alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
   },
   clearScreen: false,
   server: {
     port: 1425,
     strictPort: true,
-    host: "0.0.0.0",
-    hmr: { protocol: "ws", host: "localhost", port: 1426 },
-    watch: { ignored: ["**/src-tauri/**"] },
-    proxy: {
-      // 转发到 Spring Cloud Gateway（与 admin dev 一致）
-      "/api": {
-        target: process.env.VITE_DEV_PROXY_TARGET || "http://localhost:9000",
-        changeOrigin: true,
-      },
+    watch: {
+      ignored: ["**/src-tauri/**"],
     },
+    hmr: { protocol: "ws", host: "localhost", port: 1426 },
   },
-  envPrefix: ["VITE_", "TAURI_"],
+  envPrefix: ["VITE_", "TAURI_ENV_*"],
   build: {
-    target: "esnext",
-    minify: "esbuild",
-    sourcemap: true,
+    target: ["es2021", "chrome100", "safari13"],
+    minify: process.env.TAURI_ENV_DEBUG ? false : "esbuild",
+    sourcemap: !!process.env.TAURI_ENV_DEBUG,
   },
 });
