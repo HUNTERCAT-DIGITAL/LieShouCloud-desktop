@@ -37,6 +37,10 @@ export default defineConfig({
   },
   clearScreen: false,
   server: {
+    host: true,
+    // 联调域名/内网 IP 访问 dev 需放行（vite 6 allowedHosts 校验 · E10；
+    // dev.dwjk.lieshou.huntercat.cn/desktop 经 nginx 反代访问 dev server）
+    allowedHosts: true,
     port: 21302,
     strictPort: true,
     watch: {
