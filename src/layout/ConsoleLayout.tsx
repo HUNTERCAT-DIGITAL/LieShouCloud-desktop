@@ -24,7 +24,7 @@ import {
   ThunderboltOutlined,
   ToolOutlined,
 } from '@ant-design/icons';
-import type { AvatarProps, MenuDataItem } from '@ant-design/pro-components';
+import type { MenuDataItem } from '@ant-design/pro-components';
 import { ProLayout } from '@ant-design/pro-components';
 import { Avatar, Dropdown, Typography } from 'antd';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
@@ -59,18 +59,13 @@ function iconOf(name?: string): ReactNode {
   return (name && ICON_MAP[name]) || <AppstoreOutlined />;
 }
 
-/** 菜单项（MenuDataItem + 角标） */
-interface MenuItem extends MenuDataItem {
-  badge?: number | string;
-}
-
 /** 当前用户角色集合（缺省空；roles 未声明 = 全可见） */
 function userRoles(): string[] {
   return (useAuthStore.getState().user as { roles?: string[] } | null)?.roles ?? [];
 }
 
 /** 单个路由 → 菜单项（roles 过滤：菜单声明 roles 且与用户角色无交集 → 跳过） */
-function toMenuItem(r: EditionExtraRoute, roles: Set<string>): MenuItem | null {
+function toMenuItem(r: EditionExtraRoute, roles: Set<string>): MenuDataItem | null {
   const need = r.menu?.roles;
   if (need && need.length > 0 && !need.some((x) => roles.has(x))) return null;
   return {
@@ -81,7 +76,7 @@ function toMenuItem(r: EditionExtraRoute, roles: Set<string>): MenuItem | null {
 }
 
 /** extraRoutes（带 menu 声明）→ 菜单树（group 分组 + order 排序 + hiddenMenus/roles 裁剪） */
-export function buildMenuItems(edition: EditionConfig, currentRoles: string[] = []): MenuItem[] {
+export function buildMenuItems(edition: EditionConfig, currentRoles: string[] = []): MenuDataItem[] {
   const routes = (edition.extraRoutes ?? []).filter((r) => r.menu);
   const hidden = new Set(edition.hiddenMenus ?? []);
   const roles = new Set(currentRoles);
@@ -106,21 +101,23 @@ export function buildMenuItems(edition: EditionConfig, currentRoles: string[] = 
   const byOrder = (a: EditionExtraRoute, b: EditionExtraRoute) =>
     (a.menu?.order ?? 99) - (b.menu?.order ?? 99);
 
-  const items: MenuItem[] = [
-    ...flat.sort(byOrder).map((r) => toMenuItem(r, roles) as MenuItem),
+  const items: MenuDataItem[] = [
+    ...flat.sort(byOrder).map((r) => toMenuItem(r, roles) as MenuDataItem),
     ...[...groups.entries()]
       .sort((a, b) => (a[1][0]?.menu?.order ?? 99) - (b[1][0]?.menu?.order ?? 99))
-      .map(([name, list]) => ({
-        name,
-        icon: <MenuOutlined />,
-        children: list.sort(byOrder).map((r) => toMenuItem(r, roles) as MenuItem),
-      })),
+      .map(([name, list]) => {
+        const group: MenuDataItem = {
+          name,
+          icon: <MenuOutlined />,
+          children: list.sort(byOrder).map((r) => toMenuItem(r, roles) as MenuDataItem),
+        };
+        return group;
+      }),
   ];
   return items;
 }
 
-/**
- * 菜单角标轮询：带 menu.badge 的项按其 endpoint 轮询计数字段（如告警待确认数）。
+/** 菜单角标轮询：带 menu.badge 的项按其 endpoint 轮询计数字段（如告警待确认数）。
  * 角标值挂在 path 上，供菜单项渲染时回填。
  */
 function useBadgeMap(routes: EditionExtraRoute[]): Record<string, number> {
@@ -181,21 +178,21 @@ export default function ConsoleLayout() {
       fixedHeader
       route={{ path: '/', routes: menuItems }}
       location={{ pathname: location.pathname }}
-      menuItemRender={(item, dom) => {
+      menuItemRender={(item: MenuDataItem, dom: ReactNode) => {
         if (item.path) {
           return <a onClick={() => navigate(item.path as string)}>{dom}</a>;
         }
         return dom;
       }}
-      menuDataRender={(menus) =>
-        menus.map((m) =>
+      menuDataRender={(menus: MenuDataItem[]) =>
+        menus.map((m: MenuDataItem) =>
           m.path && badgeMap[m.path] ? { ...m, badge: badgeMap[m.path] } : m,
         )
       }
       avatarProps={{
         icon: <Avatar size="small">{user?.username?.slice(0, 1)?.toUpperCase() ?? '值'}</Avatar>,
         title: <Typography.Text>{user?.username ?? '值班员'}</Typography.Text>,
-        render: (_props: AvatarProps, dom: ReactNode) => (
+        render: (_props: unknown, dom: ReactNode) => (
           <Dropdown
             menu={{
               items: [
