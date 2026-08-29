@@ -182,6 +182,40 @@ https://dwjk.lieshou.huntercat.cn/desktop
 
 ---
 
+## 5b. Windows 安装包发布（Win11 · 核心目标）
+
+> desktop 的本质是 Tauri 桌面应用，最终交付为 **Win11 可安装的 NSIS 安装包**（含在线升级）。
+
+**构建平台**：Windows 产物必须在 **Windows 机器**跑（tauri build 目标平台限定；
+本机 WSL/Linux 只能产 Linux 包——已用 Linux 构建验证代码/配置链）。
+
+**发布流程**（Win11 发布机）：
+
+```bash
+cd lieshou-delivery-dwjk
+export TAURI_SIGNING_PRIVATE_KEY=$(cat ~/.tauri/lieshoucloud.key)
+export TAURI_SIGNING_PRIVATE_KEY_PASSWORD='LieshouCloud-DeskTop-2026'
+./deploy/publish-desktop-update.sh 0.0.38 "修复告警角标"
+```
+
+产物（deploy/updates/）：`dwjk_<ver>_x64-setup.exe` + `.sig` + `latest.json` →
+上传更新服务器（nginx /updates/ 托管 · 客户端 updater 轮询）。
+
+**配置链**（已就绪）：
+- `prepare.mjs` 生成 `tauri.dwjk.conf.json`（品牌「电网监控·物联网云平台」/ identifier
+  cn.huntercat.dwjk.desktop / CSP 注入 dwjk 域名 / NSIS 图标 / 共用 updater 端点
+  updates.lieshoucloud.huntercat.cn）+ tauri icon 全套（源图 mobile-web logo）
+- 签名密钥共用 ~/.tauri/lieshoucloud.key（各客户同 pubkey C3ECA7BD...）
+- `tauri build --config src-tauri/tauri.dwjk.conf.json`（签名 + createUpdaterArtifacts）
+
+**验证状态**：Linux 侧全链编译通过（前端 + 配置合并 + Rust → 二进制）；
+Windows NSIS 产物待 Win11 发布机执行脚本产出。
+
+**待办**：updates.lieshoucloud.huntercat.cn 更新服务器未部署（域名 000，
+需入口机 nginx /updates/ 托管 + 上传产物）。
+
+---
+
 ## 6. 踩坑速查（下次先查这里）
 
 | # | 症状 | 根因 | 修复 |
