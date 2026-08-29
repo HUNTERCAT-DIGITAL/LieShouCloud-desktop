@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ES2022",
     "useDefineForClassFields": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "skipLibCheck": true,
@@ -14,12 +18,42 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vite/client", "node"],
+    "types": [
+      "vite/client",
+      "node"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@lieshoucloud/contract-api": [
+        "open/contract-api/src"
+      ],
+      "@lieshoucloud/contract-config": [
+        "open/contract-config/src"
+      ],
+      "@lieshoucloud/contract-types": [
+        "open/contract-types/src"
+      ],
+      "@lieshoucloud/contract-types/*": [
+        "open/contract-types/src/*"
+      ],
+      "@lieshoucloud/core-web": [
+        "open/core-web/src"
+      ],
+      "@lieshoucloud/i18n": [
+        "open/i18n/src"
+      ]
     }
   },
-  "include": ["src", "vite.config.ts"],
-  "exclude": ["node_modules", "dist", "src-tauri"]
+  "include": [
+    "src",
+    "vite.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src-tauri"
+  ]
 }

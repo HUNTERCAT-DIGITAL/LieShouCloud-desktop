@@ -1,12 +1,12 @@
 /**
- * 桌面端 · 启动页（端自身骨架）
+ * 桌面端 · 启动页（端自身骨架 · 用户/登录态来自 core-web useAuthStore）
  * 品牌 + 平台标识 + 版本 + 登录用户 + 后端连通性检查（GET /api/auth/me）。
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useAuthStore } from '@lieshoucloud/core-web';
 
 import { getEdition } from '../config/editions';
 import { APP_VERSION } from '../config/version';
-import { fetchMe, getUser, logout, type SessionUser } from '../lib/auth';
 
 interface CheckState {
   loading: boolean;
@@ -16,22 +16,15 @@ interface CheckState {
 
 export default function HomePage() {
   const edition = getEdition();
-  const [user, setUser] = useState<SessionUser | null>(() => getUser());
+  const user = useAuthStore((s) => s.user);
+  const fetchMe = useAuthStore((s) => s.fetchMe);
+  const logout = useAuthStore((s) => s.logout);
   const [check, setCheck] = useState<CheckState>({ loading: false, ok: false, message: '' });
-
-  useEffect(() => {
-    fetchMe()
-      .then(setUser)
-      .catch(() => {
-        /* 静默：守卫已兜底 */
-      });
-  }, []);
 
   const runCheck = useCallback(async () => {
     setCheck({ loading: true, ok: false, message: '' });
     try {
       const me = await fetchMe();
-      setUser(me);
       setCheck({
         loading: false,
         ok: true,
@@ -44,7 +37,7 @@ export default function HomePage() {
         message: err instanceof Error ? err.message : String(err),
       });
     }
-  }, []);
+  }, [fetchMe]);
 
   return (
     <div className="home-page">
@@ -69,7 +62,7 @@ export default function HomePage() {
         <div className="home-row">
           <span className="home-key">用户</span>
           <span className="home-value">
-            {user?.displayName || user?.username || '未登录'}
+            {user?.username || '未登录'}
             {user?.tenantName ? `（${user.tenantName}）` : ''}
           </span>
         </div>

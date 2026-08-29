@@ -8,6 +8,21 @@ importers:
 
   .:
     dependencies:
+      '@lieshoucloud/contract-api':
+        specifier: workspace:*
+        version: link:open/contract-api
+      '@lieshoucloud/contract-config':
+        specifier: workspace:*
+        version: link:open/contract-config
+      '@lieshoucloud/contract-types':
+        specifier: workspace:*
+        version: link:open/contract-types
+      '@lieshoucloud/core-web':
+        specifier: workspace:*
+        version: link:open/core-web
+      '@lieshoucloud/i18n':
+        specifier: workspace:*
+        version: link:open/i18n
       '@tauri-apps/api':
         specifier: ~2.0.0
         version: 2.0.3
@@ -146,6 +161,9 @@ importers:
       '@lieshoucloud/contract-config':
         specifier: workspace:*
         version: link:../contract-config
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.3
       eslint:
         specifier: ^9.15.0
         version: 9.39.5

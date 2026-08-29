@@ -1,23 +1,25 @@
 /**
- * 桌面端 · 登录页（端自身骨架）
- * 租户 + 账号 + 密码 → lib/auth.login（POST /api/auth/login）。
+ * 桌面端 · 登录页（端自身骨架 · 登录态来自 core-web useAuthStore）
+ * 租户 + 账号 + 密码 → core-web login（POST /api/auth/login）。
  */
 import { useState, type FormEvent } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@lieshoucloud/core-web';
 
 import { getEdition } from '../config/editions';
-import { isLoggedIn, login } from '../lib/auth';
 
 export default function LoginPage() {
   const edition = getEdition();
   const navigate = useNavigate();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const login = useAuthStore((s) => s.login);
   const [tenantCode, setTenantCode] = useState(edition.tenantCode ?? 'default');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  if (isLoggedIn()) return <Navigate to="/home" replace />;
+  if (isAuthenticated) return <Navigate to="/home" replace />;
 
   async function handleSubmit(e: FormEvent): Promise<void> {
     e.preventDefault();
