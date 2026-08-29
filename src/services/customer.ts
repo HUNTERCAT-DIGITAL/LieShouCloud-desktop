@@ -1,86 +1,25 @@
 /**
- * Desktop customer service（Phase 9 多端真实化）.
+ * 客户 API service（ADR-0025 · crm-service · 后端强制 X-Tenant-Id）.
  *
- * 类型与 admin 的 services/crm.ts 对齐——下一阶段 types 包下沉后可彻底共享。
- * 现在先用 inline 类型，保持 desktop 独立可运行。
+ * 2026-10 上收 lieshou-core-web（业务逻辑唯一源，同 auth/approval 模式）：
+ * 实现移至 core-web features/crm/crm.api.ts（走注入的 ApiPort 传输），
+ * 本文件保留导出路径兼容既有页面/测试。
+ * META 展示常量保留本地（core-web 不承载 UI 元数据）。
  */
-import { request } from "@lieshoucloud/contract-api";
-
-export type CustomerStatus = "NEW" | "FOLLOWING" | "CONVERTED" | "LOST";
-
-export interface Customer {
-  id: number;
-  tenantId: number;
-  name: string;
-  contactName?: string | null;
-  contactPhone?: string | null;
-  email?: string | null;
-  address?: string | null;
-  status: CustomerStatus;
-  ownerId?: number | null;
-  remark?: string | null;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-// api-client request() 会自动拼 `/api` 前缀（vite proxy → gateway），此处只写 `/customers/**`。
-
-export async function listCustomers(keyword?: string, status?: CustomerStatus): Promise<Customer[]> {
-  const query: string[] = [];
-  if (keyword) query.push(`keyword=${encodeURIComponent(keyword)}`);
-  if (status) query.push(`status=${status}`);
-  const qs = query.length > 0 ? `?${query.join("&")}` : "";
-  return request<Customer[]>({ method: "GET", path: `/customers${qs}` });
-}
-
-export async function countCustomers(): Promise<number> {
-  return request<number>({ method: "GET", path: `/customers/count` });
-}
-
-export async function getCustomer(id: number): Promise<Customer> {
-  return request<Customer>({ method: "GET", path: `/customers/${id}` });
-}
-
-export interface CreateCustomerRequest {
-  name: string;
-  contactName?: string;
-  contactPhone?: string;
-  email?: string;
-  address?: string;
-  status?: CustomerStatus;
-  ownerId?: number;
-  remark?: string;
-}
-
-export interface UpdateCustomerRequest {
-  name?: string;
-  contactName?: string;
-  contactPhone?: string;
-  email?: string;
-  address?: string;
-  status?: CustomerStatus;
-  ownerId?: number;
-  remark?: string;
-}
-
-/** POST /customers — 新建客户 */
-export async function createCustomer(body: CreateCustomerRequest): Promise<Customer> {
-  return request<Customer>({ method: "POST", path: `/customers`, body });
-}
-
-/** PUT /customers/{id} — 编辑客户 */
-export async function updateCustomer(id: number, body: UpdateCustomerRequest): Promise<Customer> {
-  return request<Customer>({ method: "PUT", path: `/customers/${id}`, body });
-}
-
-/** DELETE /customers/{id} — 删除客户 */
-export async function deleteCustomer(id: number): Promise<void> {
-  return request<void>({ method: "DELETE", path: `/customers/${id}` });
-}
-
-export const STATUS_META: Record<CustomerStatus, { text: string; color: string }> = {
-  NEW: { text: "新客户", color: "blue" },
-  FOLLOWING: { text: "跟进中", color: "gold" },
-  CONVERTED: { text: "已转化", color: "green" },
-  LOST: { text: "已流失", color: "red" },
-};
+export {
+  listCustomers,
+  countCustomers,
+  getCustomer,
+  createCustomer,
+  updateCustomer,
+  deleteCustomer,
+  importCustomers,
+  type ImportResult,
+} from '@lieshoucloud/core-web';
+export type {
+  CreateCustomerRequest,
+  Customer,
+  CustomerStatus,
+  UpdateCustomerRequest,
+} from '@lieshoucloud/contract-types/business/customer';
+export { STATUS_META } from '@lieshoucloud/contract-types/business/customer';

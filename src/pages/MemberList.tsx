@@ -36,7 +36,7 @@ export default function MemberList() {
   const load = async () => {
     setLoading(true);
     try {
-      const [m, cust] = await Promise.all([listMembers(status as Member["status"] | undefined), listCustomers()]);
+      const [m, cust] = await Promise.all([listMembers(undefined, undefined, status as Member["status"] | undefined), listCustomers()]);
       setMembers(m);
       setCustomers(cust.map((x) => ({ id: x.id, name: x.name })));
     } catch {
@@ -48,7 +48,6 @@ export default function MemberList() {
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
   const openCreate = () => {

@@ -77,9 +77,9 @@ export function isMenuHidden(edition: DesktopEdition, path: string): boolean {
   return (edition.hiddenMenus ?? []).some((h) => path === h || path.startsWith(`${h}/`));
 }
 
-/** 品牌默认值（中性；客户版未覆盖时回落） */
+/** 品牌默认值（中性；客户版未覆盖时回落；generic 用内置 SVG，客户仓 prepare 生成 brand-logo.png 显式覆盖） */
 const DEFAULT_BRANDING: Required<DesktopBranding> = {
-  logo: '/brand-logo.png',
+  logo: '/logo-default.svg',
   slogan: '一站式企业数字化工作台',
   footerText: 'LieShou Cloud Desktop',
   windowTitle: 'LieShou Cloud Desktop',

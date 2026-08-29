@@ -63,7 +63,6 @@ export default function Approval() {
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
 
   const onCreate = async (values: {

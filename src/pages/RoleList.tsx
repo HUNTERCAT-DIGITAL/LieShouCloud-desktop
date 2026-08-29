@@ -15,7 +15,7 @@ import { createRole, deleteRole, listRoles, updateRole } from "../services/role"
 const { Text } = Typography;
 
 interface RoleFormValues {
-  code?: string;
+  code: string;
   name: string;
   scope: RoleScope;
   description?: string;
@@ -42,7 +42,6 @@ export default function RoleList() {
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const openCreate = () => {
@@ -63,7 +62,7 @@ export default function RoleList() {
       if (editing) {
         await updateRole(editing.id, { name: v.name, scope: v.scope, description: v.description });
       } else {
-        await createRole({ code: v.code!, name: v.name, scope: v.scope, description: v.description });
+        await createRole({ code: v.code, name: v.name, scope: v.scope, description: v.description });
       }
       message.success(editing ? "已保存" : "已创建");
       setOpen(false);

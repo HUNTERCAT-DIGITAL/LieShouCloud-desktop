@@ -1,15 +1,18 @@
 [submodule "open/contract-api"]
 	path = open/contract-api
-	url = https://github.com/HUNTERCAT-DIGITAL/lieshou-contract-api.git
+	url = git@github.com:HUNTERCAT-DIGITAL/lieshou-contract-api.git
 [submodule "open/contract-config"]
 	path = open/contract-config
-	url = https://github.com/HUNTERCAT-DIGITAL/lieshou-contract-config.git
+	url = git@github.com:HUNTERCAT-DIGITAL/lieshou-contract-config.git
 [submodule "open/contract-types"]
 	path = open/contract-types
-	url = https://github.com/HUNTERCAT-DIGITAL/lieshou-contract-types.git
+	url = git@github.com:HUNTERCAT-DIGITAL/lieshou-contract-types.git
 [submodule "open/ui"]
 	path = open/ui
-	url = https://github.com/HUNTERCAT-DIGITAL/lieshou-ui.git
+	url = git@github.com:HUNTERCAT-DIGITAL/lieshou-ui.git
 [submodule "open/core-web"]
 	path = open/core-web
-	url = https://github.com/HUNTERCAT-DIGITAL/lieshou-core-web.git
+	url = git@github.com:HUNTERCAT-DIGITAL/lieshou-core-web.git
+[submodule "open/i18n"]
+	path = open/i18n
+	url = git@github.com:HUNTERCAT-DIGITAL/lieshou-i18n.git

@@ -24,5 +24,11 @@ src/config/editions/*.extra.ts
 # 客户仓生成的原生品牌/升级配置（tauri.<client>.conf.json · 勿提交）
 src-tauri/tauri.*.conf.json
 
+# 客户仓生成的品牌图标产物（prepare.mjs 生成 · 勿提交；generic 用 logo-default.svg）
+public/brand-logo.png
+src-tauri/icons/**/*.png
+src-tauri/icons/*.icns
+src-tauri/icons/*.ico
+
 # 客户仓生成的版别 tsconfig（tsconfig.<client>.json · 勿提交；tsconfig.json 不受影响）
 tsconfig.*.json

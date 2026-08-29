@@ -1,30 +1,32 @@
 /**
- * Desktop auth API service（Phase 9 多端真实化）.
- *
- * 与 admin 共享 api-client request<T>()，区别是 desktop 不依赖
- * 自动注入 Bearer token（desktop 是独立进程，token 直接从 store 拿）。
- *
- * 注意：api-client 的 request() 会自动拼接 `/api` 前缀（vite proxy → gateway），
- * 因此这里 path 只写 `/auth/**`，不能再重复 `/api`。
+ * 认证 API service —— 2026-10 上收 lieshou-core-web（业务逻辑唯一源）.
+ * 本文件保留导出路径兼容既有页面/测试（实现已移至 core-web）。
+ * isApiError / RegisterRequest 保留本地：页面错误判定 + desktop 开放注册形态（后端 code 可选）。
  */
-import { request } from "@lieshoucloud/contract-api";
-import type { CurrentUser, LoginRequest, TokenResponse } from "@lieshoucloud/contract-types";
+import { register as coreRegister } from '@lieshoucloud/core-web';
+import type { CodeChannel } from '@lieshoucloud/core-web';
+import type { TokenResponse } from '@lieshoucloud/contract-types/business/auth';
 
+export {
+  login,
+  refreshTokens,
+  fetchCurrentUser,
+  switchTenant,
+  sendCode,
+  loginWithCode,
+  resetPassword,
+  oauthProviders,
+  oauthAuthorize,
+  oauthToken,
+  type CodeChannel,
+  type CodePurpose,
+  type OAuthProvider,
+  type OAuthAuthorizeResult,
+  type OAuthTokenResult,
+  type SecureSession,
+} from '@lieshoucloud/core-web';
 
-export async function login(req: LoginRequest): Promise<TokenResponse> {
-  return request<TokenResponse>({
-    method: "POST",
-    path: `/auth/login`,
-    body: req,
-  });
-}
-
-export async function fetchCurrentUser(): Promise<CurrentUser> {
-  return request<CurrentUser>({
-    method: "GET",
-    path: `/auth/me`,
-  });
-}
+export type { TokenResponse, CurrentUser, LoginRequest } from '@lieshoucloud/contract-types/business/auth';
 
 export interface ApiError extends Error {
   code: string;
@@ -32,16 +34,10 @@ export interface ApiError extends Error {
 }
 
 export function isApiError(e: unknown): e is ApiError {
-  return e instanceof Error && "code" in e;
+  return e instanceof Error && 'code' in e;
 }
 
-// ============================================================
-// 注册/验证码（ADR-0023 · 与 admin-web 契约一致）
-// ============================================================
-
-export type CodeChannel = "SMS" | "EMAIL";
-export type CodePurpose = "LOGIN" | "REGISTER" | "RESET_PASSWORD";
-
+/** 开放注册形态（无验证码；后端 code 可选 · 2026-08） */
 export interface RegisterRequest {
   /** 加入哪个租户（单租户客户版固定用默认租户；有邀请码时后端忽略） */
   tenantCode?: string;
@@ -54,13 +50,7 @@ export interface RegisterRequest {
   inviteCode?: string;
 }
 
-/** POST /auth/register - 注册（开放注册,无需验证码;注册即登录） */
+/** 注册（注册即登录）—— 薄适配：实现走 core-web（ApiPort 传输） */
 export async function register(req: RegisterRequest): Promise<TokenResponse> {
-  return request<TokenResponse>({
-    method: "POST",
-    path: `/auth/register`,
-    body: req,
-    // 注册 400 = 参数错误,不走会话过期拦截
-    skipAuth401: true,
-  });
+  return coreRegister(req);
 }

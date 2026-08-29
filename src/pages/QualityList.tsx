@@ -66,7 +66,6 @@ export default function QualityList() {
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, result]);
 
   const submit = async (v: BatchFormValues) => {

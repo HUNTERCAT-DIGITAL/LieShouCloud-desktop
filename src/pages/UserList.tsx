@@ -16,9 +16,9 @@ import type { Role } from "@lieshoucloud/contract-types/business/role";
 
 
 interface UserFormValues {
-  username?: string;
+  username: string;
   displayName: string;
-  password?: string;
+  password: string;
   email?: string;
   phone?: string;
   status: string;
@@ -49,7 +49,6 @@ export default function UserList() {
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const openCreate = () => {
@@ -84,9 +83,9 @@ export default function UserList() {
         });
       } else {
         await createUser({
-          username: v.username!,
+          username: v.username,
           displayName: v.displayName,
-          password: v.password!,
+          password: v.password,
           email: v.email || undefined,
           phone: v.phone || undefined,
         });

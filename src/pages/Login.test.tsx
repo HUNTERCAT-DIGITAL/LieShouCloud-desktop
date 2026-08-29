@@ -60,7 +60,7 @@ describe("desktop Login", () => {
 
     // antd Form 提交是异步的，等微任务
     await new Promise((r) => setTimeout(r, 50));
-    expect(loginSpy).toHaveBeenCalledWith("futurewl", "pw", getBranding().defaultTenant || "jxlkas");
+    expect(loginSpy).toHaveBeenCalledWith("futurewl", "pw", getBranding().defaultTenant || "default");
     expect(await screen.findByText("工作台页")).toBeInTheDocument();
   });
 });

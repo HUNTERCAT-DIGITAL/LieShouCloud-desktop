@@ -36,7 +36,7 @@ export default function ContactList() {
   const load = async () => {
     setLoading(true);
     try {
-      const [c, cust] = await Promise.all([listContacts(keyword || undefined), listCustomers()]);
+      const [c, cust] = await Promise.all([listContacts(undefined, keyword || undefined), listCustomers()]);
       setContacts(c);
       setCustomers(cust.map((x) => ({ id: x.id, name: x.name })));
     } catch {
@@ -48,7 +48,6 @@ export default function ContactList() {
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const openCreate = () => {

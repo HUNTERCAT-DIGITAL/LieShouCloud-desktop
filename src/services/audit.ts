@@ -1,26 +1,9 @@
 /**
- * Desktop audit service（平台管理 · 审计日志只读 · ADR-0030）.
+ * 审计日志 API service（ADR-0030 · append-only 只读）.
+ *
+ * 2026-10 上收 lieshou-core-web（业务逻辑唯一源，同 auth/approval 模式）：
+ * 实现移至 core-web features/audit/audit.api.ts（走注入的 ApiPort 传输），
+ * 本文件保留导出路径兼容既有页面/测试。
  */
-import { request } from "@lieshoucloud/contract-api";
-import type { AuditAction, AuditLog } from "@lieshoucloud/contract-types/business/audit";
-
-export interface AuditQuery {
-  action?: AuditAction;
-  resourceType?: string;
-  limit?: number;
-}
-
-/** GET /audit-logs — 审计列表（新→旧） */
-export async function listAuditLogs(query: AuditQuery = {}): Promise<AuditLog[]> {
-  const params = new URLSearchParams();
-  if (query.action) params.set("action", query.action);
-  if (query.resourceType) params.set("resourceType", query.resourceType);
-  if (query.limit) params.set("limit", String(query.limit));
-  const qs = params.toString();
-  return request<AuditLog[]>({ method: "GET", path: `/audit-logs${qs ? `?${qs}` : ""}` });
-}
-
-/** GET /audit-logs/count */
-export async function countAuditLogs(): Promise<number> {
-  return request<number>({ method: "GET", path: "/audit-logs/count" });
-}
+export { listAuditLogs, countAuditLogs, type AuditQuery } from '@lieshoucloud/core-web';
+export type { AuditAction, AuditLog } from '@lieshoucloud/contract-types/business/audit';

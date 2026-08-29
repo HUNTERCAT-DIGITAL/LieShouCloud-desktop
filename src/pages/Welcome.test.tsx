@@ -30,6 +30,19 @@ vi.mock("../services/notification", () => ({
   listNotifications: mocks.listNotifications,
 }));
 vi.mock("../services/contract", () => ({ listContracts: mocks.listContracts }));
+// legalmind 客户版注入物(legalmind.extra.ts)由客户仓 deploy 生成,开源本仓不存在。
+// 测试显式 mock 出版别裁剪行为,保留对“客户注入裁剪”场景的覆盖。
+vi.mock("../config/editions", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../config/editions")>();
+  return {
+    ...actual,
+    getEdition: () => ({
+      ...actual.EDITIONS.generic,
+      industries: ["legal"],
+      hiddenMenus: ["/customers", "/lead", "/inventory", "/finance"],
+    }),
+  };
+});
 
 function renderWelcome() {
   return render(
@@ -90,7 +103,7 @@ describe("desktop Welcome", () => {
     expect(screen.getByText("欢迎使用")).toBeInTheDocument();
   });
 
-  it("快捷入口渲染 8 个入口", () => {
+  it("快捷入口按版别裁剪(legalmind:合同/案件/通知保留,客户/线索/库存隐藏)", () => {
     useAuthStore.setState({ user: { userId: 1, username: "u", roles: [] } });
     mocks.countCustomers.mockResolvedValue(0);
     mocks.getApprovalCounts.mockResolvedValue({ inbox: 0, mine: 0 });
@@ -100,10 +113,14 @@ describe("desktop Welcome", () => {
     mocks.listNotifications.mockResolvedValue([]);
     renderWelcome();
     expect(screen.getByText("快捷入口")).toBeInTheDocument();
-    ["客户管理", "线索管理", "合同管理", "审批流", "库存管理", "记账本", "案件管理", "通知中心"].forEach(
-      (label) => {
-        expect(screen.getAllByText(label).length).toBeGreaterThan(0);
-      },
-    );
+    // 保留:合同管理 / 案件管理 / 通知中心
+    expect(screen.getByText("合同管理")).toBeInTheDocument();
+    expect(screen.getByText("案件管理")).toBeInTheDocument();
+    expect(screen.getByText("通知中心")).toBeInTheDocument();
+    // 版别裁剪隐藏:客户管理 / 线索管理 / 库存管理 / 记账本(legalmind hiddenMenus)
+    expect(screen.queryByText("客户管理")).not.toBeInTheDocument();
+    expect(screen.queryByText("线索管理")).not.toBeInTheDocument();
+    expect(screen.queryByText("库存管理")).not.toBeInTheDocument();
+    expect(screen.queryByText("记账本")).not.toBeInTheDocument();
   });
 });

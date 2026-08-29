@@ -32,6 +32,7 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         // 升级完成后 relaunch 重启
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![fetch_health])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

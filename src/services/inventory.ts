@@ -1,62 +1,27 @@
 /**
- * Desktop inventory service（Phase 9 · 多端接入）.
- * 注意：api-client 的 request() 自动拼 /api 前缀，path 只写业务路径。
+ * 进销存 API service —— 2026-10 上收 lieshou-core-web（业务逻辑唯一源）.
+ * 本文件保留导出路径兼容既有页面/测试（实现已移至 core-web）。
+ * META 展示常量保留本地（core-web 不承载 UI 元数据）。
  */
-import { request } from "@lieshoucloud/contract-api";
-
-export type StockMovementType = "IN" | "OUT";
-
-export interface Product {
-  id: number;
-  tenantId: number;
-  name: string;
-  code?: string | null;
-  unit?: string | null;
-  price?: number | null;
-  stockQuantity: number;
-  remark?: string | null;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface StockMovement {
-  id: number;
-  tenantId: number;
-  productId: number;
-  type: StockMovementType;
-  quantity: number;
-  remark?: string | null;
-  createdAt: string;
-}
-
-export async function listProducts(keyword?: string): Promise<Product[]> {
-  const qs = keyword ? `?keyword=${encodeURIComponent(keyword)}` : "";
-  return request<Product[]>({ method: "GET", path: `/products${qs}` });
-}
-
-export async function createProduct(body: {
-  name: string;
-  code?: string;
-  unit?: string;
-  price?: number;
-  remark?: string;
-}): Promise<Product> {
-  return request<Product>({ method: "POST", path: `/products`, body });
-}
-
-export async function stockIn(id: number, quantity: number, remark?: string): Promise<Product> {
-  return request<Product>({ method: "POST", path: `/products/${id}/stock-in`, body: { quantity, remark } });
-}
-
-export async function stockOut(id: number, quantity: number, remark?: string): Promise<Product> {
-  return request<Product>({ method: "POST", path: `/products/${id}/stock-out`, body: { quantity, remark } });
-}
-
-export async function listMovements(id: number): Promise<StockMovement[]> {
-  return request<StockMovement[]>({ method: "GET", path: `/products/${id}/movements` });
-}
-
-export const MOVEMENT_META: Record<StockMovementType, { text: string; color: string }> = {
-  IN: { text: "入库", color: "green" },
-  OUT: { text: "出库", color: "orange" },
-};
+export {
+  listProducts,
+  countProducts,
+  getProduct,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  stockIn,
+  stockOut,
+  listMovements,
+  importProducts,
+  type ImportResult,
+} from '@lieshoucloud/core-web';
+export type {
+  CreateProductRequest,
+  Product,
+  StockChangeRequest,
+  StockMovement,
+  StockMovementType,
+  UpdateProductRequest,
+} from '@lieshoucloud/contract-types/business/inventory';
+export { MOVEMENT_META } from '@lieshoucloud/contract-types/business/inventory';
