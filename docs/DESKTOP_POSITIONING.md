@@ -52,7 +52,8 @@
 
 | 文件 | 职责 |
 | --- | --- |
-| `src/App.tsx` | 路由装配：`/login`、`/`、`/home` + **extraRoutes 懒加载注入**（LazyRoute） |
+| `src/App.tsx` | 路由装配：`/login`、`/`、`/home` + **extraRoutes 懒加载注入**（LazyRoute）；有客户菜单声明时套 ConsoleLayout（shouldUseConsole） |
+| `src/layout/ConsoleLayout.tsx` | **控制台主框架壳**（ProLayout）：侧栏菜单（name/icon/order/group + hiddenMenus 裁剪 + roles 角色过滤 + badge 角标轮询）+ 顶栏（品牌/用户/退出）+ 内容区 Outlet |
 | `src/main.tsx` | 启动：contract-api 模块级配置（E12）+ configureCore 端口注入 + 会话恢复 |
 | `src/pages/LoginPage.tsx` | 登录页（租户/账号/密码 → core-web login） |
 | `src/pages/HomePage.tsx` | 启动页（品牌 + 版本 + 后端连通检查 GET /api/auth/me） |
@@ -83,6 +84,7 @@ function LazyRoute({ load }: { load: () => Promise<{ default: ComponentType }> }
 
 - `layoutRoutes`（非 standalone）在登录守卫内；`standaloneRoutes` 独立注册（外部落地页）。
 - 客户包页面依赖（antd 等）由**端仓依赖 + vite 强制 alias** 保证解析（见 3.5）。
+- **控制台壳**：`shouldUseConsole`（extraRoutes 有 menu 声明或 dutyConsole）→ 套 `ConsoleLayout`（ProLayout）；无菜单版别（generic 骨架）保持扁平路由。菜单数据源 = `extraRoutes[].menu`（`roles` 角色裁剪、`badge` 角标轮询，contract-types 7d734d4+）。
 
 ### 3.4 API 与认证
 
@@ -187,9 +189,12 @@ https://dev.dwjk.lieshou.huntercat.cn/desktop
 **已实现**：
 - 登录 / 启动页 / 后端连通检查；客户 extraRoutes 装配（GridOpsBoard 经 `/desktop/dwjk/ops` 浏览器可达）。
 - `/desktop/` 子路径浏览器调试 + dev.dwjk 公网链路。
+- **控制台主框架壳**（2026-09）：ProLayout 侧栏菜单 + 顶栏 + 内容区；roles 角色裁剪 + badge 角标轮询（P2 能力一次到位）。
+- 登录落地客户主页（edition.homePath，dwjk=/dwjk/ops）。
 
 **待办**：
 - [ ] iot-service 实现 `/api/iot/tickets*`（GridOpsBoard 数据出空 —— 前端已通，等后端）。
+- [ ] desktop 行业页补全（dwjk extraRoutes 注入 /iot/overview、/iot/devices、/iot/alerts 等 industry 页面 + 菜单声明）。
 - [ ] `src-tauri/tauri.conf.json` 品牌定制（productName/window title 仍为通用）。
 - [ ] dev server 常驻 systemd 化（重启机器后自动恢复 21306）。
 - [ ] README.md 更新（当前描述为薄壳前业务，已过时）。
