@@ -5,7 +5,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import type { ComponentType } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import { getExtraEdition } from "./config/editions";
+import { getEdition, getExtraEdition } from "./config/editions";
 
 import { AuthGuard, PageLoading } from "@lieshoucloud/ui";
 import BasicLayout from "./layouts/BasicLayout";
@@ -13,6 +13,7 @@ import { useAuthStore } from "./stores/auth";
 
 const Login = lazy(() => import("./pages/Login"));
 const Welcome = lazy(() => import("./pages/Welcome"));
+const About = lazy(() => import("./pages/About"));
 const Cases = lazy(() => import("./pages/Cases"));
 const CaseDetail = lazy(() => import("./pages/CaseDetail"));
 const Clients = lazy(() => import("./pages/Clients"));
@@ -52,15 +53,18 @@ function ExtraRoute({ route }: { route: { path: string; load: () => Promise<{ de
 const EXTRA_ROUTES = getExtraEdition().extraRoutes ?? [];
 
 /** 客户定制首页（今日作战台等；缺省 /welcome 通用工作台） */
-const homePath = getExtraEdition().homePath;
+const homePath = getEdition().homePath ?? '/about';
 
 /**
  * 受保护布局：认证状态由端内 auth store 读取，注入共享 AuthGuard（L1-1 · 受控版）.
  */
 function ProtectedLayout() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const edition = getEdition();
+  // 端薄壳化(2026-08-29): login.required=false 时游客直达, 不拦截路由
+  const authed = edition.login?.required === false ? true : isAuthenticated;
   return (
-    <AuthGuard isAuthenticated={isAuthenticated}>
+    <AuthGuard isAuthenticated={authed}>
       <BasicLayout />
     </AuthGuard>
   );
@@ -72,6 +76,7 @@ export const routes = (
       <Route path="/login" element={<Login />} />
       <Route element={<ProtectedLayout />}>
         <Route path="/welcome" element={homePath ? <Navigate to={homePath} replace /> : <Welcome />} />
+        <Route path="/about" element={<About />} />
         <Route path="/cases" element={<Cases />} />
         <Route path="/cases/:id" element={<CaseDetail />} />
         <Route path="/clients" element={<Clients />} />

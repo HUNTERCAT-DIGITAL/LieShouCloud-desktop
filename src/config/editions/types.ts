@@ -4,7 +4,7 @@
  * 门户营销字段（hero/faq/cta）由 admin-web 承载，此处不复制。
  */
 import type { ComponentType } from 'react';
-import type { IndustryId } from '@lieshoucloud/contract-types';
+import type { EditionLogin, IndustryId } from '@lieshoucloud/contract-types';
 
 export type DesktopEditionId = 'generic' | 'layer';
 
@@ -37,6 +37,8 @@ export interface DesktopEdition {
   branding?: DesktopBranding;
   /** 登录后首页（客户可注入专属作战台路径；缺省 /welcome） */
   homePath?: string;
+  /** 登录能力配置（端薄壳化 · 2026-08-29：required=false 游客直达, mode 定登录形态） */
+  login?: EditionLogin;
   /** 启用的行业能力（行业菜单显隐由此派生） */
   industries: IndustryId[];
   /**

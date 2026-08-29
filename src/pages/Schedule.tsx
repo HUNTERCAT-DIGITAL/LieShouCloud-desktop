@@ -39,7 +39,7 @@ export default function Schedule() {
       setSummary({
         total: s.workCount + s.meetingCount,
         upcoming: s.pendingConfirm,
-        confirmed: list.filter((i) => i.confirmed).length,
+        confirmed: list.filter((i: MatterSchedule) => i.confirmed).length,
       });
     } finally {
       setLoading(false);

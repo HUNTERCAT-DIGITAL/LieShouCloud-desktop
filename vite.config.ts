@@ -41,10 +41,10 @@ export default defineConfig({
   },
   clearScreen: false,
   server: {
-    port: 1420,
+    port: 1425,
     strictPort: true,
     host: "0.0.0.0",
-    hmr: { protocol: "ws", host: "localhost", port: 1421 },
+    hmr: { protocol: "ws", host: "localhost", port: 1426 },
     watch: { ignored: ["**/src-tauri/**"] },
     proxy: {
       // 转发到 Spring Cloud Gateway（与 admin dev 一致）
