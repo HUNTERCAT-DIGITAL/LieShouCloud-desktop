@@ -20,6 +20,9 @@ importers:
       '@lieshoucloud/core-web':
         specifier: workspace:*
         version: link:open/core-web
+      '@lieshoucloud/i18n':
+        specifier: workspace:*
+        version: link:open/i18n
       '@lieshoucloud/ui':
         specifier: workspace:*
         version: link:open/ui

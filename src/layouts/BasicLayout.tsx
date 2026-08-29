@@ -12,6 +12,7 @@ import {
   AccountBookOutlined,
   AppstoreOutlined,
   BellOutlined,
+  GlobalOutlined,
   CloudSyncOutlined,
   DashboardOutlined,
   FileTextOutlined,
@@ -30,6 +31,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import WindowControls from "../components/WindowControls";
 import { useUpdaterContext } from "../components/Updater";
 import { unreadNotificationCount } from "../services/notification";
+import { useI18n } from "../hooks/useI18n";
 import { useAuthStore } from "../stores/auth";
 import { colors } from "../theme/colors";
 import { getAvatarColor } from "../utils/avatar";
@@ -120,6 +122,7 @@ export default function BasicLayout() {
 
   // 通知未读数：首拉 + 60s 轮询 + 页面切换刷新
   const [unread, setUnread] = useState(0);
+  const { locale, setLocale, t } = useI18n();
   useEffect(() => {
     const refresh = () => {
       unreadNotificationCount()
@@ -264,6 +267,24 @@ export default function BasicLayout() {
               </Badge>
             }
           />
+          <Dropdown
+            menu={{
+              items: [
+                { key: "zh-CN", label: "中文" },
+                { key: "en-US", label: "English" },
+              ],
+              selectedKeys: [locale],
+              onClick: ({ key }) => setLocale(key as "zh-CN" | "en-US"),
+            }}
+            placement="bottomRight"
+          >
+            <Button
+              type="text"
+              aria-label={t("common.lang.switch")}
+              style={{ color: "#fff", padding: "4px 10px" }}
+              icon={<GlobalOutlined style={{ fontSize: 16 }} />}
+            />
+          </Dropdown>
           <Dropdown menu={{ items: userMenu }} placement="bottomRight">
             <Space style={{ cursor: "pointer", padding: "0 8px" }}>
               <Avatar size="small" icon={<UserOutlined />} style={{ background: getAvatarColor(user?.username) }}>

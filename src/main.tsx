@@ -1,14 +1,18 @@
-import { StrictMode } from "react";
+import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { ConfigProvider, message } from "antd";
+import enUS from "antd/locale/en_US";
+import dayjs from "dayjs";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { configureCore } from "@lieshoucloud/core-web";
+import { configureCore, useAuthStore } from "@lieshoucloud/core-web";
 import { request, setBaseUrl } from "@lieshoucloud/contract-api";
 import { resolveApiBase } from "@lieshoucloud/contract-config";
 import App from "./App";
 import { getBranding, getEdition } from "./config/editions";
 import { colors } from "./theme/colors";
+import { restoreLocale, useLocale } from "./hooks/useI18n";
 import zhCN from "antd/locale/zh_CN";
+import "dayjs/locale/zh-cn";
 import "./styles/global.css";
 
 // —— API 网关基址：env 优先（VITE_API_BASE，与发布脚本 publish-desktop-update.sh 注入一致），缺省本地 Tauri 联调 ——
@@ -46,6 +50,8 @@ configureCore({
     },
   },
 });
+// core-web auth store 采用 skipHydration（端口注入后显式恢复会话，2026-09 正本清源）
+void useAuthStore.persist.rehydrate();
 
 // —— 品牌（可配置 · 2026-09）：antd 主题 token 用版别主色；原生窗口标题用版别品牌 ——
 const branding = getBranding();
@@ -61,12 +67,15 @@ if (typeof window !== "undefined" && "__TAURI_INTERNALS__" in window) {
     .catch(() => undefined);
 }
 
-// Vite 标准入口：root 由 index.html 保证存在
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+restoreLocale();
+
+// —— 语言跟随（共享 i18n · 2026-09）：antd 组件内置文案随语言切换 ——
+function ThemedApp(): React.JSX.Element {
+  const locale = useLocale();
+  dayjs.locale(locale === "en-US" ? "en" : "zh-cn");
+  return (
     <ConfigProvider
-      locale={zhCN}
+      locale={locale === "en-US" ? enUS : zhCN}
       theme={{
         token: {
           colorPrimary: brandColors.primary,
@@ -90,5 +99,11 @@ createRoot(document.getElementById("root")!).render(
     >
       <App />
     </ConfigProvider>
+  );
+}
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <ThemedApp />
   </StrictMode>,
 );
