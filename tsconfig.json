@@ -54,6 +54,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "src-tauri"
+    "src-tauri",
+    "src/config/editions/*.extra.ts"
   ]
 }

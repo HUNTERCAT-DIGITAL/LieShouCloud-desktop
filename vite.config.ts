@@ -12,7 +12,21 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
+    alias: [
+      { find: "@", replacement: path.resolve(__dirname, "src") },
+      // 共享包显式 alias（嵌套 workspace（客户仓 submodule）场景 symlink 解析漂移 → 强制端内 open/*）
+      { find: "@lieshoucloud/contract-api", replacement: path.resolve(__dirname, "open/contract-api/src") },
+      { find: "@lieshoucloud/contract-config", replacement: path.resolve(__dirname, "open/contract-config/src") },
+      { find: "@lieshoucloud/contract-types", replacement: path.resolve(__dirname, "open/contract-types/src") },
+      { find: "@lieshoucloud/core-web", replacement: path.resolve(__dirname, "open/core-web/src") },
+      { find: "@lieshoucloud/i18n", replacement: path.resolve(__dirname, "open/i18n/src") },
+      // 客户包兜底：@lieshoucloud/<client>[/<subpath>] → ../packages/<client>/src[/<subpath>]
+      // （正则捕获组 + $1/$2 由 Vite alias 字符串替换展开；共享包走显式 alias，排除避免误命中）
+      {
+        find: /^@lieshoucloud\/(?!contract-api|contract-config|contract-types|ui|core-web|charts|hooks|i18n|ui-native)([a-z-]+)(\/.*)?$/,
+        replacement: path.resolve(__dirname, "../packages/$1/src$2"),
+      },
+    ],
   },
   clearScreen: false,
   server: {
