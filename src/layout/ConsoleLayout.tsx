@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuDataItem } from '@ant-design/pro-components';
 import { ProLayout } from '@ant-design/pro-components';
-import { Avatar, Dropdown, Typography } from 'antd';
+import { Avatar, Badge, Dropdown, Typography } from 'antd';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
@@ -179,16 +179,20 @@ export default function ConsoleLayout() {
       route={{ path: '/', routes: menuItems }}
       location={{ pathname: location.pathname }}
       menuItemRender={(item: MenuDataItem, dom: ReactNode) => {
+        let node: ReactNode = dom;
         if (item.path) {
-          return <a onClick={() => navigate(item.path as string)}>{dom}</a>;
+          node = <a onClick={() => navigate(item.path as string)}>{dom}</a>;
         }
-        return dom;
+        // 角标（badge 轮询值 · antd Badge 包菜单项；>0 才显示）
+        const count = item.path ? badgeMap[item.path] : undefined;
+        return count && count > 0 ? (
+          <Badge count={count} size="small" offset={[8, 0]}>
+            {node}
+          </Badge>
+        ) : (
+          node
+        );
       }}
-      menuDataRender={(menus: MenuDataItem[]) =>
-        menus.map((m: MenuDataItem) =>
-          m.path && badgeMap[m.path] ? { ...m, badge: badgeMap[m.path] } : m,
-        )
-      }
       avatarProps={{
         icon: <Avatar size="small">{user?.username?.slice(0, 1)?.toUpperCase() ?? '值'}</Avatar>,
         title: <Typography.Text>{user?.username ?? '值班员'}</Typography.Text>,
