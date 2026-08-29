@@ -24,7 +24,7 @@ import {
   ThunderboltOutlined,
   ToolOutlined,
 } from '@ant-design/icons';
-import type { MenuDataItem } from '@ant-design/pro-components';
+import type { AvatarProps, MenuDataItem } from '@ant-design/pro-components';
 import { ProLayout } from '@ant-design/pro-components';
 import { Avatar, Dropdown, Typography } from 'antd';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
@@ -195,7 +195,7 @@ export default function ConsoleLayout() {
       avatarProps={{
         icon: <Avatar size="small">{user?.username?.slice(0, 1)?.toUpperCase() ?? '值'}</Avatar>,
         title: <Typography.Text>{user?.username ?? '值班员'}</Typography.Text>,
-        render: (_props, dom) => (
+        render: (_props: AvatarProps, dom: ReactNode) => (
           <Dropdown
             menu={{
               items: [
