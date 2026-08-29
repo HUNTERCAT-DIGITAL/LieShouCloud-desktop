@@ -15,6 +15,10 @@ const Login = lazy(() => import("./pages/Login"));
 const Welcome = lazy(() => import("./pages/Welcome"));
 const Cases = lazy(() => import("./pages/Cases"));
 const CaseDetail = lazy(() => import("./pages/CaseDetail"));
+const Clients = lazy(() => import("./pages/Clients"));
+const Schedule = lazy(() => import("./pages/Schedule"));
+const KnowledgeBase = lazy(() => import("./pages/KnowledgeBase"));
+const AiWorkspace = lazy(() => import("./pages/AiWorkspace"));
 const Customers = lazy(() => import("./pages/Customers"));
 const CustomerDetail = lazy(() => import("./pages/CustomerDetail"));
 const Inventory = lazy(() => import("./pages/Inventory"));
@@ -70,6 +74,10 @@ export const routes = (
         <Route path="/welcome" element={homePath ? <Navigate to={homePath} replace /> : <Welcome />} />
         <Route path="/cases" element={<Cases />} />
         <Route path="/cases/:id" element={<CaseDetail />} />
+        <Route path="/clients" element={<Clients />} />
+        <Route path="/schedule" element={<Schedule />} />
+        <Route path="/knowledge" element={<KnowledgeBase />} />
+        <Route path="/ai" element={<AiWorkspace />} />
         <Route path="/customers" element={<Customers />} />
         <Route path="/customers/:id" element={<CustomerDetail />} />
         <Route path="/inventory" element={<Inventory />} />

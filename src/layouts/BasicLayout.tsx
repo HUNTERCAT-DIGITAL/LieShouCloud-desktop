@@ -60,6 +60,10 @@ const ICON_MAP: Record<string, ReactNode> = {
 const BASE_NAV: NavItem[] = [
   { key: "/welcome", label: "工作台", path: "/welcome" },
   { key: "/cases", label: "案件管理", path: "/cases" },
+  { key: "/clients", label: "客户价值", path: "/clients" },
+  { key: "/schedule", label: "日程", path: "/schedule" },
+  { key: "/knowledge", label: "知识库", path: "/knowledge" },
+  { key: "/ai", label: "AI 助手", path: "/ai" },
   { key: "/customers", label: "客户管理", path: "/customers" },
   { key: "/inventory", label: "库存管理", path: "/inventory" },
   { key: "/finance", label: "记账本", path: "/finance" },
