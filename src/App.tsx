@@ -13,6 +13,7 @@ import {
 import { useAuthStore } from '@lieshoucloud/core-web';
 
 import { getEdition } from './config/editions';
+import ConsoleLayout, { shouldUseConsole } from './layout/ConsoleLayout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 
@@ -44,6 +45,7 @@ function RequireAuth() {
 export default function App() {
   const edition = getEdition();
   const extraRoutes = edition.extraRoutes ?? [];
+  const useConsole = shouldUseConsole(edition);
   // 登录后落地页：客户 edition.homePath 优先（客户主页/工作台），缺省上游启动页
   const fallbackPath = edition.homePath ?? '/home';
   // 工作台/首页：客户可注入 path='/' 或 '/home' 覆盖骨架 HomePage（对齐 admin-web）
@@ -54,20 +56,26 @@ export default function App() {
   );
   const standaloneRoutes = extraRoutes.filter((r) => r.standalone);
 
+  const layoutChildren = (
+    <>
+      <Route path="/" element={homeElement} />
+      <Route path="/home" element={homeElement} />
+      {layoutRoutes.map((r) => (
+        <Route
+          key={r.path}
+          path={r.path.replace(/^\//, '')}
+          element={<LazyRoute load={r.load} />}
+        />
+      ))}
+    </>
+  );
+
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL} useTransitions={false}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route element={<RequireAuth />}>
-          <Route path="/" element={homeElement} />
-          <Route path="/home" element={homeElement} />
-          {layoutRoutes.map((r) => (
-            <Route
-              key={r.path}
-              path={r.path.replace(/^\//, '')}
-              element={<LazyRoute load={r.load} />}
-            />
-          ))}
+          {useConsole ? <Route element={<ConsoleLayout />}>{layoutChildren}</Route> : layoutChildren}
         </Route>
         {standaloneRoutes.map((r) => (
           <Route

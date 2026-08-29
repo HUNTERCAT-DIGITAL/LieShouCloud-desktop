@@ -21,19 +21,22 @@
     "tauri:build": "tauri build"
   },
   "dependencies": {
-    "antd": "^5.22.0",
-    "@tauri-apps/api": "~2.0.0",
-    "@tauri-apps/plugin-process": "2.3.1",
-    "@tauri-apps/plugin-shell": "2.3.1",
-    "@tauri-apps/plugin-updater": "2.10.1",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-router-dom": "^7.18.2",
+    "@ant-design/icons": "~5.5.1",
+    "@ant-design/pro-components": "^2.8.0",
     "@lieshoucloud/contract-api": "workspace:*",
     "@lieshoucloud/contract-config": "workspace:*",
     "@lieshoucloud/contract-types": "workspace:*",
     "@lieshoucloud/core-web": "workspace:*",
-    "@lieshoucloud/i18n": "workspace:*"
+    "@lieshoucloud/i18n": "workspace:*",
+    "@tauri-apps/api": "~2.0.0",
+    "@tauri-apps/plugin-process": "2.3.1",
+    "@tauri-apps/plugin-shell": "2.3.1",
+    "@tauri-apps/plugin-updater": "2.10.1",
+    "antd": "^5.22.0",
+    "dayjs": "~1.11.13",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-router-dom": "^7.18.2"
   },
   "devDependencies": {
     "@eslint/js": "9.15.0",

@@ -27,6 +27,9 @@ export default defineConfig({
       // 客户包 antd 页面（../packages/<client>/src 位于端仓外）：antd 从 import 文件向上
       // 解析不到端内 node_modules → 强制 alias（E13 同款 · react-router-dom/antd 等）
       { find: "antd", replacement: path.resolve(__dirname, "node_modules/antd") },
+      { find: "@ant-design/icons", replacement: path.resolve(__dirname, "node_modules/@ant-design/icons") },
+      { find: "@ant-design/pro-components", replacement: path.resolve(__dirname, "node_modules/@ant-design/pro-components") },
+      { find: "dayjs", replacement: path.resolve(__dirname, "node_modules/dayjs") },
       // 客户包兜底：@lieshoucloud/<client>[/<subpath>] → ../packages/<client>/src[/<subpath>]
       // （正则捕获组 + $1/$2 由 Vite alias 字符串替换展开；共享包走显式 alias，排除避免误命中）
       {
