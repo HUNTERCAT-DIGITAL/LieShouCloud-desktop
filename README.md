@@ -1,7 +1,9 @@
-# lieshou-cloud-desktop · 猎手云桌面端(开源)
+# lieshou-app-desktop · 猎手云桌面端(开源)
 
-> 猎手云(开源)的桌面客户端:Tauri 2 桌面壳 + React 19 渲染,承载登录 / 工作台 / 客户 / 库存 / 财务 / 审批等通用业务。
+> 猎手云(开源)的桌面客户端:Tauri 2 桌面壳 + React 19 渲染。**薄壳化**——端仓只含登录 / 启动页骨架;
 > 行业能力与客户定制通过 **Edition 配置 + 客户仓注入**(`extraRoutes`)装配,不在本仓内。
+> 浏览器等价物:同一前端可在 `/desktop/` 子路径浏览器访问(零 Tauri API 依赖)。
+> **定位与职责详见 [docs/DESKTOP_POSITIONING.md](docs/DESKTOP_POSITIONING.md)**。
 
 <p align="center">
   <img src="https://img.shields.io/badge/Tauri-2-orange" alt="Tauri 2"/>
@@ -18,8 +20,9 @@
 ## 快速开始
 
 ```bash
-git clone git@github.com:HUNTERCAT-DIGITAL/lieshou-desktop.git
-git submodule update --init --recursive   # 拉 open/(lieshou-cloud-web 共享包)
+git clone git@github.com:HUNTERCAT-DIGITAL/lieshou-app-desktop.git
+cd lieshou-app-desktop
+git submodule update --init --recursive   # 拉 open/(共享包 contract-api/types/config/ui/core-web)
 pnpm install
 pnpm tauri:dev                            # 开发(需 Rust toolchain)
 ```
@@ -36,11 +39,12 @@ pnpm tauri:dev                            # 开发(需 Rust toolchain)
 
 ## 客户/行业装配
 
-本仓只含**通用部分**;行业能力与客户定制由客户仓注入:
+本仓只含**通用薄壳**(登录 + 启动页);行业能力与客户定制由客户仓注入:
 
-- 客户 Edition 配置在客户仓 `config/editions/<client>.ts`(本仓仅 `generic` + `layer` 预设)
-- 客户仓生成 `editions/<client>.extra.ts`(extraRoutes)→ 本仓装配
-- `EditionGuard` / `isMenuHidden` 按 `edition.hiddenMenus` 裁剪;行业能力经 `edition.industries` 声明(industry 包为闭源商业模块)
+- 客户 Edition 配置:delivery 仓 `deploy:prepare` 生成 `config/editions/<client>.extra.ts`
+  (本仓仅 `generic` 预设;`index.ts` 用 `import.meta.glob` 自动收集 `*.extra.ts`)
+- 客户包页面(`packages/<client>/`)经 `extraRoutes` 懒加载装配(`App.tsx` LazyRoute)
+- 浏览器调试: `VITE_BASE=/desktop/ VITE_API_BASE='' pnpm dev --port 21306` → /desktop/
 
 ## 共享层升级流程
 
@@ -54,10 +58,10 @@ pnpm tauri:dev                            # 开发(需 Rust toolchain)
 
 ## 关联仓库
 
-- 共享层(开源):`HUNTERCAT-DIGITAL/lieshou-cloud-web`
-- 后端底座(开源):`HUNTERCAT-DIGITAL/lieshou-cloud`
-- 其他端(开源):`lieshou-cloud-admin-web` · `lieshou-cloud-mobile` · `lieshou-cloud-mini-program`
-- 商业主仓:`HUNTERCAT-DIGITAL/lieshou-cloud-pro`
+- 共享层(开源):`HUNTERCAT-DIGITAL/lieshou-contract-{api,types,config}` · `lieshou-ui` · `lieshou-core-web`(open/ submodule)
+- 后端底座(开源):`HUNTERCAT-DIGITAL/lieshou-cloud` · `lieshou-framework`
+- 其他端(开源):`lieshou-app-admin-web` · `lieshou-app-mobile` · `lieshou-app-mobile-web` · `lieshou-app-mini-program`
+- 客户聚合仓(闭源):`HUNTERCAT-DIGITAL/lieshou-delivery-{dwjk,haizan,legalmind,...}`
 
 ## License
 
