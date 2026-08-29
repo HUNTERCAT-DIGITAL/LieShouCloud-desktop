@@ -150,7 +150,7 @@ export default function TenantList() {
         <Form<TenantFormValues> form={form} layout="vertical" onFinish={submit} requiredMark={false}>
           {!editing && (
             <Form.Item label="租户编码" name="code" rules={[{ required: true, message: "请输入编码" }]}>
-              <Input placeholder="如:jxlkas" />
+              <Input placeholder="如:default" />
             </Form.Item>
           )}
           <Form.Item label="租户名称" name="name" rules={[{ required: true, message: "请输入名称" }]}>
