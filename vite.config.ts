@@ -30,12 +30,12 @@ export default defineConfig({
   },
   clearScreen: false,
   server: {
-    port: 1425,
+    port: 21302,
     strictPort: true,
     watch: {
       ignored: ["**/src-tauri/**"],
     },
-    hmr: { protocol: "ws", host: "localhost", port: 1426 },
+    hmr: { protocol: "ws", host: "localhost", port: 21303 },
   },
   envPrefix: ["VITE_", "TAURI_ENV_*"],
   build: {

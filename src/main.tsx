@@ -12,7 +12,7 @@ import './styles/global.css';
 // （与 src-tauri/tauri.conf.json CSP connect-src 白名单对齐）
 const API_BASE =
   (import.meta.env?.VITE_API_BASE as string | undefined)?.replace(/\/+$/, '') ??
-  'http://localhost:9000';
+  'http://localhost:21000';
 
 // —— API 客户端（contract-api：token 注入 + 401 单飞刷新 + 会话过期兜底）——
 const api = createApiClient({
