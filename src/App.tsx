@@ -10,6 +10,7 @@ import {
   Route,
   Routes,
 } from 'react-router-dom';
+import { invoke } from '@tauri-apps/api/core';
 import { useAuthStore } from '@lieshoucloud/core-web';
 
 import { getEdition } from './config/editions';
@@ -53,7 +54,7 @@ export default function App() {
   // 沉浸式兜底：Rust set_immersive 命令（FindWindow 移除 WS_CAPTION · 延迟重试——窗口就绪后）
   const tryImmersive = () => {
     try {
-      void import('@tauri-apps/api/core').then(({ invoke }) => invoke('set_immersive'));
+      void invoke('set_immersive');
     } catch {
       // 浏览器/非 Tauri 环境
     }
