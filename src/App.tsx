@@ -19,6 +19,7 @@ import { checkForUpdates, isTauri } from './lib/updater';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import PortalPage from './pages/PortalPage';
+import WelcomePage from './pages/WelcomePage';
 
 /** 客户注入路由的懒加载出口 */
 function LazyRoute({ load }: { load: () => Promise<{ default: ComponentType }> }) {
@@ -36,12 +37,12 @@ function LazyRoute({ load }: { load: () => Promise<{ default: ComponentType }> }
   );
 }
 
-/** 登录守卫：required=false（游客直达）时放行 */
+/** 登录守卫：required=false（游客直达）时放行；未登录 → 门户页 */
 function RequireAuth() {
   const edition = getEdition();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const required = edition.login?.required !== false;
-  if (required && !isAuthenticated) return <Navigate to="/login" replace />;
+  if (required && !isAuthenticated) return <Navigate to="/portal" replace />;
   return <Outlet />;
 }
 
@@ -80,8 +81,10 @@ export default function App() {
     <BrowserRouter basename={import.meta.env.BASE_URL} useTransitions={false}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        {/* 门户页（公开 · 未登录落地） */}
         <Route path="/portal" element={<PortalPage />} />
         <Route element={<RequireAuth />}>
+          <Route path="/welcome" element={<WelcomePage />} />
           {useConsole ? <Route element={<ConsoleLayout />}>{layoutChildren}</Route> : layoutChildren}
         </Route>
         {standaloneRoutes.map((r) => (

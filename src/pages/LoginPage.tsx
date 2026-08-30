@@ -7,6 +7,8 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@lieshoucloud/core-web';
 
 import { getEdition } from '../config/editions';
+import { APP_VERSION } from '../config/version';
+import { checkForUpdates, isTauri } from '../lib/updater';
 
 export default function LoginPage() {
   const edition = getEdition();
@@ -87,6 +89,14 @@ export default function LoginPage() {
           前往门户
         </button>
       </form>
+      <footer className="login-footer">
+        <span>v{APP_VERSION}</span>
+        {isTauri() && (
+          <button className="login-check-update" type="button" onClick={() => void checkForUpdates(false)}>
+            检查更新
+          </button>
+        )}
+      </footer>
     </div>
   );
 }
