@@ -22,6 +22,7 @@ import {
   InfoCircleOutlined,
   LogoutOutlined,
   MenuOutlined,
+  SyncOutlined,
   ThunderboltOutlined,
   ToolOutlined,
 } from '@ant-design/icons';
@@ -35,6 +36,7 @@ import { request } from '@lieshoucloud/contract-api';
 import { useAuthStore } from '@lieshoucloud/core-web';
 import type { EditionConfig, EditionExtraRoute } from '@lieshoucloud/contract-types';
 
+import { checkForUpdates, isTauri } from '../lib/updater';
 import { getEdition } from '../config/editions';
 
 /** 菜单图标：string 名称 → antd 图标（未知名称兜底默认图标） */
@@ -201,6 +203,17 @@ export default function ConsoleLayout() {
           <Dropdown
             menu={{
               items: [
+                // 桌面端在线升级（Tauri 环境；浏览器版不显示）
+                ...(isTauri()
+                  ? [
+                      {
+                        key: 'check-update',
+                        icon: <SyncOutlined />,
+                        label: '检查更新',
+                        onClick: () => void checkForUpdates(false),
+                      },
+                    ]
+                  : []),
                 {
                   key: 'about',
                   icon: <InfoCircleOutlined />,

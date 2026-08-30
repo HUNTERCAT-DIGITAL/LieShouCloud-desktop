@@ -14,7 +14,11 @@ import { useAuthStore } from '@lieshoucloud/core-web';
 
 import { getEdition } from './config/editions';
 import ConsoleLayout, { shouldUseConsole } from './layout/ConsoleLayout';
+<<<<<<< HEAD
 import AboutPage from './pages/AboutPage';
+=======
+import { checkForUpdates, isTauri } from './lib/updater';
+>>>>>>> 2db0522 (feat(desktop): 在线升级客户端——启动静默检查 + 顶栏「检查更新」)
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 
@@ -47,6 +51,8 @@ export default function App() {
   const edition = getEdition();
   const extraRoutes = edition.extraRoutes ?? [];
   const useConsole = shouldUseConsole(edition);
+  // 桌面端启动静默检查更新（Tauri 环境；浏览器版跳过）
+  void (isTauri() ? checkForUpdates(true) : Promise.resolve());
   // 登录后落地页：客户 edition.homePath 优先（客户主页/工作台），缺省上游启动页
   const fallbackPath = edition.homePath ?? '/home';
   // 工作台/首页：客户可注入 path='/' 或 '/home' 覆盖骨架 HomePage（对齐 admin-web）
