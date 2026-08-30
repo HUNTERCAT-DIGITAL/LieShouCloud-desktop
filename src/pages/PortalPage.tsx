@@ -15,7 +15,6 @@ import {
   FundOutlined,
   FundProjectionScreenOutlined,
   HomeOutlined,
-  LoginOutlined,
   MenuOutlined,
   ThunderboltOutlined,
   ToolOutlined,
@@ -25,7 +24,6 @@ import type { ReactNode } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@lieshoucloud/core-web';
 
-import TitleBar from '../components/TitleBar';
 import { getEdition } from '../config/editions';
 import { APP_VERSION } from '../config/version';
 import { checkForUpdates, isTauri } from '../lib/updater';
@@ -74,37 +72,6 @@ export default function PortalPage() {
 
   return (
     <div className="portal-page">
-      {/* ===== 统一顶部标题栏（接管原生标题栏 · 品牌+操作+窗口按钮一体） ===== */}
-      <TitleBar
-        actions={
-          <>
-            {entries.length > 0 && (
-              <a className="titlebar-link" href="#features">
-                平台功能
-              </a>
-            )}
-            {isTauri() && (
-              <Button
-                size="small"
-                type="text"
-                className="titlebar-btn"
-                onClick={() => void checkForUpdates(false)}
-              >
-                检查更新
-              </Button>
-            )}
-            <Button
-              size="small"
-              type="primary"
-              className="titlebar-btn"
-              icon={<LoginOutlined />}
-              onClick={() => navigate('/login')}
-            >
-              登录
-            </Button>
-          </>
-        }
-      />
 
       {/* ===== Hero：品牌 + 标语 + 描述 + CTA ===== */}
       <header className="portal-hero" id="hero">

@@ -8,6 +8,105 @@ body,
   height: 100%;
   margin: 0;
 }
+/* ============================================================
+ * 全局壳（App 层）——唯一顶部标题栏 AppTopBar + 内容区
+ * flex 布局：topbar 44px 固定 + app-main 占满剩余（100vh - 44px）
+ * ============================================================ */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+.app-topbar {
+  flex-shrink: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 12px;
+  z-index: 1000;
+  background: var(--apptop-bg);
+  border-bottom: 1px solid var(--apptop-border);
+  user-select: none;
+  -webkit-app-region: drag; /* 兜底拖拽（Tauri 亦用 data-tauri-drag-region） */
+}
+.app-topbar-light {
+  --apptop-bg: #ffffff;
+  --apptop-fg: #334155;
+  --apptop-border: rgba(15, 23, 42, 0.08);
+  --apptop-hover-bg: rgba(0, 0, 0, 0.05);
+  --apptop-hover-fg: #0f172a;
+  --apptop-link-hover-bg: #eef2f7;
+}
+.app-topbar-dark {
+  --apptop-bg: #02429b;
+  --apptop-fg: rgba(255, 255, 255, 0.88);
+  --apptop-border: rgba(255, 255, 255, 0.1);
+  --apptop-hover-bg: rgba(255, 255, 255, 0.12);
+  --apptop-hover-fg: #ffffff;
+  --apptop-link-hover-bg: rgba(255, 255, 255, 0.14);
+}
+.app-topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--apptop-fg);
+}
+.app-topbar-logo {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  object-fit: cover;
+}
+.app-topbar-logo-fallback {
+  background: #02429b;
+  color: #fff;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.app-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  margin-left: auto;
+}
+.app-topbar-btn {
+  border-radius: 6px;
+}
+.app-topbar-dark .app-topbar-btn.ant-btn-text {
+  color: var(--apptop-fg);
+}
+.app-topbar-dark .app-topbar-btn.ant-btn-text:hover {
+  background: var(--apptop-hover-bg);
+  color: #fff;
+}
+.app-topbar-dark .ant-btn-primary.app-topbar-btn {
+  box-shadow: none;
+}
+.app-topbar-user {
+  color: var(--apptop-fg);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.app-topbar-user:hover {
+  background: var(--apptop-hover-bg);
+}
+.app-main {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
 body {
   background: #f5f6f7;
   font-family:
@@ -17,7 +116,8 @@ body {
 }
 /* ---------- 登录页 ---------- */
 .login-page {
-  min-height: 100vh;
+  height: 100%;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,17 +125,6 @@ body {
   /* 无 padding：TitleBar 贴顶 + 撑满整宽（顶部一个整体） */
   padding: 0;
   background: linear-gradient(160deg, #02429b 0%, #0a6bd8 60%, #f5f6f7 60.1%);
-}
-/* TitleBar 贴顶后，内容区需自带顶部间距 */
-.login-page .titlebar {
-  width: 100%;
-  flex-shrink: 0;
-}
-.login-page .login-brand {
-  padding-top: 56px;
-}
-.login-page .login-card {
-  margin-bottom: 56px;
 }
 .login-brand {
   text-align: center;
@@ -260,99 +349,13 @@ body {
  * 沉浸式门户页（PortalPage 2026-09 · 无边框界面）
  * ============================================================ */
 .portal-page {
-  min-height: 100vh;
+  height: 100%;
+  min-height: 100%;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   background: #f5f8ff;
   overflow-x: hidden;
-}
-
-/* ---- 统一顶部标题栏（接管原生标题栏 · 品牌+操作+窗口按钮一体） ----
- * 深浅主题由 CSS 变量统一管理（light 浅底深字 / dark 深底浅字），
- * 窗口控制按钮颜色也跟随同一套变量，保证顶部是一个整体。 */
-.titlebar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 12px;
-  gap: 12px;
-  background: var(--titlebar-bg);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--titlebar-border);
-  user-select: none;
-}
-.titlebar-light {
-  --titlebar-bg: rgba(255, 255, 255, 0.92);
-  --titlebar-fg: #334155;
-  --titlebar-border: rgba(15, 23, 42, 0.08);
-  --titlebar-hover-bg: rgba(0, 0, 0, 0.05);
-  --titlebar-hover-fg: #0f172a;
-  --titlebar-link-hover-bg: #eef2f7;
-}
-.titlebar-dark {
-  --titlebar-bg: #02429b;
-  --titlebar-fg: rgba(255, 255, 255, 0.88);
-  --titlebar-border: rgba(255, 255, 255, 0.1);
-  --titlebar-hover-bg: rgba(255, 255, 255, 0.12);
-  --titlebar-hover-fg: #fff;
-  --titlebar-link-hover-bg: rgba(255, 255, 255, 0.14);
-}
-.titlebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--titlebar-fg);
-}
-.titlebar-logo {
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  object-fit: cover;
-}
-.titlebar-logo-fallback {
-  background: #02429b;
-  color: #fff;
-  font-size: 14px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.titlebar-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 100%;
-}
-.titlebar-link {
-  color: var(--titlebar-fg);
-  font-size: 13px;
-  text-decoration: none;
-  padding: 4px 8px;
-  border-radius: 6px;
-  opacity: 0.85;
-}
-.titlebar-link:hover {
-  opacity: 1;
-  background: var(--titlebar-link-hover-bg);
-}
-.titlebar-btn {
-  border-radius: 6px;
-}
-.titlebar-dark .titlebar-btn.ant-btn-text {
-  color: var(--titlebar-fg);
-}
-.titlebar-dark .titlebar-btn.ant-btn-text:hover {
-  background: var(--titlebar-hover-bg);
-  color: #fff;
-}
-.titlebar-dark .ant-btn-primary.titlebar-btn {
-  box-shadow: none;
 }
 
 /* ---- 窗口控制按钮（自定义最小化/最大化/关闭） ---- */

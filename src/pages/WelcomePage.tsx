@@ -8,7 +8,6 @@ import { Button, Card, Col, Row, Tag, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@lieshoucloud/core-web';
 
-import TitleBar from '../components/TitleBar';
 import { getEdition } from '../config/editions';
 import { APP_VERSION } from '../config/version';
 import { checkForUpdates, isTauri } from '../lib/updater';
@@ -24,8 +23,6 @@ export default function WelcomePage() {
   return (
     <div className="portal-page welcome-page">
       {/* 沉浸式标题栏（拖拽 + 窗口控制） */}
-      {/* 统一顶部标题栏 */}
-      <TitleBar />
       <header className="portal-hero">
         <Title level={2} className="portal-title">
           欢迎回来，{user?.username ?? '用户'}

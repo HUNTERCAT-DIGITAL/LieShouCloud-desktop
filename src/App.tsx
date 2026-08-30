@@ -13,6 +13,7 @@ import {
 import { useAuthStore } from '@lieshoucloud/core-web';
 
 import { getEdition } from './config/editions';
+import AppTopBar from './layout/AppTopBar';
 import ConsoleLayout, { shouldUseConsole } from './layout/ConsoleLayout';
 import { invoke } from '@tauri-apps/api/core';
 import AboutPage from './pages/AboutPage';
@@ -93,6 +94,9 @@ export default function App() {
 
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL} useTransitions={false}>
+      <div className="app-shell">
+      <AppTopBar />
+      <div className="app-main">
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         {/* 门户页（公开 · 未登录落地） */}
@@ -110,6 +114,8 @@ export default function App() {
         ))}
         <Route path="*" element={<Navigate to={fallbackPath} replace />} />
       </Routes>
+      </div>
+      </div>
     </BrowserRouter>
   );
 }

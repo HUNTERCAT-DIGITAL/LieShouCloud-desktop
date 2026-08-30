@@ -19,16 +19,13 @@ import {
   FundOutlined,
   FundProjectionScreenOutlined,
   HomeOutlined,
-  InfoCircleOutlined,
-  LogoutOutlined,
   MenuOutlined,
-  SyncOutlined,
   ThunderboltOutlined,
   ToolOutlined,
 } from '@ant-design/icons';
 import type { MenuDataItem } from '@ant-design/pro-components';
 import { ProLayout } from '@ant-design/pro-components';
-import { Avatar, Badge, Dropdown, Typography } from 'antd';
+import { Badge } from 'antd';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
@@ -36,8 +33,6 @@ import { request } from '@lieshoucloud/contract-api';
 import { useAuthStore } from '@lieshoucloud/core-web';
 import type { EditionConfig, EditionExtraRoute } from '@lieshoucloud/contract-types';
 
-import WindowControls from '../components/WindowControls';
-import { checkForUpdates, isTauri } from '../lib/updater';
 import { getEdition } from '../config/editions';
 
 /** 菜单图标：string 名称 → antd 图标（未知名称兜底默认图标） */
@@ -166,9 +161,6 @@ export function shouldUseConsole(edition: EditionConfig): boolean {
 export default function ConsoleLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useAuthStore((s) => s.user);
-  const logout = useAuthStore((s) => s.logout);
-
   const edition = getEdition();
   const menuItems = useMemo(() => buildMenuItems(edition, userRoles()), [edition]);
   const badgeMap = useBadgeMap(edition.extraRoutes ?? []);
@@ -177,9 +169,8 @@ export default function ConsoleLayout() {
     <ProLayout
       title={edition.brandName}
       logo={false}
-      layout="mix"
+      layout="side"
       fixSiderbar
-      fixedHeader
       route={{ path: '/', routes: menuItems }}
       location={{ pathname: location.pathname }}
       menuItemRender={(item: MenuDataItem, dom: ReactNode) => {
@@ -197,44 +188,6 @@ export default function ConsoleLayout() {
           node
         );
       }}
-      avatarProps={{
-        icon: <Avatar size="small">{user?.username?.slice(0, 1)?.toUpperCase() ?? '值'}</Avatar>,
-        title: <Typography.Text>{user?.username ?? '值班员'}</Typography.Text>,
-        render: (_props: unknown, dom: ReactNode) => (
-          <Dropdown
-            menu={{
-              items: [
-                // 桌面端在线升级（Tauri 环境；浏览器版不显示）
-                ...(isTauri()
-                  ? [
-                      {
-                        key: 'check-update',
-                        icon: <SyncOutlined />,
-                        label: '检查更新',
-                        onClick: () => void checkForUpdates(false),
-                      },
-                    ]
-                  : []),
-                {
-                  key: 'about',
-                  icon: <InfoCircleOutlined />,
-                  label: '关于',
-                  onClick: () => navigate('/about'),
-                },
-                {
-                  key: 'logout',
-                  icon: <LogoutOutlined />,
-                  label: '退出登录',
-                  onClick: () => logout(),
-                },
-              ],
-            }}
-          >
-            {dom}
-          </Dropdown>
-        ),
-      }}
-      actionsRender={() => [<WindowControls key="wc" variant="dark" />]}
     >
       <Outlet />
     </ProLayout>
