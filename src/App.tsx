@@ -14,11 +14,8 @@ import { useAuthStore } from '@lieshoucloud/core-web';
 
 import { getEdition } from './config/editions';
 import ConsoleLayout, { shouldUseConsole } from './layout/ConsoleLayout';
-<<<<<<< HEAD
 import AboutPage from './pages/AboutPage';
-=======
 import { checkForUpdates, isTauri } from './lib/updater';
->>>>>>> 2db0522 (feat(desktop): 在线升级客户端——启动静默检查 + 顶栏「检查更新」)
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 
