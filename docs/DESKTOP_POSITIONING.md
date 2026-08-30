@@ -274,3 +274,14 @@ curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:21000/api/auth
 - [ ] `src-tauri/tauri.conf.json` 品牌定制（productName/window title 仍为通用）。
 - [ ] dev server 常驻 systemd 化（重启机器后自动恢复 21306）。
 - [ ] README.md 更新（当前描述为薄壳前业务，已过时）。
+
+### Win11 构建 Rust 改动不生效（2026-09 · 沉浸式排查 · 根因链）
+
+- **症状**：改了 `src-tauri/src/lib.rs`（setup/命令/on_page_load）反复构建，Windows 上行为毫无变化（系统标题栏仍在）；PowerShell 手动 `SetWindowLong` 却能改。
+- **根因链（3 层）**：
+  1. **`cp` 到 `/mnt/c`（drvfs）同步失败**——`cp src-tauri/.../lib.rs /mnt/c/.../` 多源复制在 drvfs 上不可靠，**Rust 改动从未进构建目录**（前端 vite 产物正常、Rust 全旧）。验证：`grep -c set_immersive /mnt/c/.../lib.rs` = 0。
+  2. **cargo 增量不重编**——`touch -d` 固定未来时间（如 2030）两次相同 → cargo fingerprint 相同 → 不重编。
+  3. **windows crate 0.61 API 变化**——`BOOL` 在 `windows::core`（非 Win32::Foundation）、`FindWindowW` 返回 `Result<HWND>`（需 unwrap）。
+- **修复**：`rsync -a` 单文件同步（可靠）；`touch -d` 用**递增未来时间**（2035→2036→2037…）强制 cargo 重编；API 按 0.61 修。
+- **排查要点**：Rust 改动后验证「exe 二进制含命令名」（`grep -c set_immersive exe`）；看构建日志 `Compiling lieshoucloud-desktop` 确认重编。
+- **最终方案**：`on_page_load` 回调移除本进程所有顶层窗口 WS_CAPTION（`EnumWindows` + `SetWindowLong` + `SWP_FRAMECHANGED`）→ Win11 CAPTION=False ✓。
