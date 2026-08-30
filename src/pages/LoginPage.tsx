@@ -83,6 +83,9 @@ export default function LoginPage() {
         <button className="login-submit" type="submit" disabled={submitting}>
           {submitting ? '登录中…' : '登 录'}
         </button>
+        <button className="portal-link" type="button" onClick={() => navigate('/portal')}>
+          前往门户
+        </button>
       </form>
     </div>
   );
