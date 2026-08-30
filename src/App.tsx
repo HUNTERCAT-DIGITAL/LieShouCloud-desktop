@@ -2,7 +2,7 @@
  * 桌面端 · 路由装配（端自身骨架 · 登录态来自 core-web useAuthStore）
  * /login 登录页；/、/home 启动页（登录守卫）；客户 extraRoutes 懒加载注入。
  */
-import { Suspense, lazy, useMemo, type ComponentType } from 'react';
+import { Suspense, lazy, useEffect, useMemo, type ComponentType } from 'react';
 import {
   BrowserRouter,
   Navigate,
@@ -59,6 +59,20 @@ export default function App() {
   for (const delay of [600, 1500, 3000]) {
     setTimeout(tryImmersive, delay);
   }
+  // 最大化/还原后 tauri 会重新应用窗口样式（conf decorations:true）→ 系统标题栏回归；
+  // 监听 resize/move 事件，变化后重新进入沉浸式（仅当前窗口，安全）。
+  useEffect(() => {
+    try {
+      // 动态引入：浏览器/非 Tauri 环境跳过（模块顶层访问 internals 会抛错）
+      void import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
+        const win = getCurrentWindow();
+        void win.onResized(() => safeInvoke('set_immersive'));
+        void win.onMoved(() => safeInvoke('set_immersive'));
+      });
+    } catch {
+      // 浏览器/非 Tauri 环境
+    }
+  }, []);
   // 桌面端启动静默检查更新（Tauri 环境；浏览器版跳过）
   void (isTauri() ? checkForUpdates(true) : Promise.resolve());
   // 登录后落地页：客户 edition.homePath 优先（客户主页/工作台），缺省上游启动页
