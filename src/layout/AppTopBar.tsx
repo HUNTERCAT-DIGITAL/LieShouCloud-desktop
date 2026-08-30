@@ -50,18 +50,26 @@ export default function AppTopBar() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const logout = useAuthStore((s) => s.logout);
   const [theme, setTheme] = useState<Theme>('light');
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     setTheme(resolveTheme(location.pathname, isAuthenticated));
   }, [location.pathname, isAuthenticated]);
 
+  // 浏览器全屏（kiosk/电视墙等 Fullscreen API）→ 隐藏顶栏，全屏沉浸
+  useEffect(() => {
+    const onFs = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onFs);
+    return () => document.removeEventListener('fullscreenchange', onFs);
+  }, []);
+
   const dark = theme === 'dark';
   const isLogin = location.pathname === '/login';
   const isConsole = isAuthenticated && !isLogin && !['/portal', '/welcome'].includes(location.pathname);
 
-  // 驾驶舱/独立全屏页（extraRoutes standalone）：隐藏顶栏，全屏沉浸
+  // 驾驶舱/独立全屏页（extraRoutes standalone）或浏览器全屏（kiosk）→ 隐藏顶栏
   const standalonePaths = (edition.extraRoutes ?? []).filter((r) => r.standalone).map((r) => r.path);
-  if (standalonePaths.includes(location.pathname)) return null;
+  if (isFullscreen || standalonePaths.includes(location.pathname)) return null;
 
   return (
     <header
