@@ -1,23 +1,24 @@
 /**
  * 桌面端 · 门户页（未登录公开落地页 · 端通用层）.
  *
- * 现代化品牌 landing：Hero（品牌 + 标语 + 描述 + CTA）+ 功能入口卡
- * （extraRoutes 菜单项 → 真实 antd 图标）+ 页脚（版本号 + 检查更新）。
+ * 场景：桌面应用已安装在客户电脑上（无需「下载」入口），打开应用未登录时落地本页。
+ * 结构：顶部导航（品牌 + 锚点 + 检查更新 + 登录）→ 品牌 Hero → 产品介绍 → 平台功能 → 页脚。
  * 登录态访问自动回主页（homePath）。
  */
 import {
   AlertOutlined,
   ApartmentOutlined,
   AppstoreOutlined,
+  ArrowRightOutlined,
+  ControlOutlined,
   DashboardOutlined,
   FundOutlined,
   FundProjectionScreenOutlined,
   HomeOutlined,
+  LoginOutlined,
   MenuOutlined,
   ThunderboltOutlined,
   ToolOutlined,
-  ControlOutlined,
-  ArrowRightOutlined,
 } from '@ant-design/icons';
 import { Button, Card, Col, Row, Tag, Typography } from 'antd';
 import type { ReactNode } from 'react';
@@ -56,6 +57,7 @@ function iconOf(name?: string): ReactNode {
 export default function PortalPage() {
   const navigate = useNavigate();
   const edition = getEdition();
+  const portal = edition.portal;
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const entries = (edition.extraRoutes ?? [])
     .filter((r) => r.menu && !r.menu?.group)
@@ -66,8 +68,36 @@ export default function PortalPage() {
 
   return (
     <div className="portal-page">
+      {/* ===== 顶部导航：品牌 + 锚点 + 检查更新 + 登录 ===== */}
+      <header className="portal-nav">
+        <div className="portal-nav-inner">
+          <a className="portal-nav-brand" href="#hero">
+            {edition.logo ? (
+              <img className="portal-nav-logo" src={edition.logo} alt={edition.brandName} />
+            ) : (
+              <span className="portal-logo-fallback nav">{edition.brandName?.slice(0, 1)}</span>
+            )}
+            <span>{edition.brandName}</span>
+          </a>
+          <nav className="portal-nav-links">
+            {portal?.intro && portal.intro.length > 0 && <a href="#intro">产品介绍</a>}
+            {entries.length > 0 && <a href="#features">平台功能</a>}
+          </nav>
+          <div className="portal-nav-actions">
+            {isTauri() && (
+              <Button size="middle" onClick={() => void checkForUpdates(false)}>
+                检查更新
+              </Button>
+            )}
+            <Button type="primary" icon={<LoginOutlined />} onClick={() => navigate('/login')}>
+              登录
+            </Button>
+          </div>
+        </div>
+      </header>
+
       {/* ===== Hero：品牌 + 标语 + 描述 + CTA ===== */}
-      <header className="portal-hero">
+      <header className="portal-hero" id="hero">
         <div className="portal-hero-inner">
           <div className="portal-logo">
             {edition.logo ? (
@@ -93,7 +123,11 @@ export default function PortalPage() {
               进入系统
             </Button>
             {isTauri() && (
-              <Button size="large" className="portal-update-btn" onClick={() => void checkForUpdates(false)}>
+              <Button
+                size="large"
+                className="portal-update-btn"
+                onClick={() => void checkForUpdates(false)}
+              >
                 检查更新
               </Button>
             )}
@@ -101,9 +135,23 @@ export default function PortalPage() {
         </div>
       </header>
 
+      {/* ===== 产品介绍 ===== */}
+      {portal?.intro && portal.intro.length > 0 && (
+        <section className="portal-section" id="intro">
+          <div className="portal-section-title">
+            <Title level={3}>产品介绍</Title>
+          </div>
+          <div className="portal-intro">
+            {portal.intro.map((p, i) => (
+              <Paragraph key={i}>{p}</Paragraph>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* ===== 功能入口卡（客户装配的菜单项 · 真实图标） ===== */}
       {entries.length > 0 && (
-        <section className="portal-features">
+        <section className="portal-features" id="features">
           <div className="portal-section-title">
             <Title level={3}>平台功能</Title>
             <Paragraph>一站式数字化值守工作台</Paragraph>
@@ -123,9 +171,7 @@ export default function PortalPage() {
 
       {/* ===== 页脚：版本号 + 检查更新 ===== */}
       <footer className="portal-footer">
-        <span className="portal-footer-brand">
-          {edition.companyName ?? edition.brandName}
-        </span>
+        <span className="portal-footer-brand">{edition.companyName ?? edition.brandName}</span>
         <Tag className="portal-version-tag">v{APP_VERSION}</Tag>
         {isTauri() && (
           <Button type="link" size="small" onClick={() => void checkForUpdates(false)}>

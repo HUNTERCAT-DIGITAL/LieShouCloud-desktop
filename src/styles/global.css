@@ -219,6 +219,101 @@ body {
   background: #f5f8ff;
 }
 
+/* ---- 顶部导航 ---- */
+.portal-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+}
+
+.portal-nav-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.portal-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1f1f1f;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.portal-nav-logo {
+  height: 32px;
+  width: 32px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.portal-logo-fallback.nav {
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+}
+
+.portal-nav-links {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+}
+
+.portal-nav-links a {
+  color: #555;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.portal-nav-links a:hover {
+  color: #02429b;
+}
+
+.portal-nav-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* ---- 产品介绍 ---- */
+.portal-section {
+  width: 100%;
+  max-width: 1080px;
+  padding: 56px 24px 24px;
+}
+
+.portal-section-title {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.portal-section-title .ant-typography {
+  margin-bottom: 8px;
+}
+
+.portal-intro {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.portal-intro .ant-typography {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #555;
+}
+
 /* ---- Hero ---- */
 .portal-hero {
   width: 100%;
