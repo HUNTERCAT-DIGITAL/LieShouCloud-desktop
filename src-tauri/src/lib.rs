@@ -24,6 +24,35 @@ fn fetch_health() -> HealthResponse {
     }
 }
 
+/// 沉浸式无边框：按标题定位主窗口并移除 WS_CAPTION（前端 invoke 调用 · 多次重试）。
+#[tauri::command]
+fn set_immersive() -> bool {
+    #[cfg(target_os = "windows")]
+    {
+        unsafe {
+            use windows::core::w;
+            use windows::Win32::Foundation::HWND;
+            use windows::Win32::UI::WindowsAndMessaging::*;
+            let hwnd: HWND = FindWindowW(None, w!("电网监控"));
+            if !hwnd.is_invalid() {
+                let style = GetWindowLongW(hwnd, GWL_STYLE);
+                SetWindowLongW(hwnd, GWL_STYLE, style & !(WS_CAPTION.0 as i32));
+                SetWindowPos(
+                    hwnd,
+                    None,
+                    0,
+                    0,
+                    0,
+                    0,
+                    SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER,
+                );
+                return true;
+            }
+        }
+    }
+    false
+}
+
 /// Tauri 入口.
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -64,7 +93,7 @@ pub fn run() {
             let _ = app;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![fetch_health])
+        .invoke_handler(tauri::generate_handler![fetch_health, set_immersive])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
