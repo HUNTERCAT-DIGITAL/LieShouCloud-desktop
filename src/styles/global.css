@@ -104,12 +104,19 @@ body {
   opacity: 0.6;
 }
 
-/* ---------- 启动页 ---------- */
-.home-page {
+/* ---------- 启动页 / 关于页 ---------- */
+.home-page,
+.about-page {
   min-height: 100vh;
   max-width: 720px;
   margin: 0 auto;
   padding: 48px 24px;
+}
+
+.home-logo {
+  display: block;
+  max-height: 64px;
+  margin: 0 auto 16px;
 }
 
 .home-header {

@@ -14,6 +14,7 @@ import { useAuthStore } from '@lieshoucloud/core-web';
 
 import { getEdition } from './config/editions';
 import ConsoleLayout, { shouldUseConsole } from './layout/ConsoleLayout';
+import AboutPage from './pages/AboutPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 
@@ -60,6 +61,7 @@ export default function App() {
     <>
       <Route path="/" element={homeElement} />
       <Route path="/home" element={homeElement} />
+      <Route path="about" element={<AboutPage />} />
       {layoutRoutes.map((r) => (
         <Route
           key={r.path}

@@ -19,6 +19,7 @@ import {
   FundOutlined,
   FundProjectionScreenOutlined,
   HomeOutlined,
+  InfoCircleOutlined,
   LogoutOutlined,
   MenuOutlined,
   ThunderboltOutlined,
@@ -200,6 +201,12 @@ export default function ConsoleLayout() {
           <Dropdown
             menu={{
               items: [
+                {
+                  key: 'about',
+                  icon: <InfoCircleOutlined />,
+                  label: '关于',
+                  onClick: () => navigate('/about'),
+                },
                 {
                   key: 'logout',
                   icon: <LogoutOutlined />,
