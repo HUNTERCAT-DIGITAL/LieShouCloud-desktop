@@ -36,30 +36,32 @@ pub fn run() {
         // 沉浸式无边框：Rust 侧直接强制（conf decorations:false + tauri set_decorations 均兜底；
         // Windows 再用 Win32 直接移除 WS_CAPTION——tauri 2 的 set_decorations 实测未完全生效）
         .setup(|app| {
-            if let Some(w) = app.get_webview_window("main") {
-                let _ = w.set_decorations(false);
-                #[cfg(target_os = "windows")]
-                unsafe {
-                    use windows::core::w;
-                    use windows::Win32::Foundation::HWND;
-                    use windows::Win32::UI::WindowsAndMessaging::*;
-                    // 按窗口标题定位主窗口（tauri hwnd() 可能非外层窗口）
-                    let hwnd: HWND = FindWindowW(None, w!("电网监控"));
-                    if !hwnd.is_invalid() {
-                        let style = GetWindowLongW(hwnd, GWL_STYLE);
-                        SetWindowLongW(hwnd, GWL_STYLE, style & !(WS_CAPTION.0 as i32));
-                        SetWindowPos(
-                            hwnd,
-                            None,
-                            0,
-                            0,
-                            0,
-                            0,
-                            SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER,
-                        );
-                    }
+            #[cfg(target_os = "windows")]
+            unsafe {
+                use windows::core::w;
+                use windows::Win32::Foundation::HWND;
+                use windows::Win32::UI::WindowsAndMessaging::*;
+                // 按窗口标题定位主窗口（不依赖 get_webview_window——setup 时窗口可能未就绪）
+                let hwnd: HWND = FindWindowW(None, w!("电网监控"));
+                let _ = std::fs::write(
+                    "C:/dwjk-build/setup-info.txt",
+                    format!("setup=ran hwnd_valid={} windows={}", !hwnd.is_invalid(), cfg!(target_os = "windows")),
+                );
+                if !hwnd.is_invalid() {
+                    let style = GetWindowLongW(hwnd, GWL_STYLE);
+                    SetWindowLongW(hwnd, GWL_STYLE, style & !(WS_CAPTION.0 as i32));
+                    SetWindowPos(
+                        hwnd,
+                        None,
+                        0,
+                        0,
+                        0,
+                        0,
+                        SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER,
+                    );
                 }
             }
+            let _ = app;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![fetch_health])
