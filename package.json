@@ -1,6 +1,6 @@
 {
   "name": "@lieshoucloud/desktop-app",
-  "version": "0.2.6",
+  "version": "0.2.8",
   "private": true,
   "type": "module",
   "description": "猎手云桌面端（Tauri 2 + React 19 + Vite）· 端自身最小骨架（零上游共享依赖）。",
