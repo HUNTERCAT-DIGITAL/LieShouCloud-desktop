@@ -218,6 +218,36 @@ Windows NSIS 产物待 Win11 发布机执行脚本产出。
 
 ## 6. 踩坑速查（下次先查这里）
 
+### Tauri 桌面端登录 Failed to fetch（三层排查 · 2026-09 Win11 实测）
+
+**症状**：Win11 安装的桌面端登录报「网络请求失败，请检查网络后重试（TypeError: Failed to fetch）」；浏览器同域名正常。
+
+**排查链（三层，按此顺序查）**：
+
+| 层 | 根因 | 验证 | 修复 |
+| --- | --- | --- | --- |
+| ① API 基址 | 构建时 `VITE_API_BASE=''`（同源）→ Tauri WebView origin 是 `tauri://localhost`，相对 `/api` 无路由 | 产物 js 搜不到 API 域名 | 构建注入**绝对 URL**：`VITE_API_BASE=https://dev.dwjk.lieshou.huntercat.cn/api`（发布脚本默认值） |
+| ② CSP | `connect-src` 缺 API 域名（只有生产域名 + 错误的 `*.lieshoucloud` 通配） | 查 `tauri.dwjk.conf.json` CSP | prepare `cspDomains` 加客户 API 域名（dev.dwjk） |
+| ③ **CORS（最终根因）** | Tauri WebView fetch 跨源带 `Origin: tauri://localhost`（/https://tauri.localhost），gateway CORS 白名单无 → 403。浏览器能登录是「Origin==Host 同源放行」，桌面端 origin≠host 走白名单 | `curl -H "Origin: tauri://localhost" .../api/auth/login` → 403/200 | gateway CORS 白名单加 `tauri://localhost, https://tauri.localhost, http://tauri.localhost`（部署 .env CORS_ALLOWED_ORIGINS + compose 默认 + gateway 源码默认兜底） |
+
+**排查命令**：
+```bash
+# ① 产物含 API 域名？
+grep -rl "dev.dwjk.lieshou.huntercat.cn" dist/assets/*.js
+# ③ 网关是否放行 Tauri origin？
+curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:21000/api/auth/login \
+  -H "Content-Type: application/json" -H "Origin: tauri://localhost" \
+  -d '{"tenantCode":"default","username":"admin","password":"admin123"}'
+# 200 = 放行；403 = 白名单缺 Tauri origin
+```
+
+**防再犯**：
+- 桌面端构建**永远注入绝对 API URL**（禁止 '' 同源——那是浏览器静态托管语义）
+- 新客户 desktop 上线的 CORS 白名单检查清单：API 域名 + `tauri://localhost` 系 origin
+- gateway 源码默认值已含 Tauri origin（1960957）作通用兜底；部署 .env 覆盖时需手动补
+
+### 其他已记录坑
+
 | # | 症状 | 根因 | 修复 |
 | --- | --- | --- | --- |
 | E10 | 域名访问 dev 403 | vite 6 Host 校验 | `server.host:true + allowedHosts:true` |
