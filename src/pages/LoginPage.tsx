@@ -286,14 +286,6 @@ export default function LoginPage() {
         >
           {mode === 'password' ? '登 录' : '验证码登录'}
         </Button>
-
-        <Button
-          block
-          style={{ marginTop: 8 }}
-          onClick={() => navigate('/portal')}
-        >
-          前往门户
-        </Button>
       </form>
 
       {/* 页脚：版本号 + 检查更新（沉浸式） */}
