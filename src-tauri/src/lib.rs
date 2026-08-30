@@ -33,6 +33,13 @@ pub fn run() {
         // 升级完成后 relaunch 重启
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_shell::init())
+        // 沉浸式无边框：Rust 侧直接强制（绕过 JS IPC/capabilities；conf decorations:false 兜底）
+        .setup(|app| {
+            if let Some(w) = app.get_webview_window("main") {
+                let _ = w.set_decorations(false);
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![fetch_health])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
