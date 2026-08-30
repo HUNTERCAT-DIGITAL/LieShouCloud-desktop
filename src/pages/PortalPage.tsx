@@ -101,7 +101,10 @@ export default function PortalPage() {
         <div className="portal-hero-inner">
           <div className="portal-logo">
             {edition.logo ? (
-              <img src={edition.logo} alt={edition.brandName} />
+              <img
+                src={`${import.meta.env.BASE_URL}${edition.logo.replace(/^\//, '')}`}
+                alt={edition.brandName}
+              />
             ) : (
               <span className="portal-logo-fallback">{edition.brandName?.slice(0, 1)}</span>
             )}
