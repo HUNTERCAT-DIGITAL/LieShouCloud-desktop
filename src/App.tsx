@@ -62,16 +62,20 @@ export default function App() {
   // 最大化/还原后 tauri 会重新应用窗口样式（conf decorations:true）→ 系统标题栏回归；
   // 监听 resize/move 事件，变化后重新进入沉浸式（仅当前窗口，安全）。
   useEffect(() => {
-    try {
-      // 动态引入：浏览器/非 Tauri 环境跳过（模块顶层访问 internals 会抛错）
-      void import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
-        const win = getCurrentWindow();
-        void win.onResized(() => safeInvoke('set_immersive'));
-        void win.onMoved(() => safeInvoke('set_immersive'));
+    // 动态引入：浏览器/非 Tauri 环境跳过（模块顶层访问 internals 会抛错）
+    void import('@tauri-apps/api/window')
+      .then(({ getCurrentWindow }) => {
+        try {
+          const win = getCurrentWindow();
+          void win.onResized(() => safeInvoke('set_immersive'));
+          void win.onMoved(() => safeInvoke('set_immersive'));
+        } catch {
+          // 浏览器/非 Tauri 环境：getCurrentWindow 内部读 internals 抛错——忽略
+        }
+      })
+      .catch(() => {
+        // import 失败（无 tauri 依赖）/非 Tauri
       });
-    } catch {
-      // 浏览器/非 Tauri 环境
-    }
   }, []);
   // 桌面端启动静默检查更新（Tauri 环境；浏览器版跳过）
   void (isTauri() ? checkForUpdates(true) : Promise.resolve());
