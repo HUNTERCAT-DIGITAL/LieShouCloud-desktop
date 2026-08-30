@@ -36,6 +36,7 @@ import { request } from '@lieshoucloud/contract-api';
 import { useAuthStore } from '@lieshoucloud/core-web';
 import type { EditionConfig, EditionExtraRoute } from '@lieshoucloud/contract-types';
 
+import WindowControls from '../components/WindowControls';
 import { checkForUpdates, isTauri } from '../lib/updater';
 import { getEdition } from '../config/editions';
 
@@ -233,7 +234,7 @@ export default function ConsoleLayout() {
           </Dropdown>
         ),
       }}
-      actionsRender={() => []}
+      actionsRender={() => [<WindowControls key="wc" />]}
     >
       <Outlet />
     </ProLayout>

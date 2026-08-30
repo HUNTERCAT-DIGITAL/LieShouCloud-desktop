@@ -1,9 +1,9 @@
 /**
- * 桌面端 · 门户页（未登录公开落地页 · 端通用层 · 2026-09 重建）.
+ * 桌面端 · 门户页（未登录公开落地页 · 端通用层 · 2026-09 沉浸式重建）.
  *
- * 独立完整门户（与 admin-web 分开）：顶部导航（品牌/锚点/检查更新/登录）
- * → 品牌 Hero（logo/标语/描述/CTA）→ 平台功能（extraRoutes 图标卡，自动装配）
- * → 页脚（版本/版权/检查更新）。登录态访问自动回主页。
+ * 沉浸式无边框界面：顶部自定义标题栏（拖拽区 + 品牌 + 窗口控制按钮）
+ * → Hero（logo/标语/描述/CTA）→ 平台功能（extraRoutes 图标卡自动装配）→ 页脚。
+ * 登录态访问自动回主页。
  */
 import {
   AlertOutlined,
@@ -25,6 +25,7 @@ import type { ReactNode } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@lieshoucloud/core-web';
 
+import WindowControls from '../components/WindowControls';
 import { getEdition } from '../config/editions';
 import { APP_VERSION } from '../config/version';
 import { checkForUpdates, isTauri } from '../lib/updater';
@@ -73,30 +74,39 @@ export default function PortalPage() {
 
   return (
     <div className="portal-page">
-      {/* ===== 顶部导航：品牌 + 锚点 + 检查更新 + 登录 ===== */}
-      <header className="portal-nav">
-        <div className="portal-nav-inner">
-          <a className="portal-nav-brand" href="#hero">
-            {edition.logo ? (
-              <img className="portal-nav-logo" src={logoUrl(edition.logo)} alt={edition.brandName} />
-            ) : (
-              <span className="portal-logo-fallback nav">{edition.brandName?.slice(0, 1)}</span>
-            )}
-            <span>{edition.brandName}</span>
-          </a>
-          <nav className="portal-nav-links">
-            {entries.length > 0 && <a href="#features">平台功能</a>}
-          </nav>
-          <div className="portal-nav-actions">
-            {isTauri() && (
-              <Button size="middle" onClick={() => void checkForUpdates(false)}>
-                检查更新
-              </Button>
-            )}
-            <Button type="primary" icon={<LoginOutlined />} onClick={() => navigate('/login')}>
-              登录
+      {/* ===== 自定义标题栏（沉浸式 · 可拖拽 + 窗口控制） ===== */}
+      <header className="portal-titlebar" data-tauri-drag-region>
+        <div className="portal-titlebar-brand" data-tauri-drag-region>
+          {edition.logo ? (
+            <img className="portal-titlebar-logo" src={logoUrl(edition.logo)} alt="" />
+          ) : (
+            <span className="portal-titlebar-logo portal-titlebar-logo-fallback">
+              {edition.brandName?.slice(0, 1)}
+            </span>
+          )}
+          <span className="portal-titlebar-name">{edition.brandName}</span>
+        </div>
+        <div className="portal-titlebar-right" data-tauri-drag-region>
+          {entries.length > 0 && (
+            <a className="portal-titlebar-link" href="#features">
+              平台功能
+            </a>
+          )}
+          {isTauri() && (
+            <Button size="small" type="text" className="portal-titlebar-btn" onClick={() => void checkForUpdates(false)}>
+              检查更新
             </Button>
-          </div>
+          )}
+          <Button
+            size="small"
+            type="primary"
+            className="portal-titlebar-btn"
+            icon={<LoginOutlined />}
+            onClick={() => navigate('/login')}
+          >
+            登录
+          </Button>
+          <WindowControls />
         </div>
       </header>
 
@@ -159,17 +169,12 @@ export default function PortalPage() {
         </section>
       )}
 
-      {/* ===== 页脚：版本 + 版权 + 检查更新 ===== */}
+      {/* ===== 页脚 ===== */}
       <footer className="portal-footer">
-        <span className="portal-footer-brand">
+        <span>
           © {new Date().getFullYear()} {edition.companyName ?? edition.brandName}
         </span>
         <Tag className="portal-version-tag">v{APP_VERSION}</Tag>
-        {isTauri() && (
-          <Button type="link" size="small" onClick={() => void checkForUpdates(false)}>
-            检查更新
-          </Button>
-        )}
       </footer>
     </div>
   );

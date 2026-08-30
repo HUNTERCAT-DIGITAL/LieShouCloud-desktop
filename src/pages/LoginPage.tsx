@@ -15,6 +15,9 @@ import {
 } from '@lieshoucloud/core-web';
 
 import { getEdition } from '../config/editions';
+import WindowControls from '../components/WindowControls';
+import { APP_VERSION } from '../config/version';
+import { checkForUpdates, isTauri } from '../lib/updater';
 
 /** 记住密码（明文存 localStorage，仅「记住密码」勾选时） */
 const REMEMBER_KEY = 'lieshoucloud:remember';
@@ -156,6 +159,10 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
+      {/* 沉浸式：顶部拖拽区 + 窗口控制 */}
+      <div className="login-titlebar" data-tauri-drag-region>
+        <WindowControls />
+      </div>
       <div className="login-brand">
         <h1 className="login-title">{edition.brandName}</h1>
         {edition.slogan && <p className="login-slogan">{edition.slogan}</p>}
@@ -293,6 +300,20 @@ export default function LoginPage() {
           前往门户
         </Button>
       </form>
+
+      {/* 页脚：版本号 + 检查更新（沉浸式） */}
+      <footer className="login-footer">
+        <span>v{APP_VERSION}</span>
+        {isTauri() && (
+          <button
+            className="login-check-update"
+            type="button"
+            onClick={() => void checkForUpdates(false)}
+          >
+            检查更新
+          </button>
+        )}
+      </footer>
 
       {/* 忘记密码 */}
       <Modal

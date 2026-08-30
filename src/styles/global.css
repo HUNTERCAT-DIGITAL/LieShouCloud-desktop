@@ -2,14 +2,12 @@
 * {
   box-sizing: border-box;
 }
-
 html,
 body,
 #root {
   height: 100%;
   margin: 0;
 }
-
 body {
   background: #f5f6f7;
   font-family:
@@ -17,7 +15,6 @@ body {
     'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-
 /* ---------- 登录页 ---------- */
 .login-page {
   min-height: 100vh;
@@ -28,24 +25,20 @@ body {
   padding: 24px;
   background: linear-gradient(160deg, #02429b 0%, #0a6bd8 60%, #f5f6f7 60.1%);
 }
-
 .login-brand {
   text-align: center;
   color: #fff;
   margin-bottom: 32px;
 }
-
 .login-title {
   margin: 0 0 8px;
   font-size: 28px;
 }
-
 .login-slogan {
   margin: 0;
   font-size: 14px;
   opacity: 0.85;
 }
-
 .login-card {
   width: 100%;
   max-width: 360px;
@@ -54,19 +47,16 @@ body {
   padding: 28px 24px;
   box-shadow: 0 8px 24px rgb(0 0 0 / 10%);
 }
-
 .field {
   display: block;
   margin-bottom: 16px;
 }
-
 .field-label {
   display: block;
   font-size: 13px;
   color: #666;
   margin-bottom: 6px;
 }
-
 .field-input {
   width: 100%;
   height: 42px;
@@ -77,18 +67,15 @@ body {
   background: #fafafa;
   outline: none;
 }
-
 .field-input:focus {
   border-color: #02429b;
   background: #fff;
 }
-
 .login-error {
   margin: 0 0 12px;
   color: #cf1322;
   font-size: 13px;
 }
-
 .login-submit {
   width: 100%;
   height: 44px;
@@ -99,11 +86,9 @@ body {
   font-size: 16px;
   cursor: pointer;
 }
-
 .login-submit:disabled {
   opacity: 0.6;
 }
-
 .login-options {
   display: flex;
   align-items: center;
@@ -130,7 +115,6 @@ body {
 .login-forgot-link:hover { text-decoration: underline; }
 .login-code-row { display: flex; gap: 8px; }
 .login-code-row .field-input { flex: 1; }
-
 /* ---------- 启动页 / 关于页 ---------- */
 .home-page,
 .about-page {
@@ -139,37 +123,31 @@ body {
   margin: 0 auto;
   padding: 48px 24px;
 }
-
 .home-logo {
   display: block;
   max-height: 64px;
   margin: 0 auto 16px;
 }
-
 .home-header {
   text-align: center;
   padding-bottom: 32px;
 }
-
 .home-title {
   margin: 0 0 8px;
   font-size: 26px;
   color: #1f1f1f;
 }
-
 .home-slogan {
   margin: 0;
   font-size: 14px;
   color: #8c8c8c;
 }
-
 .home-card {
   background: #fff;
   border-radius: 12px;
   padding: 8px 20px;
   margin-bottom: 20px;
 }
-
 .home-row {
   display: flex;
   justify-content: space-between;
@@ -177,26 +155,21 @@ body {
   border-bottom: 1px solid #f0f0f0;
   font-size: 14px;
 }
-
 .home-row:last-child {
   border-bottom: none;
 }
-
 .home-key {
   color: #8c8c8c;
 }
-
 .home-value {
   color: #1f1f1f;
   text-align: right;
 }
-
 .home-actions {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-
 .btn-primary {
   height: 42px;
   border: none;
@@ -206,11 +179,9 @@ body {
   font-size: 15px;
   cursor: pointer;
 }
-
 .btn-primary:disabled {
   opacity: 0.6;
 }
-
 .btn-ghost {
   height: 42px;
   border: 1px solid #d9d9d9;
@@ -220,163 +191,193 @@ body {
   font-size: 15px;
   cursor: pointer;
 }
-
 .check-ok {
   margin: 4px 0 0;
   color: #389e0d;
   font-size: 13px;
   text-align: center;
 }
-
 .check-fail {
   margin: 4px 0 0;
   color: #cf1322;
   font-size: 13px;
   text-align: center;
 }
-
 /* ============================================================
  * 门户页（PortalPage · 现代化 landing）
+ * ============================================================ */
+/* ---- 顶部导航 ---- */
+/* ---- 产品介绍 ---- */
+/* ---- Hero ---- */
+/* 装饰：右上大圆 + 左下网格点 */
+/* ---- 功能入口卡 ---- */
+/* ---- 页脚 ---- */
+/* ============================================================
+ * 欢迎页（WelcomePage · 复用门户布局，浅色变体）
+ * ============================================================ */
+/* ============================================================
+ * 登录页页脚（版本号 + 检查更新）
+ * ============================================================ */
+.login-footer {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #999;
+  font-size: 12px;
+}
+.login-check-update {
+  background: none;
+  border: none;
+  color: #1677ff;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+.login-check-update:hover {
+  text-decoration: underline;
+}
+/* ============================================================
+ * 登录页「前往门户」链接（漂移修复 0.0.4）
+ * ============================================================ */
+/* ============================================================
+ * 门户页顶部导航（PortalPage 重建 2026-09 · 独立于 admin-web）
+ * ============================================================ */
+
+/* ============================================================
+ * 沉浸式门户页（PortalPage 2026-09 · 无边框界面）
  * ============================================================ */
 .portal-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
   background: #f5f8ff;
+  overflow-x: hidden;
 }
 
-/* ---- 顶部导航 ---- */
-.portal-nav {
+/* ---- 自定义标题栏（拖拽区 + 品牌 + 窗口控制） ---- */
+.portal-titlebar {
   position: sticky;
   top: 0;
   z-index: 100;
-  width: 100%;
-  background: #fff;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
-}
-
-.portal-nav-inner {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 0 24px;
-  height: 60px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  padding: 0 0 0 16px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #eef1f6;
+  user-select: none;
 }
-
-.portal-nav-brand {
+.portal-titlebar-brand {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #1f1f1f;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
+  color: #1f2d3d;
 }
-
-.portal-nav-logo {
-  height: 32px;
-  width: 32px;
-  border-radius: 8px;
+.portal-titlebar-logo {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
   object-fit: cover;
 }
-
-.portal-logo-fallback.nav {
-  width: 32px;
-  height: 32px;
-  font-size: 18px;
-}
-
-.portal-nav-links {
-  display: flex;
-  gap: 24px;
-  flex: 1;
-}
-
-.portal-nav-links a {
-  color: #555;
-  text-decoration: none;
+.portal-titlebar-logo-fallback {
+  background: #02429b;
+  color: #fff;
   font-size: 14px;
-}
-
-.portal-nav-links a:hover {
-  color: #02429b;
-}
-
-.portal-nav-actions {
-  display: flex;
-  gap: 12px;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+}
+.portal-titlebar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+}
+.portal-titlebar-link {
+  color: #5a6b7f;
+  font-size: 13px;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.portal-titlebar-link:hover {
+  color: #02429b;
+  background: #f0f5ff;
+}
+.portal-titlebar-btn {
+  border-radius: 6px;
 }
 
-/* ---- 产品介绍 ---- */
-.portal-section {
-  width: 100%;
-  max-width: 1080px;
-  padding: 56px 24px 24px;
+/* ---- 窗口控制按钮（自定义最小化/最大化/关闭） ---- */
+.window-controls {
+  display: flex;
+  height: 100%;
+  margin-left: 8px;
 }
-
-.portal-section-title {
-  text-align: center;
-  margin-bottom: 24px;
+.window-control-btn {
+  width: 44px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: #5a6b7f;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
 }
-
-.portal-section-title .ant-typography {
-  margin-bottom: 8px;
+.window-control-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #1f2d3d;
 }
-
-.portal-intro {
-  max-width: 720px;
-  margin: 0 auto;
-  text-align: center;
+.window-control-btn.wc-close:hover {
+  background: #e81123;
+  color: #fff;
 }
-
-.portal-intro .ant-typography {
-  font-size: 15px;
-  line-height: 1.8;
-  color: #555;
+.wc-max-icon {
+  font-size: 11px;
 }
 
 /* ---- Hero ---- */
 .portal-hero {
-  width: 100%;
   position: relative;
   overflow: hidden;
   background: linear-gradient(135deg, #02429b 0%, #0a6bd8 55%, #1a86f0 100%);
-  padding: 64px 24px 96px;
+  padding: 64px 24px 88px;
   display: flex;
   justify-content: center;
 }
-/* 装饰：右上大圆 + 左下网格点 */
-.portal-hero::before {
+.portal-hero::before,
+.portal-hero::after {
   content: '';
   position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+.portal-hero::before {
   right: -120px;
   top: -120px;
   width: 340px;
   height: 340px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
 }
 .portal-hero::after {
-  content: '';
-  position: absolute;
   left: -80px;
   bottom: -160px;
   width: 300px;
   height: 300px;
-  border-radius: 50%;
   background: rgba(255, 255, 255, 0.06);
 }
 .portal-hero-inner {
   position: relative;
   z-index: 1;
   text-align: center;
-  max-width: 760px;
+  max-width: 720px;
   padding: 0 16px;
 }
 .portal-logo {
@@ -385,23 +386,23 @@ body {
   margin-bottom: 20px;
 }
 .portal-logo img {
-  width: 84px;
-  height: 84px;
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  width: 88px;
+  height: 88px;
+  border-radius: 22px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
 }
 .portal-logo-fallback {
-  width: 84px;
-  height: 84px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.92);
+  width: 88px;
+  height: 88px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
   color: #02429b;
-  font-size: 40px;
+  font-size: 42px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
 }
 .portal-title {
   margin: 0 0 8px !important;
@@ -449,25 +450,23 @@ body {
   color: #fff !important;
 }
 
-/* ---- 功能入口卡 ---- */
+/* ---- 平台功能卡 ---- */
 .portal-features {
   width: 100%;
   max-width: 1080px;
-  margin-top: -48px;
+  margin: -48px auto 0;
   padding: 0 24px;
   position: relative;
   z-index: 2;
 }
 .portal-section-title {
   text-align: center;
-  margin-bottom: 20px;
-}
-.portal-section-title .ant-typography {
-  margin-bottom: 0 !important;
+  margin-bottom: 22px;
 }
 .portal-section-title h3 {
   color: #1a2b4a;
   font-weight: 600;
+  margin-bottom: 0 !important;
 }
 .portal-section-title p {
   color: #8a94a6;
@@ -506,15 +505,13 @@ body {
 /* ---- 页脚 ---- */
 .portal-footer {
   margin-top: auto;
-  padding: 40px 24px 28px;
+  padding: 36px 24px 24px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   color: #98a2b3;
   font-size: 13px;
-}
-.portal-footer-brand {
-  color: #6b7a90;
 }
 .portal-version-tag {
   border-radius: 10px;
@@ -526,16 +523,15 @@ body {
 }
 
 /* ============================================================
- * 欢迎页（WelcomePage · 复用门户布局，浅色变体）
+ * 欢迎页（WelcomePage · 沉浸式 · 复用门户标题栏）
  * ============================================================ */
 .welcome-page {
   background: linear-gradient(180deg, #eef4ff 0%, #f5f8ff 100%);
   justify-content: flex-start;
-  padding-top: 56px;
 }
 .welcome-page .portal-hero {
   background: transparent;
-  padding: 24px 24px 8px;
+  padding: 48px 24px 16px;
 }
 .welcome-page .portal-title {
   color: #02429b !important;
@@ -545,119 +541,23 @@ body {
   margin-bottom: 0 !important;
 }
 .welcome-page .portal-features {
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
 /* ============================================================
- * 登录页页脚（版本号 + 检查更新）
+ * 登录页沉浸式（标题栏 + 拖拽区）
  * ============================================================ */
-.login-footer {
-  margin-top: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #999;
-  font-size: 12px;
-}
-.login-check-update {
-  background: none;
-  border: none;
-  color: #1677ff;
-  font-size: 12px;
-  cursor: pointer;
-  padding: 0;
-}
-.login-check-update:hover {
-  text-decoration: underline;
-}
-
-/* ============================================================
- * 登录页「前往门户」链接（漂移修复 0.0.4）
- * ============================================================ */
-.portal-link {
-  display: block;
-  width: 100%;
-  margin-top: 10px;
-  background: none;
-  border: none;
-  color: #8a94a6;
-  font-size: 13px;
-  cursor: pointer;
-  text-align: center;
-  padding: 4px 0;
-  transition: color 0.2s;
-}
-.portal-link:hover {
-  color: #02429b;
-  text-decoration: underline;
-}
-
-/* ============================================================
- * 门户页顶部导航（PortalPage 重建 2026-09 · 独立于 admin-web）
- * ============================================================ */
-.portal-nav {
-  position: sticky;
+.login-titlebar {
+  position: absolute;
   top: 0;
-  z-index: 100;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
-}
-.portal-nav-inner {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 0 24px;
-  height: 60px;
+  right: 0;
+  left: 0;
+  height: 44px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  justify-content: flex-end;
+  z-index: 10;
+  user-select: none;
 }
-.portal-nav-brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #1f1f1f;
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-}
-.portal-nav-logo {
-  height: 32px;
-  width: 32px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-.portal-logo-fallback.nav {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: #02429b;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.portal-nav-links {
-  display: flex;
-  gap: 24px;
-  flex: 1;
-}
-.portal-nav-links a {
-  color: #555;
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.2s;
-}
-.portal-nav-links a:hover {
-  color: #02429b;
-}
-.portal-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.login-page {
+  position: relative;
 }
