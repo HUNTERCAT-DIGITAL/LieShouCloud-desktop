@@ -1,81 +1,103 @@
 /**
- * 桌面端 · 门户页（未登录公开落地页 · 端通用层）.
+ * 管理后台 · 门户页（公开官网 landing · 端自身骨架）.
  *
- * 品牌 hero（brandName/slogan/heroDesc）+ 功能入口卡（从 extraRoutes 带 menu 的项派生，
- * 客户装配什么就展示什么）+ 进入系统 CTA + 页脚（版本号 + 检查更新）。
- * 登录态访问自动回主页（homePath）。
+ * 结构：品牌 hero（logo/slogan/heroDesc + 登录 CTA）→ 产品介绍 → 产品功能卡片 → 多端入口
+ * （H5 二维码 / 桌面端下载 / 移动端下载 / 小程序二维码）。
+ * 内容（介绍/功能/入口）由 edition.portal 注入，端层只渲染结构。
  */
-import { Button, Card, Col, Row, Tag, Typography } from 'antd';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { QRCodeSVG } from 'qrcode.react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@lieshoucloud/core-web';
 
 import { getEdition } from '../config/editions';
-import { APP_VERSION } from '../config/version';
-import { checkForUpdates, isTauri } from '../lib/updater';
-
-const { Title, Paragraph, Text } = Typography;
 
 export default function PortalPage() {
-  const navigate = useNavigate();
   const edition = getEdition();
+  const portal = edition.portal;
+  const navigate = useNavigate();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const entries = (edition.extraRoutes ?? [])
-    .filter((r) => r.menu && !r.menu?.group)
-    .slice(0, 6);
 
-  // 已登录 → 直接进主页（避免门户/主页来回）
-  if (isAuthenticated) return <Navigate to={edition.homePath ?? '/home'} replace />;
+  const go = () => navigate(isAuthenticated ? (edition.homePath ?? '/home') : '/login');
 
   return (
     <div className="portal-page">
-      {/* Hero：品牌 + 标语 + 描述 + CTA */}
-      <header className="portal-hero">
-        <div className="portal-logo">
-          {edition.logo ? (
-            <img src={edition.logo} alt={edition.brandName} />
-          ) : (
-            <span className="portal-logo-fallback">{edition.brandName?.slice(0, 1)}</span>
-          )}
-        </div>
-        <Title level={2} className="portal-title">
-          {edition.brandName}
-        </Title>
-        {edition.slogan && <Paragraph className="portal-slogan">{edition.slogan}</Paragraph>}
-        {edition.heroDesc && <Paragraph className="portal-desc">{edition.heroDesc}</Paragraph>}
-        <Button type="primary" size="large" className="portal-cta" onClick={() => navigate('/login')}>
-          进入系统
-        </Button>
-      </header>
+      {/* ① 品牌 hero */}
+      <section className="portal-hero">
+        {edition.logo && (
+          <img
+            className="portal-logo"
+            src={`${import.meta.env.BASE_URL}${edition.logo.replace(/^\//, '')}`}
+            alt={edition.brandName}
+          />
+        )}
+        <h1 className="portal-title">{edition.brandName}</h1>
+        {edition.slogan && <p className="portal-slogan">{edition.slogan}</p>}
+        {edition.heroDesc && <p className="portal-desc">{edition.heroDesc}</p>}
+        <button type="button" className="portal-cta" onClick={go}>
+          {isAuthenticated ? '进入工作台' : '登录进入'}
+        </button>
+      </section>
 
-      {/* 功能入口卡（客户装配的菜单项） */}
-      {entries.length > 0 && (
-        <section className="portal-features">
-          <Row gutter={[16, 16]}>
-            {entries.map((r) => (
-              <Col key={r.path} xs={12} sm={8} md={6}>
-                <Card
-                  hoverable
-                  className="portal-feature-card"
-                  onClick={() => navigate('/login')}
-                  title={<span className="portal-feature-icon">{r.menu?.icon}</span>}
-                >
-                  <Text strong>{r.menu?.name}</Text>
-                </Card>
-              </Col>
+      {/* ② 产品介绍 */}
+      {portal?.intro && portal.intro.length > 0 && (
+        <section className="portal-section">
+          <h2 className="portal-section-title">产品介绍</h2>
+          <div className="portal-intro">
+            {portal.intro.map((p, i) => (
+              <p key={i}>{p}</p>
             ))}
-          </Row>
+          </div>
         </section>
       )}
 
-      {/* 页脚：版本号 + 检查更新 */}
-      <footer className="portal-footer">
-        <Tag>v{APP_VERSION}</Tag>
-        {isTauri() && (
-          <Button type="link" size="small" onClick={() => void checkForUpdates(false)}>
-            检查更新
-          </Button>
-        )}
-      </footer>
+      {/* ③ 产品功能 */}
+      {portal?.features && portal.features.length > 0 && (
+        <section className="portal-section">
+          <h2 className="portal-section-title">产品功能</h2>
+          <div className="feature-grid">
+            {portal.features.map((f) => (
+              <div className="feature-card" key={f.title}>
+                <h3 className="feature-title">{f.title}</h3>
+                <p className="feature-desc">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ④ 多端入口 */}
+      {portal?.entries && portal.entries.length > 0 && (
+        <section className="portal-section">
+          <h2 className="portal-section-title">多端访问</h2>
+          <div className="entry-grid">
+            {portal.entries.map((e) => (
+              <div className="entry-card" key={e.label}>
+                <h3 className="entry-title">{e.label}</h3>
+                {e.desc && <p className="entry-desc">{e.desc}</p>}
+                {e.kind === 'qrcode' && e.url && (
+                  <QRCodeSVG value={e.url} size={132} className="entry-qrcode" />
+                )}
+                {e.kind === 'download' && e.url && (
+                  <a
+                    className="entry-btn"
+                    href={e.url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    下载
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {edition.companyName && (
+        <footer className="portal-footer">
+          © {new Date().getFullYear()} {edition.companyName}
+        </footer>
+      )}
     </div>
   );
 }

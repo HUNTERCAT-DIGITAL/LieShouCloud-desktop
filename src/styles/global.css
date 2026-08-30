@@ -208,72 +208,243 @@ body {
   text-align: center;
 }
 
-/* ---------- 门户页 ---------- */
+/* ============================================================
+ * 门户页（PortalPage · 现代化 landing）
+ * ============================================================ */
 .portal-page {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f5f8ff;
+}
+
+/* ---- Hero ---- */
+.portal-hero {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #02429b 0%, #0a6bd8 55%, #1a86f0 100%);
+  padding: 64px 24px 96px;
+  display: flex;
+  justify-content: center;
+}
+/* 装饰：右上大圆 + 左下网格点 */
+.portal-hero::before {
+  content: '';
+  position: absolute;
+  right: -120px;
+  top: -120px;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+.portal-hero::after {
+  content: '';
+  position: absolute;
+  left: -80px;
+  bottom: -160px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+}
+.portal-hero-inner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 760px;
+  padding: 0 16px;
+}
+.portal-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.portal-logo img {
+  width: 84px;
+  height: 84px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+.portal-logo-fallback {
+  width: 84px;
+  height: 84px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #02429b;
+  font-size: 40px;
+  font-weight: 700;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  background: linear-gradient(160deg, #02429b 0%, #0a6bd8 60%, #f5f6f7 60.1%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
-
-.portal-hero {
-  text-align: center;
-  color: #fff;
-  max-width: 640px;
-}
-
-.portal-logo {
-  max-height: 80px;
-  margin: 0 auto 20px;
-}
-
 .portal-title {
-  margin: 0 0 12px;
-  font-size: 40px;
+  margin: 0 0 8px !important;
+  color: #fff !important;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
-
 .portal-slogan {
-  margin: 0 0 8px;
-  font-size: 18px;
-  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.92) !important;
+  font-size: 17px;
+  font-weight: 500;
+  margin-bottom: 4px !important;
 }
-
 .portal-desc {
-  margin: 0 0 32px;
-  font-size: 15px;
-  opacity: 0.75;
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78) !important;
+  font-size: 14px;
+  line-height: 1.8;
+  max-width: 600px;
+  margin: 10px auto 28px !important;
 }
-
+.portal-hero-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
 .portal-cta {
-  height: 48px;
-  padding: 0 40px;
-  border: none;
-  border-radius: 24px;
-  background: #fff;
-  color: #02429b;
+  min-width: 168px;
+  height: 44px;
+  border-radius: 22px;
   font-size: 16px;
   font-weight: 600;
-  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+.portal-update-btn {
+  min-width: 120px;
+  height: 44px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+.portal-update-btn:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #fff !important;
 }
 
-.portal-cta:hover {
-  opacity: 0.9;
-}
-
-/* 登录页「前往门户」按钮 */
-.portal-link {
+/* ---- 功能入口卡 ---- */
+.portal-features {
   width: 100%;
-  height: 40px;
-  margin-top: 8px;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
-  background: #fff;
+  max-width: 1080px;
+  margin-top: -48px;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
+.portal-section-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.portal-section-title .ant-typography {
+  margin-bottom: 0 !important;
+}
+.portal-section-title h3 {
+  color: #1a2b4a;
+  font-weight: 600;
+}
+.portal-section-title p {
+  color: #8a94a6;
+  margin-top: 4px !important;
+}
+.portal-feature-card {
+  border-radius: 14px;
+  border: 1px solid #eef1f6;
+  box-shadow: 0 4px 14px rgba(2, 66, 155, 0.06);
+  text-align: center;
+  padding: 8px 4px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.portal-feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(2, 66, 155, 0.14);
+}
+.portal-feature-icon {
+  width: 56px;
+  height: 56px;
+  margin: 4px auto 10px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
   color: #02429b;
+  background: linear-gradient(135deg, #e8f0ff 0%, #d6e4ff 100%);
+}
+.portal-feature-name {
   font-size: 14px;
+  font-weight: 600;
+  color: #1a2b4a;
+}
+
+/* ---- 页脚 ---- */
+.portal-footer {
+  margin-top: auto;
+  padding: 40px 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #98a2b3;
+  font-size: 13px;
+}
+.portal-footer-brand {
+  color: #6b7a90;
+}
+.portal-version-tag {
+  border-radius: 10px;
+  background: #eef2f8;
+  color: #6b7a90;
+  border-color: transparent;
+  font-size: 12px;
+  padding: 0 8px;
+}
+
+/* ============================================================
+ * 欢迎页（WelcomePage · 复用门户布局，浅色变体）
+ * ============================================================ */
+.welcome-page {
+  background: linear-gradient(180deg, #eef4ff 0%, #f5f8ff 100%);
+  justify-content: flex-start;
+  padding-top: 56px;
+}
+.welcome-page .portal-hero {
+  background: transparent;
+  padding: 24px 24px 8px;
+}
+.welcome-page .portal-title {
+  color: #02429b !important;
+}
+.welcome-page .portal-desc {
+  color: #6b7a90 !important;
+  margin-bottom: 0 !important;
+}
+.welcome-page .portal-features {
+  margin-top: 24px;
+}
+
+/* ============================================================
+ * 登录页页脚（版本号 + 检查更新）
+ * ============================================================ */
+.login-footer {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #999;
+  font-size: 12px;
+}
+.login-check-update {
+  background: none;
+  border: none;
+  color: #1677ff;
+  font-size: 12px;
   cursor: pointer;
-
-
+  padding: 0;
+}
+.login-check-update:hover {
+  text-decoration: underline;
 }
