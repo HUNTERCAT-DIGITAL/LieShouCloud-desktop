@@ -7,33 +7,35 @@
 import { BorderOutlined, CloseOutlined, MinusOutlined } from '@ant-design/icons';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 
-import { isTauri } from '../lib/updater';
-
 export default function WindowControls() {
-  if (!isTauri()) return null;
-
-  const win = getCurrentWindow();
+  // 无条件渲染 + try/catch（不依赖 isTauri 检测；浏览器版按钮点击抛错忽略）
+  let win: ReturnType<typeof getCurrentWindow> | null = null;
+  try {
+    win = getCurrentWindow();
+  } catch {
+    return null;
+  }
 
   return (
     <div className="window-controls">
       <button
         className="window-control-btn"
         title="最小化"
-        onClick={() => void win.minimize()}
+        onClick={() => win && void win.minimize()}
       >
         <MinusOutlined />
       </button>
       <button
         className="window-control-btn"
         title="最大化 / 还原"
-        onClick={() => void win.toggleMaximize()}
+        onClick={() => win && void win.toggleMaximize()}
       >
         <BorderOutlined className="wc-max-icon" />
       </button>
       <button
         className="window-control-btn wc-close"
         title="关闭"
-        onClick={() => void win.close()}
+        onClick={() => win && void win.close()}
       >
         <CloseOutlined />
       </button>

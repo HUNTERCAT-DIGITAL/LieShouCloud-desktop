@@ -51,8 +51,13 @@ export default function App() {
   const edition = getEdition();
   const extraRoutes = edition.extraRoutes ?? [];
   const useConsole = shouldUseConsole(edition);
-  // 沉浸式兜底：运行时强制无系统标题栏（conf decorations:false 某些平台可能未完全生效）
-  void (isTauri() ? getCurrentWindow().setDecorations(false) : Promise.resolve());
+  // 沉浸式兜底：运行时强制无系统标题栏（conf decorations:false 某些平台可能未完全生效；
+  // 无条件 try/catch——不依赖 isTauri 检测，浏览器版抛错忽略）
+  try {
+    void getCurrentWindow().setDecorations(false);
+  } catch {
+    // 浏览器/非 Tauri 环境
+  }
   // 桌面端启动静默检查更新（Tauri 环境；浏览器版跳过）
   void (isTauri() ? checkForUpdates(true) : Promise.resolve());
   // 登录后落地页：客户 edition.homePath 优先（客户主页/工作台），缺省上游启动页
