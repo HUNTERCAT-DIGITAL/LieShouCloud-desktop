@@ -15,7 +15,7 @@ import { useAuthStore } from '@lieshoucloud/core-web';
 import { getEdition } from './config/editions';
 import AppTopBar from './layout/AppTopBar';
 import ConsoleLayout, { shouldUseConsole } from './layout/ConsoleLayout';
-import { invoke } from '@tauri-apps/api/core';
+import { safeInvoke } from './lib/tauri';
 import AboutPage from './pages/AboutPage';
 import { checkForUpdates, isTauri } from './lib/updater';
 import HomePage from './pages/HomePage';
@@ -54,13 +54,7 @@ export default function App() {
   const useConsole = shouldUseConsole(edition);
 
   // 沉浸式：Rust set_immersive（移除系统标题栏/绿色 resize 边框 · 延迟重试窗口就绪后）
-  const tryImmersive = () => {
-    try {
-      void invoke('set_immersive');
-    } catch {
-      // 浏览器/非 Tauri 环境
-    }
-  };
+  const tryImmersive = () => safeInvoke('set_immersive');
   tryImmersive();
   for (const delay of [600, 1500, 3000]) {
     setTimeout(tryImmersive, delay);
