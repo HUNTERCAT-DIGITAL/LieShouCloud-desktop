@@ -1,23 +1,24 @@
 /**
- * 桌面端 · 门户页（未登录公开落地页 · 端通用层）.
+ * 桌面端 · 门户页（未登录公开落地页 · 端通用层 · 2026-09 重建）.
  *
- * 现代化品牌 landing：Hero（品牌 logo/标语/描述 + CTA）+ 功能入口卡
- * （extraRoutes 菜单项 → 真实 antd 图标，客户装配什么就展示什么）+ 页脚（版本号 + 检查更新）。
- * 登录态访问自动回主页（homePath）。
+ * 独立完整门户（与 admin-web 分开）：顶部导航（品牌/锚点/检查更新/登录）
+ * → 品牌 Hero（logo/标语/描述/CTA）→ 平台功能（extraRoutes 图标卡，自动装配）
+ * → 页脚（版本/版权/检查更新）。登录态访问自动回主页。
  */
 import {
   AlertOutlined,
   ApartmentOutlined,
   AppstoreOutlined,
+  ArrowRightOutlined,
   ControlOutlined,
   DashboardOutlined,
   FundOutlined,
   FundProjectionScreenOutlined,
   HomeOutlined,
+  LoginOutlined,
   MenuOutlined,
   ThunderboltOutlined,
   ToolOutlined,
-  ArrowRightOutlined,
 } from '@ant-design/icons';
 import { Button, Card, Col, Row, Tag, Typography } from 'antd';
 import type { ReactNode } from 'react';
@@ -53,6 +54,12 @@ function iconOf(name?: string): ReactNode {
   return (name && ICON_MAP[name]) || <AppstoreOutlined />;
 }
 
+/** logo 完整路径（/desktop/ 子路径下需 BASE_URL 前缀） */
+function logoUrl(logo?: string): string | undefined {
+  if (!logo) return undefined;
+  return `${import.meta.env.BASE_URL}${logo.replace(/^\//, '')}`;
+}
+
 export default function PortalPage() {
   const navigate = useNavigate();
   const edition = getEdition();
@@ -66,15 +73,39 @@ export default function PortalPage() {
 
   return (
     <div className="portal-page">
+      {/* ===== 顶部导航：品牌 + 锚点 + 检查更新 + 登录 ===== */}
+      <header className="portal-nav">
+        <div className="portal-nav-inner">
+          <a className="portal-nav-brand" href="#hero">
+            {edition.logo ? (
+              <img className="portal-nav-logo" src={logoUrl(edition.logo)} alt={edition.brandName} />
+            ) : (
+              <span className="portal-logo-fallback nav">{edition.brandName?.slice(0, 1)}</span>
+            )}
+            <span>{edition.brandName}</span>
+          </a>
+          <nav className="portal-nav-links">
+            {entries.length > 0 && <a href="#features">平台功能</a>}
+          </nav>
+          <div className="portal-nav-actions">
+            {isTauri() && (
+              <Button size="middle" onClick={() => void checkForUpdates(false)}>
+                检查更新
+              </Button>
+            )}
+            <Button type="primary" icon={<LoginOutlined />} onClick={() => navigate('/login')}>
+              登录
+            </Button>
+          </div>
+        </div>
+      </header>
+
       {/* ===== Hero：品牌 + 标语 + 描述 + CTA ===== */}
-      <header className="portal-hero">
+      <header className="portal-hero" id="hero">
         <div className="portal-hero-inner">
           <div className="portal-logo">
             {edition.logo ? (
-              <img
-                src={`${import.meta.env.BASE_URL}${edition.logo.replace(/^\//, '')}`}
-                alt={edition.brandName}
-              />
+              <img src={logoUrl(edition.logo)} alt={edition.brandName} />
             ) : (
               <span className="portal-logo-fallback">{edition.brandName?.slice(0, 1)}</span>
             )}
@@ -108,9 +139,9 @@ export default function PortalPage() {
         </div>
       </header>
 
-      {/* ===== 功能入口卡（客户装配的菜单项 · 真实图标） ===== */}
+      {/* ===== 平台功能（客户装配的菜单项 · 真实图标 · 自动装配） ===== */}
       {entries.length > 0 && (
-        <section className="portal-features">
+        <section className="portal-features" id="features">
           <div className="portal-section-title">
             <Title level={3}>平台功能</Title>
             <Paragraph>一站式数字化值守工作台</Paragraph>
@@ -128,9 +159,11 @@ export default function PortalPage() {
         </section>
       )}
 
-      {/* ===== 页脚：版本号 + 检查更新 ===== */}
+      {/* ===== 页脚：版本 + 版权 + 检查更新 ===== */}
       <footer className="portal-footer">
-        <span className="portal-footer-brand">{edition.companyName ?? edition.brandName}</span>
+        <span className="portal-footer-brand">
+          © {new Date().getFullYear()} {edition.companyName ?? edition.brandName}
+        </span>
         <Tag className="portal-version-tag">v{APP_VERSION}</Tag>
         {isTauri() && (
           <Button type="link" size="small" onClick={() => void checkForUpdates(false)}>

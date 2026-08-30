@@ -591,3 +591,73 @@ body {
   color: #02429b;
   text-decoration: underline;
 }
+
+/* ============================================================
+ * 门户页顶部导航（PortalPage 重建 2026-09 · 独立于 admin-web）
+ * ============================================================ */
+.portal-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+}
+.portal-nav-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.portal-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1f1f1f;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.portal-nav-logo {
+  height: 32px;
+  width: 32px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.portal-logo-fallback.nav {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #02429b;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.portal-nav-links {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+}
+.portal-nav-links a {
+  color: #555;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+.portal-nav-links a:hover {
+  color: #02429b;
+}
+.portal-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
