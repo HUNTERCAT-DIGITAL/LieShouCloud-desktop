@@ -70,8 +70,6 @@ export default function LoginPage() {
   const [forgotError, setForgotError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  if (isAuthenticated) return <Navigate to={edition.homePath ?? '/home'} replace />;
-
   // 倒计时
   useEffect(() => {
     if (countdown <= 0) return;
@@ -155,6 +153,9 @@ export default function LoginPage() {
       setSubmitting(false);
     }
   }
+
+  // 已登录重定向（放所有 hooks 之后——避免 early return 破坏 hooks 顺序导致 React 崩）
+  if (isAuthenticated) return <Navigate to={edition.homePath ?? '/home'} replace />;
 
   return (
     <div className="login-page">
