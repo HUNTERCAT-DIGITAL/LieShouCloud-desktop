@@ -561,3 +561,18 @@ body {
 .login-page {
   position: relative;
 }
+
+/* ============================================================
+ * 窗口控制按钮 · 深色背景变体（控制台深蓝顶栏）
+ * ============================================================ */
+.window-controls.wc-dark .window-control-btn {
+  color: rgba(255, 255, 255, 0.72);
+}
+.window-controls.wc-dark .window-control-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+.window-controls.wc-dark .window-control-btn.wc-close:hover {
+  background: #e81123;
+  color: #fff;
+}

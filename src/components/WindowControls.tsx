@@ -7,7 +7,12 @@
 import { BorderOutlined, CloseOutlined, MinusOutlined } from '@ant-design/icons';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 
-export default function WindowControls() {
+/**
+ * 窗口控制按钮（沉浸式无边框）.
+ * variant: 'light' = 浅色背景（深色按钮，门户/登录/欢迎标题栏）;
+ *           'dark'  = 深色背景（浅色按钮，控制台深蓝顶栏）。
+ */
+export default function WindowControls({ variant = 'light' }: { variant?: 'light' | 'dark' }) {
   // 无条件渲染 + try/catch（不依赖 isTauri 检测；浏览器版按钮点击抛错忽略）
   let win: ReturnType<typeof getCurrentWindow> | null = null;
   try {
@@ -17,7 +22,7 @@ export default function WindowControls() {
   }
 
   return (
-    <div className="window-controls">
+    <div className={`window-controls ${variant === 'dark' ? 'wc-dark' : 'wc-light'}`}>
       <button
         className="window-control-btn"
         title="最小化"

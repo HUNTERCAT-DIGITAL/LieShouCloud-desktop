@@ -234,7 +234,7 @@ export default function ConsoleLayout() {
           </Dropdown>
         ),
       }}
-      actionsRender={() => [<WindowControls key="wc" />]}
+      actionsRender={() => [<WindowControls key="wc" variant="dark" />]}
     >
       <Outlet />
     </ProLayout>
