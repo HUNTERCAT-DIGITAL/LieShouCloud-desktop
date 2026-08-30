@@ -161,7 +161,7 @@ export default function LoginPage() {
     <div className="login-page">
       {/* 沉浸式：顶部拖拽区 + 窗口控制 */}
       <div className="login-titlebar" data-tauri-drag-region>
-        <WindowControls />
+        <WindowControls variant="dark" />
       </div>
       <div className="login-brand">
         <h1 className="login-title">{edition.brandName}</h1>
