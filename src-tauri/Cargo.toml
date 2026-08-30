@@ -1,6 +1,6 @@
 [package]
 name = "lieshoucloud-desktop"
-version = "0.1.0"
+version = "0.1.4"
 description = "LieShou Cloud Desktop App (Tauri 2 + React 19)"
 authors = ["FutureWL"]
 edition = "2021"
@@ -14,6 +14,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+windows = { version = "0.61", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging"] }
 tauri = { version = "2", features = [] }
 # 在线升级（2026-09 客户仓 · Windows nsis）
 tauri-plugin-updater = "2"

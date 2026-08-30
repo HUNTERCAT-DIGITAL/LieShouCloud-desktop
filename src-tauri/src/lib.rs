@@ -33,10 +33,28 @@ pub fn run() {
         // 升级完成后 relaunch 重启
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_shell::init())
-        // 沉浸式无边框：Rust 侧直接强制（绕过 JS IPC/capabilities；conf decorations:false 兜底）
+        // 沉浸式无边框：Rust 侧直接强制（conf decorations:false + tauri set_decorations 均兜底；
+        // Windows 再用 Win32 直接移除 WS_CAPTION——tauri 2 的 set_decorations 实测未完全生效）
         .setup(|app| {
             if let Some(w) = app.get_webview_window("main") {
                 let _ = w.set_decorations(false);
+                #[cfg(target_os = "windows")]
+                unsafe {
+                    use windows::Win32::Foundation::HWND;
+                    use windows::Win32::UI::WindowsAndMessaging::*;
+                    let hwnd: HWND = w.hwnd().cast();
+                    let style = GetWindowLongW(hwnd, GWL_STYLE);
+                    SetWindowLongW(hwnd, GWL_STYLE, style & !(WS_CAPTION.0 as i32));
+                    SetWindowPos(
+                        hwnd,
+                        None,
+                        0,
+                        0,
+                        0,
+                        0,
+                        SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER,
+                    );
+                }
             }
             Ok(())
         })
