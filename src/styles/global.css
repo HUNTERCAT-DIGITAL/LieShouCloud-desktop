@@ -104,6 +104,33 @@ body {
   opacity: 0.6;
 }
 
+.login-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 4px 0 16px;
+  font-size: 13px;
+}
+.login-remember {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+  cursor: pointer;
+}
+.login-remember input { cursor: pointer; }
+.login-forgot-link {
+  background: none;
+  border: none;
+  color: #02429b;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+}
+.login-forgot-link:hover { text-decoration: underline; }
+.login-code-row { display: flex; gap: 8px; }
+.login-code-row .field-input { flex: 1; }
+
 /* ---------- 启动页 / 关于页 ---------- */
 .home-page,
 .about-page {
