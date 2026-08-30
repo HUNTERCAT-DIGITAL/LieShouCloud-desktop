@@ -448,3 +448,24 @@ body {
 .login-check-update:hover {
   text-decoration: underline;
 }
+
+/* ============================================================
+ * 登录页「前往门户」链接（漂移修复 0.0.4）
+ * ============================================================ */
+.portal-link {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: #8a94a6;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: center;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+.portal-link:hover {
+  color: #02429b;
+  text-decoration: underline;
+}
