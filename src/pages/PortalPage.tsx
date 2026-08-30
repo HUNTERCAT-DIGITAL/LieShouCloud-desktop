@@ -5,22 +5,8 @@
  * → Hero（logo/标语/描述/CTA）→ 平台功能（extraRoutes 图标卡自动装配）→ 页脚。
  * 登录态访问自动回主页。
  */
-import {
-  AlertOutlined,
-  ApartmentOutlined,
-  AppstoreOutlined,
-  ArrowRightOutlined,
-  ControlOutlined,
-  DashboardOutlined,
-  FundOutlined,
-  FundProjectionScreenOutlined,
-  HomeOutlined,
-  MenuOutlined,
-  ThunderboltOutlined,
-  ToolOutlined,
-} from '@ant-design/icons';
-import { Button, Card, Col, Row, Tag, Typography } from 'antd';
-import type { ReactNode } from 'react';
+import { ArrowRightOutlined } from '@ant-design/icons';
+import { Button, Tag, Typography } from 'antd';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@lieshoucloud/core-web';
 
@@ -29,29 +15,6 @@ import { APP_VERSION } from '../config/version';
 import { checkForUpdates, isTauri } from '../lib/updater';
 
 const { Title, Paragraph } = Typography;
-
-/** 菜单 icon 字符串 → antd 图标（与 ConsoleLayout 同源映射） */
-const ICON_MAP: Record<string, ReactNode> = {
-  dashboard: <DashboardOutlined />,
-  workbench: <DashboardOutlined />,
-  home: <HomeOutlined />,
-  alert: <AlertOutlined />,
-  overview: <FundOutlined />,
-  topo: <ApartmentOutlined />,
-  device: <ThunderboltOutlined />,
-  devices: <ThunderboltOutlined />,
-  product: <AppstoreOutlined />,
-  products: <AppstoreOutlined />,
-  rule: <ControlOutlined />,
-  rules: <ControlOutlined />,
-  ops: <ToolOutlined />,
-  cockpit: <FundProjectionScreenOutlined />,
-  menu: <MenuOutlined />,
-};
-
-function iconOf(name?: string): ReactNode {
-  return (name && ICON_MAP[name]) || <AppstoreOutlined />;
-}
 
 /** logo 完整路径（/desktop/ 子路径下需 BASE_URL 前缀） */
 function logoUrl(logo?: string): string | undefined {
@@ -63,10 +26,6 @@ export default function PortalPage() {
   const navigate = useNavigate();
   const edition = getEdition();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const entries = (edition.extraRoutes ?? [])
-    .filter((r) => r.menu && !r.menu?.group)
-    .slice(0, 6);
-
   // 已登录 → 直接进主页（避免门户/主页来回）
   if (isAuthenticated) return <Navigate to={edition.homePath ?? '/home'} replace />;
 
@@ -111,26 +70,6 @@ export default function PortalPage() {
           </div>
         </div>
       </header>
-
-      {/* ===== 平台功能（客户装配的菜单项 · 真实图标 · 自动装配） ===== */}
-      {entries.length > 0 && (
-        <section className="portal-features" id="features">
-          <div className="portal-section-title">
-            <Title level={3}>平台功能</Title>
-            <Paragraph>一站式数字化值守工作台</Paragraph>
-          </div>
-          <Row gutter={[20, 20]} justify="center">
-            {entries.map((r) => (
-              <Col key={r.path} xs={12} sm={8} md={6} lg={4}>
-                <Card hoverable className="portal-feature-card" onClick={() => navigate('/login')}>
-                  <div className="portal-feature-icon">{iconOf(r.menu?.icon)}</div>
-                  <div className="portal-feature-name">{r.menu?.name}</div>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </section>
-      )}
 
       {/* ===== 页脚 ===== */}
       <footer className="portal-footer">
