@@ -59,6 +59,10 @@ export default function AppTopBar() {
   const isLogin = location.pathname === '/login';
   const isConsole = isAuthenticated && !isLogin && !['/portal', '/welcome'].includes(location.pathname);
 
+  // 驾驶舱/独立全屏页（extraRoutes standalone）：隐藏顶栏，全屏沉浸
+  const standalonePaths = (edition.extraRoutes ?? []).filter((r) => r.standalone).map((r) => r.path);
+  if (standalonePaths.includes(location.pathname)) return null;
+
   return (
     <header
       className={`app-topbar ${dark ? 'app-topbar-dark' : 'app-topbar-light'}`}
