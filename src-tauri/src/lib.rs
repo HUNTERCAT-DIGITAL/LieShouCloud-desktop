@@ -28,7 +28,8 @@ fn fetch_health() -> HealthResponse {
 #[cfg(target_os = "windows")]
 fn remove_caption_win() {
     unsafe {
-        use windows::Win32::Foundation::{BOOL, HWND, LPARAM};
+        use windows::core::BOOL;
+        use windows::Win32::Foundation::{HWND, LPARAM};
         use windows::Win32::UI::WindowsAndMessaging::*;
         // 改本进程所有顶层窗口的 WS_CAPTION（不匹配标题——确保主窗口被改）
         unsafe extern "system" fn cb(hwnd: HWND, _lparam: LPARAM) -> BOOL {
@@ -55,7 +56,7 @@ fn set_immersive() -> bool {
             use windows::core::w;
             use windows::Win32::Foundation::HWND;
             use windows::Win32::UI::WindowsAndMessaging::*;
-            let hwnd: HWND = FindWindowW(None, w!("电网监控"));
+            let hwnd: HWND = FindWindowW(None, w!("电网监控")).unwrap_or_default();
             if !hwnd.is_invalid() {
                 let style = GetWindowLongW(hwnd, GWL_STYLE);
                 SetWindowLongW(hwnd, GWL_STYLE, style & !(WS_CAPTION.0 as i32));
@@ -93,7 +94,7 @@ pub fn run() {
                 use windows::Win32::Foundation::HWND;
                 use windows::Win32::UI::WindowsAndMessaging::*;
                 // 按窗口标题定位主窗口（不依赖 get_webview_window——setup 时窗口可能未就绪）
-                let hwnd: HWND = FindWindowW(None, w!("电网监控"));
+                let hwnd: HWND = FindWindowW(None, w!("电网监控")).unwrap_or_default();
                 let _ = std::fs::write(
                     "C:/dwjk-build/setup-info.txt",
                     format!("setup=ran hwnd_valid={} windows={}", !hwnd.is_invalid(), cfg!(target_os = "windows")),
