@@ -55,6 +55,13 @@ body,
   font-size: 14px;
   font-weight: 600;
   color: var(--apptop-fg);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.app-topbar-brand:hover {
+  background: var(--apptop-hover-bg);
 }
 .app-topbar-logo {
   width: 26px;

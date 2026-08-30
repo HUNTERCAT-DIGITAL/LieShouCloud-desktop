@@ -64,8 +64,13 @@ export default function AppTopBar() {
       className={`app-topbar ${dark ? 'app-topbar-dark' : 'app-topbar-light'}`}
       data-tauri-drag-region
     >
-      {/* 品牌区（左侧） */}
-      <div className="app-topbar-brand" data-tauri-drag-region>
+      {/* 品牌区（左侧 · 点击前往门户，对齐 admin-web） */}
+      <div
+        className="app-topbar-brand"
+        data-tauri-drag-region
+        onClick={() => navigate('/portal')}
+        title="前往门户"
+      >
         {edition.logo ? (
           <img className="app-topbar-logo" src={logoUrl(edition.logo)} alt="" />
         ) : (
