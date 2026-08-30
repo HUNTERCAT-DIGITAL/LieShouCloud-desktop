@@ -10,7 +10,6 @@ import {
   Route,
   Routes,
 } from 'react-router-dom';
-import { invoke } from '@tauri-apps/api/core';
 import { useAuthStore } from '@lieshoucloud/core-web';
 
 import { getEdition } from './config/editions';
@@ -51,18 +50,7 @@ export default function App() {
   const edition = getEdition();
   const extraRoutes = edition.extraRoutes ?? [];
   const useConsole = shouldUseConsole(edition);
-  // 沉浸式兜底：Rust set_immersive 命令（FindWindow 移除 WS_CAPTION · 延迟重试——窗口就绪后）
-  const tryImmersive = () => {
-    try {
-      void invoke('set_immersive');
-    } catch {
-      // 浏览器/非 Tauri 环境
-    }
-  };
-  tryImmersive();
-  for (const delay of [600, 1500, 3000, 6000]) {
-    setTimeout(tryImmersive, delay);
-  }
+
   // 桌面端启动静默检查更新（Tauri 环境；浏览器版跳过）
   void (isTauri() ? checkForUpdates(true) : Promise.resolve());
   // 登录后落地页：客户 edition.homePath 优先（客户主页/工作台），缺省上游启动页
