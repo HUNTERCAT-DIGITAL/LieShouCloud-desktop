@@ -255,8 +255,10 @@ body {
   overflow-x: hidden;
 }
 
-/* ---- 自定义标题栏（拖拽区 + 品牌 + 窗口控制） ---- */
-.portal-titlebar {
+/* ---- 统一顶部标题栏（接管原生标题栏 · 品牌+操作+窗口按钮一体） ----
+ * 深浅主题由 CSS 变量统一管理（light 浅底深字 / dark 深底浅字），
+ * 窗口控制按钮颜色也跟随同一套变量，保证顶部是一个整体。 */
+.titlebar {
   position: sticky;
   top: 0;
   z-index: 100;
@@ -264,27 +266,44 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0 0 16px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid #eef1f6;
+  padding: 0 12px;
+  gap: 12px;
+  background: var(--titlebar-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--titlebar-border);
   user-select: none;
 }
-.portal-titlebar-brand {
+.titlebar-light {
+  --titlebar-bg: rgba(255, 255, 255, 0.92);
+  --titlebar-fg: #334155;
+  --titlebar-border: rgba(15, 23, 42, 0.08);
+  --titlebar-hover-bg: rgba(0, 0, 0, 0.05);
+  --titlebar-hover-fg: #0f172a;
+  --titlebar-link-hover-bg: #eef2f7;
+}
+.titlebar-dark {
+  --titlebar-bg: #02429b;
+  --titlebar-fg: rgba(255, 255, 255, 0.88);
+  --titlebar-border: rgba(255, 255, 255, 0.1);
+  --titlebar-hover-bg: rgba(255, 255, 255, 0.12);
+  --titlebar-hover-fg: #fff;
+  --titlebar-link-hover-bg: rgba(255, 255, 255, 0.14);
+}
+.titlebar-brand {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #1f2d3d;
+  color: var(--titlebar-fg);
 }
-.portal-titlebar-logo {
+.titlebar-logo {
   width: 26px;
   height: 26px;
   border-radius: 7px;
   object-fit: cover;
 }
-.portal-titlebar-logo-fallback {
+.titlebar-logo-fallback {
   background: #02429b;
   color: #fff;
   font-size: 14px;
@@ -292,25 +311,36 @@ body {
   align-items: center;
   justify-content: center;
 }
-.portal-titlebar-right {
+.titlebar-actions {
   display: flex;
   align-items: center;
   gap: 6px;
   height: 100%;
 }
-.portal-titlebar-link {
-  color: #5a6b7f;
+.titlebar-link {
+  color: var(--titlebar-fg);
   font-size: 13px;
   text-decoration: none;
   padding: 4px 8px;
   border-radius: 6px;
+  opacity: 0.85;
 }
-.portal-titlebar-link:hover {
-  color: #02429b;
-  background: #f0f5ff;
+.titlebar-link:hover {
+  opacity: 1;
+  background: var(--titlebar-link-hover-bg);
 }
-.portal-titlebar-btn {
+.titlebar-btn {
   border-radius: 6px;
+}
+.titlebar-dark .titlebar-btn.ant-btn-text {
+  color: var(--titlebar-fg);
+}
+.titlebar-dark .titlebar-btn.ant-btn-text:hover {
+  background: var(--titlebar-hover-bg);
+  color: #fff;
+}
+.titlebar-dark .ant-btn-primary.titlebar-btn {
+  box-shadow: none;
 }
 
 /* ---- 窗口控制按钮（自定义最小化/最大化/关闭） ---- */
@@ -324,7 +354,7 @@ body {
   height: 100%;
   border: none;
   background: transparent;
-  color: #5a6b7f;
+  color: var(--titlebar-fg, #5a6b7f);
   font-size: 13px;
   display: flex;
   align-items: center;
@@ -333,8 +363,8 @@ body {
   transition: background 0.15s, color 0.15s;
 }
 .window-control-btn:hover {
-  background: rgba(0, 0, 0, 0.06);
-  color: #1f2d3d;
+  background: var(--titlebar-hover-bg, rgba(0, 0, 0, 0.06));
+  color: var(--titlebar-hover-fg, #1f2d3d);
 }
 .window-control-btn.wc-close:hover {
   background: #e81123;
@@ -542,24 +572,6 @@ body {
 }
 .welcome-page .portal-features {
   margin-top: 28px;
-}
-
-/* ============================================================
- * 登录页沉浸式（标题栏 + 拖拽区）
- * ============================================================ */
-.login-titlebar {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 44px;
-  display: flex;
-  justify-content: flex-end;
-  z-index: 10;
-  user-select: none;
-}
-.login-page {
-  position: relative;
 }
 
 /* ============================================================

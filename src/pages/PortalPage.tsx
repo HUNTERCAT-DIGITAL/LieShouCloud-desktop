@@ -25,7 +25,7 @@ import type { ReactNode } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@lieshoucloud/core-web';
 
-import WindowControls from '../components/WindowControls';
+import TitleBar from '../components/TitleBar';
 import { getEdition } from '../config/editions';
 import { APP_VERSION } from '../config/version';
 import { checkForUpdates, isTauri } from '../lib/updater';
@@ -74,41 +74,37 @@ export default function PortalPage() {
 
   return (
     <div className="portal-page">
-      {/* ===== 自定义标题栏（沉浸式 · 可拖拽 + 窗口控制） ===== */}
-      <header className="portal-titlebar" data-tauri-drag-region>
-        <div className="portal-titlebar-brand" data-tauri-drag-region>
-          {edition.logo ? (
-            <img className="portal-titlebar-logo" src={logoUrl(edition.logo)} alt="" />
-          ) : (
-            <span className="portal-titlebar-logo portal-titlebar-logo-fallback">
-              {edition.brandName?.slice(0, 1)}
-            </span>
-          )}
-          <span className="portal-titlebar-name">{edition.brandName}</span>
-        </div>
-        <div className="portal-titlebar-right" data-tauri-drag-region>
-          {entries.length > 0 && (
-            <a className="portal-titlebar-link" href="#features">
-              平台功能
-            </a>
-          )}
-          {isTauri() && (
-            <Button size="small" type="text" className="portal-titlebar-btn" onClick={() => void checkForUpdates(false)}>
-              检查更新
+      {/* ===== 统一顶部标题栏（接管原生标题栏 · 品牌+操作+窗口按钮一体） ===== */}
+      <TitleBar
+        actions={
+          <>
+            {entries.length > 0 && (
+              <a className="titlebar-link" href="#features">
+                平台功能
+              </a>
+            )}
+            {isTauri() && (
+              <Button
+                size="small"
+                type="text"
+                className="titlebar-btn"
+                onClick={() => void checkForUpdates(false)}
+              >
+                检查更新
+              </Button>
+            )}
+            <Button
+              size="small"
+              type="primary"
+              className="titlebar-btn"
+              icon={<LoginOutlined />}
+              onClick={() => navigate('/login')}
+            >
+              登录
             </Button>
-          )}
-          <Button
-            size="small"
-            type="primary"
-            className="portal-titlebar-btn"
-            icon={<LoginOutlined />}
-            onClick={() => navigate('/login')}
-          >
-            登录
-          </Button>
-          <WindowControls />
-        </div>
-      </header>
+          </>
+        }
+      />
 
       {/* ===== Hero：品牌 + 标语 + 描述 + CTA ===== */}
       <header className="portal-hero" id="hero">

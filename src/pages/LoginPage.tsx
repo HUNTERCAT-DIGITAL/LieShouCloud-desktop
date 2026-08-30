@@ -15,7 +15,7 @@ import {
 } from '@lieshoucloud/core-web';
 
 import { getEdition } from '../config/editions';
-import WindowControls from '../components/WindowControls';
+import TitleBar from '../components/TitleBar';
 import { APP_VERSION } from '../config/version';
 import { checkForUpdates, isTauri } from '../lib/updater';
 
@@ -159,10 +159,8 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
-      {/* 沉浸式：顶部拖拽区 + 窗口控制 */}
-      <div className="login-titlebar" data-tauri-drag-region>
-        <WindowControls variant="dark" />
-      </div>
+      {/* 统一顶部标题栏（深色——与登录页深蓝背景融为一体） */}
+      <TitleBar variant="dark" />
       <div className="login-brand">
         <h1 className="login-title">{edition.brandName}</h1>
         {edition.slogan && <p className="login-slogan">{edition.slogan}</p>}
