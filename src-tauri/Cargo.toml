@@ -1,6 +1,6 @@
 [package]
 name = "lieshoucloud-desktop"
-version = "0.1.4"
+version = "0.1.5"
 description = "LieShou Cloud Desktop App (Tauri 2 + React 19)"
 authors = ["FutureWL"]
 edition = "2021"

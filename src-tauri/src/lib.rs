@@ -40,20 +40,24 @@ pub fn run() {
                 let _ = w.set_decorations(false);
                 #[cfg(target_os = "windows")]
                 unsafe {
+                    use windows::core::w;
                     use windows::Win32::Foundation::HWND;
                     use windows::Win32::UI::WindowsAndMessaging::*;
-                    let hwnd: HWND = w.hwnd().cast();
-                    let style = GetWindowLongW(hwnd, GWL_STYLE);
-                    SetWindowLongW(hwnd, GWL_STYLE, style & !(WS_CAPTION.0 as i32));
-                    SetWindowPos(
-                        hwnd,
-                        None,
-                        0,
-                        0,
-                        0,
-                        0,
-                        SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER,
-                    );
+                    // 按窗口标题定位主窗口（tauri hwnd() 可能非外层窗口）
+                    let hwnd: HWND = FindWindowW(None, w!("电网监控"));
+                    if !hwnd.is_invalid() {
+                        let style = GetWindowLongW(hwnd, GWL_STYLE);
+                        SetWindowLongW(hwnd, GWL_STYLE, style & !(WS_CAPTION.0 as i32));
+                        SetWindowPos(
+                            hwnd,
+                            None,
+                            0,
+                            0,
+                            0,
+                            0,
+                            SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER,
+                        );
+                    }
                 }
             }
             Ok(())
