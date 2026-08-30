@@ -13,6 +13,8 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const login = useAuthStore((s) => s.login);
+  // 单租户部署（login.hideTenantInput）隐藏租户框，固定用 edition.tenantCode（缺省 default）
+  const hideTenantInput = edition.login?.hideTenantInput === true;
   const [tenantCode, setTenantCode] = useState(edition.tenantCode ?? 'default');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -42,16 +44,18 @@ export default function LoginPage() {
         {edition.slogan && <p className="login-slogan">{edition.slogan}</p>}
       </div>
       <form className="login-card" onSubmit={handleSubmit}>
-        <label className="field">
-          <span className="field-label">租户</span>
-          <input
-            className="field-input"
-            value={tenantCode}
-            onChange={(e) => setTenantCode(e.target.value)}
-            placeholder="租户编码"
-            autoComplete="organization"
-          />
-        </label>
+        {!hideTenantInput && (
+          <label className="field">
+            <span className="field-label">租户</span>
+            <input
+              className="field-input"
+              value={tenantCode}
+              onChange={(e) => setTenantCode(e.target.value)}
+              placeholder="租户编码"
+              autoComplete="organization"
+            />
+          </label>
+        )}
         <label className="field">
           <span className="field-label">账号</span>
           <input
