@@ -37,7 +37,12 @@ fn set_immersive() -> bool {
             let hwnd: HWND = FindWindowW(None, w!("电网监控")).unwrap_or_default();
             if !hwnd.is_invalid() {
                 let style = GetWindowLongW(hwnd, GWL_STYLE);
-                SetWindowLongW(hwnd, GWL_STYLE, style & !(WS_CAPTION.0 as i32));
+                // 沉浸式：移除标题栏(CAPTION) + resize 边框(THICKFRAME——Win11 顶部绿色系统边框)
+                SetWindowLongW(
+                    hwnd,
+                    GWL_STYLE,
+                    style & !(WS_CAPTION.0 as i32) & !(WS_THICKFRAME.0 as i32),
+                );
                 SetWindowPos(
                     hwnd,
                     None,

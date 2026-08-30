@@ -14,6 +14,7 @@ import { useAuthStore } from '@lieshoucloud/core-web';
 
 import { getEdition } from './config/editions';
 import ConsoleLayout, { shouldUseConsole } from './layout/ConsoleLayout';
+import { invoke } from '@tauri-apps/api/core';
 import AboutPage from './pages/AboutPage';
 import { checkForUpdates, isTauri } from './lib/updater';
 import HomePage from './pages/HomePage';
@@ -51,6 +52,18 @@ export default function App() {
   const extraRoutes = edition.extraRoutes ?? [];
   const useConsole = shouldUseConsole(edition);
 
+  // 沉浸式：Rust set_immersive（移除系统标题栏/绿色 resize 边框 · 延迟重试窗口就绪后）
+  const tryImmersive = () => {
+    try {
+      void invoke('set_immersive');
+    } catch {
+      // 浏览器/非 Tauri 环境
+    }
+  };
+  tryImmersive();
+  for (const delay of [600, 1500, 3000]) {
+    setTimeout(tryImmersive, delay);
+  }
   // 桌面端启动静默检查更新（Tauri 环境；浏览器版跳过）
   void (isTauri() ? checkForUpdates(true) : Promise.resolve());
   // 登录后落地页：客户 edition.homePath 优先（客户主页/工作台），缺省上游启动页
