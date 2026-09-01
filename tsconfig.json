@@ -29,6 +29,9 @@
       ],
       "@lieshoucloud/core-web": [
         "open/core-web/src"
+      ],
+      "@lieshoucloud/i18n": [
+        "open/i18n/src"
       ]
     }
   },

@@ -10,14 +10,23 @@
  */
 import {
   AccountBookOutlined,
+  ApartmentOutlined,
   AppstoreOutlined,
+  AuditOutlined,
   BellOutlined,
   CloudSyncOutlined,
   DashboardOutlined,
   FileTextOutlined,
+  FormOutlined,
+  HomeOutlined,
   LineChartOutlined,
   LogoutOutlined,
+  MoneyCollectOutlined,
+  PieChartOutlined,
+  ProjectOutlined,
+  SettingOutlined,
   SwapOutlined,
+  TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { RoleTag } from "@lieshoucloud/ui";
@@ -50,10 +59,19 @@ interface NavItem {
 /** 菜单图标映射（icon 字符串 key → antd 图标；缺省回退 AppstoreOutlined） */
 const ICON_MAP: Record<string, ReactNode> = {
   dashboard: <DashboardOutlined />,
+  home: <HomeOutlined />,
   "account-book": <AccountBookOutlined />,
   swap: <SwapOutlined />,
   "file-text": <FileTextOutlined />,
   "line-chart": <LineChartOutlined />,
+  project: <ProjectOutlined />,
+  money: <MoneyCollectOutlined />,
+  "pie-chart": <PieChartOutlined />,
+  apartment: <ApartmentOutlined />,
+  team: <TeamOutlined />,
+  audit: <AuditOutlined />,
+  form: <FormOutlined />,
+  setting: <SettingOutlined />,
 };
 
 /** 通用菜单（所有版别基础；客户层可用 hiddenMenus 裁剪） */
