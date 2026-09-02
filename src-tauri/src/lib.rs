@@ -77,6 +77,7 @@ pub fn run() {
             // 按窗口 label 定位主窗口（不依赖标题；setup 时窗口未就绪则跳过，前端多次重试兜底）。
             #[cfg(target_os = "windows")]
             {
+                use tauri::Manager;
                 use windows::Win32::Foundation::HWND;
                 use windows::Win32::UI::WindowsAndMessaging::*;
                 if let Some(win) = app.get_webview_window("main") {
