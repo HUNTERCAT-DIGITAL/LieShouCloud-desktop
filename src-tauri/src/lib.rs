@@ -76,7 +76,7 @@ pub fn run() {
             // 沉浸式无边框：Rust 侧 setup 直接强制（conf decorations:true + 前端 invoke set_immersive 均兜底）。
             // 按窗口 label 定位主窗口（不依赖标题；setup 时窗口未就绪则跳过，前端多次重试兜底）。
             #[cfg(target_os = "windows")]
-            {
+            unsafe {
                 use tauri::Manager;
                 use windows::Win32::Foundation::HWND;
                 use windows::Win32::UI::WindowsAndMessaging::*;
