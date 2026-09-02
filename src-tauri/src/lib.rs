@@ -25,16 +25,16 @@ fn fetch_health() -> HealthResponse {
 }
 
 
-/// 沉浸式无边框：按标题定位主窗口并移除 WS_CAPTION（前端 invoke 调用 · 多次重试）。
+/// 沉浸式无边框：按窗口 label 定位主窗口并移除 WS_CAPTION（前端 invoke 调用 · 多次重试）。
+/// 跨客户通用（不依赖窗口标题——历史曾硬编码 dwjk 的“电网监控”，客户品牌不同会失效）。
 #[tauri::command]
-fn set_immersive() -> bool {
+fn set_immersive(window: tauri::Window) -> bool {
     #[cfg(target_os = "windows")]
     {
         unsafe {
-            use windows::core::w;
             use windows::Win32::Foundation::HWND;
             use windows::Win32::UI::WindowsAndMessaging::*;
-            let hwnd: HWND = FindWindowW(None, w!("电网监控")).unwrap_or_default();
+            let hwnd: HWND = window.hwnd().unwrap_or_default();
             if !hwnd.is_invalid() {
                 let style = GetWindowLongW(hwnd, GWL_STYLE);
                 // 沉浸式：移除标题栏(CAPTION) + resize 边框(THICKFRAME——Win11 顶部绿色系统边框)
@@ -71,29 +71,27 @@ pub fn run() {
         // 沉浸式无边框：Rust 侧直接强制（conf decorations:false + tauri set_decorations 均兜底；
         // Windows 再用 Win32 直接移除 WS_CAPTION——tauri 2 的 set_decorations 实测未完全生效）
         .setup(|app| {
+            // 沉浸式无边框：Rust 侧 setup 直接强制（conf decorations:true + 前端 invoke set_immersive 均兜底）。
+            // 按窗口 label 定位主窗口（不依赖标题；setup 时窗口未就绪则跳过，前端多次重试兜底）。
             #[cfg(target_os = "windows")]
-            unsafe {
-                use windows::core::w;
+            {
                 use windows::Win32::Foundation::HWND;
                 use windows::Win32::UI::WindowsAndMessaging::*;
-                // 按窗口标题定位主窗口（不依赖 get_webview_window——setup 时窗口可能未就绪）
-                let hwnd: HWND = FindWindowW(None, w!("电网监控")).unwrap_or_default();
-                let _ = std::fs::write(
-                    "C:/dwjk-build/setup-info.txt",
-                    format!("setup=ran hwnd_valid={} windows={}", !hwnd.is_invalid(), cfg!(target_os = "windows")),
-                );
-                if !hwnd.is_invalid() {
-                    let style = GetWindowLongW(hwnd, GWL_STYLE);
-                    SetWindowLongW(hwnd, GWL_STYLE, style & !(WS_CAPTION.0 as i32));
-                    SetWindowPos(
-                        hwnd,
-                        None,
-                        0,
-                        0,
-                        0,
-                        0,
-                        SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER,
-                    );
+                if let Some(win) = app.get_webview_window("main") {
+                    let hwnd: HWND = win.hwnd().unwrap_or_default();
+                    if !hwnd.is_invalid() {
+                        let style = GetWindowLongW(hwnd, GWL_STYLE);
+                        SetWindowLongW(hwnd, GWL_STYLE, style & !(WS_CAPTION.0 as i32));
+                        SetWindowPos(
+                            hwnd,
+                            None,
+                            0,
+                            0,
+                            0,
+                            0,
+                            SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER,
+                        );
+                    }
                 }
             }
             let _ = app;
