@@ -3,7 +3,7 @@
 ; 本文件 UTF-8 带 BOM（NSIS 中文脚本需 Unicode 编译 + BOM 避免乱码）。
 ; ⚠️ 改品牌名/可执行名时同步：$INSTDIR 下主程序名（Cargo package name）与默认快捷方式路径。
 
-!macro customInstall
+!macro NSIS_HOOK_POSTINSTALL
   ; 替换默认英文快捷方式为中文品牌名（默认：$DESKTOP\legalmind.lnk + $SMPROGRAMS\legalmind.lnk）
   Delete "$DESKTOP\legalmind.lnk"
   Delete "$SMPROGRAMS\legalmind.lnk"
@@ -11,7 +11,7 @@
   CreateShortCut "$SMPROGRAMS\智法云枢.lnk" "$INSTDIR\lieshoucloud-desktop.exe"
 !macroend
 
-!macro customUnInstall
+!macro NSIS_HOOK_POSTUNINSTALL
   ; 卸载时清理自定义中文快捷方式（默认英文快捷方式由 tauri 卸载器处理）
   Delete "$DESKTOP\智法云枢.lnk"
   Delete "$SMPROGRAMS\智法云枢.lnk"
