@@ -27,6 +27,8 @@ fn fetch_health() -> HealthResponse {
 
 /// 沉浸式无边框：按窗口 label 定位主窗口并移除 WS_CAPTION（前端 invoke 调用 · 多次重试）。
 /// 跨客户通用（不依赖窗口标题——历史曾硬编码 dwjk 的“电网监控”，客户品牌不同会失效）。
+/// 非 Windows 平台 window 参数未使用（cfg(windows) 块内才引用），标注忽略。
+#[cfg_attr(not(target_os = "windows"), allow(unused_variables))]
 #[tauri::command]
 fn set_immersive(window: tauri::Window) -> bool {
     #[cfg(target_os = "windows")]
