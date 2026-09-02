@@ -14,12 +14,21 @@ import {
   AlertOutlined,
   ApartmentOutlined,
   AppstoreOutlined,
+  BarChartOutlined,
+  BellOutlined,
+  BookOutlined,
+  ClockCircleOutlined,
   ControlOutlined,
   DashboardOutlined,
+  FileTextOutlined,
+  FolderOutlined,
   FundOutlined,
   FundProjectionScreenOutlined,
   HomeOutlined,
   MenuOutlined,
+  MessageOutlined,
+  RobotOutlined,
+  TeamOutlined,
   ThunderboltOutlined,
   ToolOutlined,
 } from '@ant-design/icons';
@@ -52,6 +61,18 @@ const ICON_MAP: Record<string, ReactNode> = {
   ops: <ToolOutlined />,
   cockpit: <FundProjectionScreenOutlined />,
   menu: <MenuOutlined />,
+  // 行业页（legal 客户包菜单图标 · 对齐 admin-web）
+  file: <FileTextOutlined />,
+  'file-text': <FileTextOutlined />,
+  folder: <FolderOutlined />,
+  team: <TeamOutlined />,
+  clock: <ClockCircleOutlined />,
+  book: <BookOutlined />,
+  ai: <RobotOutlined />,
+  chart: <BarChartOutlined />,
+  news: <FileTextOutlined />,
+  message: <MessageOutlined />,
+  bell: <BellOutlined />,
 };
 
 function iconOf(name?: string): ReactNode {
@@ -171,6 +192,8 @@ export default function ConsoleLayout() {
       logo={false}
       layout="side"
       fixSiderbar
+      // 桌面端：AppTopBar 已完全接管窗口顶栏（系统标题栏替代）——隐藏 ProLayout 自带 header，避免双顶栏
+      headerRender={false}
       route={{ path: '/', routes: menuItems }}
       location={{ pathname: location.pathname }}
       menuItemRender={(item: MenuDataItem, dom: ReactNode) => {
